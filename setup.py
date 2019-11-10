@@ -9,4 +9,9 @@ setup(
     install_requires=[
         'pywikibot',
     ],
+    extras_require={
+        'dev': [
+            'pytest',
+        ]
+    }
 )
