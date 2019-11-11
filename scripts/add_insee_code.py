@@ -12,7 +12,8 @@ import pywikibot
 from pywikibot import pagegenerators as pg
 import re
 
-from wikidatabot.types import SITE, Claim, Statement, Item
+import wikidatabot
+from wikidatabot.types import Claim, Statement, Item
 
 
 INSTANCE_OF = 'P31'
@@ -194,7 +195,7 @@ def main(query=None, summary=None, year=None, to=None, is_last=False, debug=True
     # print(to_insee_code_value)
 
     # Create item generator
-    administrative_divisions = pg.WikidataSPARQLPageGenerator(query, site=SITE)
+    administrative_divisions = pg.WikidataSPARQLPageGenerator(query, site=wikidatabot.site)
     # print('After Page Generator')
 
     # Iterate over administrative divisions (items)

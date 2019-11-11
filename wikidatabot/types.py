@@ -3,7 +3,7 @@ from collections import defaultdict, OrderedDict
 import copy
 import pywikibot
 
-from wikidatabot import SITE, REPO
+from wikidatabot import site, repo
 
 
 # class Site:
@@ -30,9 +30,9 @@ class Claim:
                      year=None, month=None, day=None, text=None, language=None):
         self.property = property
         if item is not None:
-            value = pywikibot.ItemPage(REPO, item)
+            value = pywikibot.ItemPage(repo, item)
         elif quantity is not None:
-            value = pywikibot.WbQuantity(quantity, site=SITE)
+            value = pywikibot.WbQuantity(quantity, site=site)
         elif year is not None:
             value = pywikibot.WbTime(year=year, month=month, day=day)
         elif text is not None:
@@ -40,7 +40,7 @@ class Claim:
                 value = pywikibot.WbMonolingualText(text, language)
         self.value = value
 
-        claim = pywikibot.Claim(REPO, property)
+        claim = pywikibot.Claim(repo, property)
         claim.setTarget(value)
         self._claim = claim
 
@@ -61,12 +61,12 @@ class Claim:
     def create_claim(property=None, value=None, item=None, quantity=None,
                      year=None, month=None, day=None, text=None, language=None):
 
-        claim = pywikibot.Claim(REPO, property)
+        claim = pywikibot.Claim(repo, property)
 
         if item is not None:
-            value = pywikibot.ItemPage(REPO, item)
+            value = pywikibot.ItemPage(repo, item)
         elif quantity is not None:
-            value = pywikibot.WbQuantity(quantity, site=SITE)
+            value = pywikibot.WbQuantity(quantity, site=site)
         elif year is not None:
             value = pywikibot.WbTime(year=year, month=month, day=day)
         elif text is not None:
@@ -205,5 +205,5 @@ class Item:
         # TODO: []
         data = {'claims': [statement._statement.toJSON()]}  # add the statement on property: use []
         # to overwrite statement on property: do not use []  # FALSE; use snak instead
-        response = REPO.editEntity(identification, data, summary=summary)
+        response = repo.editEntity(identification, data, summary=summary)
         return response

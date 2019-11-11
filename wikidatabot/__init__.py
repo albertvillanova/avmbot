@@ -18,5 +18,5 @@ import pywikibot
 #
 # SITE = Site()
 
-SITE = pywikibot.Site('wikidata', "wikidata")
-REPO = SITE.data_repository()
+site = pywikibot.Site('wikidata', "wikidata")
+repo = site.data_repository()
