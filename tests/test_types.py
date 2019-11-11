@@ -1,12 +1,7 @@
-import wikidatabot
-
-wikidatabot.SITE = wikidatabot.pywikibot.Site('test', 'wikidata')
-wikidatabot.REPO = wikidatabot.SITE.data_repository()
-
 
 class TestClaim:
 
-    def test_init(self):
+    def test_init(self, wikidatabot):
         from wikidatabot.types import Claim
         claim_property = 'P115'  # 'P488'
         claim_item = 'Q271'  # 'Q50'
