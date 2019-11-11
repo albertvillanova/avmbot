@@ -3,7 +3,7 @@ from collections import defaultdict, OrderedDict
 import copy
 import pywikibot
 
-from . import SITE, REPO
+from wikidatabot import SITE, REPO
 
 
 # class Site:
@@ -24,17 +24,15 @@ from . import SITE, REPO
 # REPO = SITE.get_repo()
 
 
-
-
 class Claim:
-    """TODO"""
-    def __init__(self, property=None, value=None, item=None, quantity=None, repo=REPO, site=SITE,
+
+    def __init__(self, property=None, value=None, item=None, quantity=None,
                      year=None, month=None, day=None, text=None, language=None):
         self.property = property
         if item is not None:
-            value = pywikibot.ItemPage(repo, item)
+            value = pywikibot.ItemPage(REPO, item)
         elif quantity is not None:
-            value = pywikibot.WbQuantity(quantity, site=site)
+            value = pywikibot.WbQuantity(quantity, site=SITE)
         elif year is not None:
             value = pywikibot.WbTime(year=year, month=month, day=day)
         elif text is not None:
@@ -42,7 +40,7 @@ class Claim:
                 value = pywikibot.WbMonolingualText(text, language)
         self.value = value
 
-        claim = pywikibot.Claim(repo, property)
+        claim = pywikibot.Claim(REPO, property)
         claim.setTarget(value)
         self._claim = claim
 
@@ -60,16 +58,15 @@ class Claim:
     # def __setattr__(self, key, value):
     #     return setattr(self.claim, key, value)
 
-
-    def create_claim(property=None, value=None, item=None, quantity=None, repo=REPO, site=SITE,
+    def create_claim(property=None, value=None, item=None, quantity=None,
                      year=None, month=None, day=None, text=None, language=None):
 
-        claim = pywikibot.Claim(repo, property)
+        claim = pywikibot.Claim(REPO, property)
 
         if item is not None:
-            value = pywikibot.ItemPage(repo, item)
+            value = pywikibot.ItemPage(REPO, item)
         elif quantity is not None:
-            value = pywikibot.WbQuantity(quantity, site=site)
+            value = pywikibot.WbQuantity(quantity, site=SITE)
         elif year is not None:
             value = pywikibot.WbTime(year=year, month=month, day=day)
         elif text is not None:
@@ -121,7 +118,6 @@ class Statement:
             self.set_qualifiers(qualifiers)
         if sources is not None:
             self.set_sources(sources)
-
 
     @property
     def claim(self):
