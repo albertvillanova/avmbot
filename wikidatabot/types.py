@@ -161,6 +161,9 @@ class Item:
     """TODO"""
 
     def __init__(self, item=None):
+        if isinstance(item, str):
+            item = pywikibot.ItemPage(repo, item)
+            _ = item.get()
         self.id = item.id
         self.labels = item.labels
         self.descriptions = item.descriptions
