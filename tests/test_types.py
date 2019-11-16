@@ -16,15 +16,29 @@ class TestClaim:
 
 class TestItem:
 
-    def test_init(self, wikidatabot):
+    def test_init_from_pwb_item(self, wikidatabot):
         from wikidatabot.types import Item
         item_id = 'Q68'
-        pywikibot_item = wikidatabot.pywikibot.ItemPage(wikidatabot.repo, item_id)
-        _ = pywikibot_item.get()
-        item = Item(pywikibot_item)
-        assert item.id == pywikibot_item.id
-        assert item.labels == pywikibot_item.labels
-        assert item.descriptions == pywikibot_item.descriptions
-        assert item.aliases == pywikibot_item.aliases
-        assert item.statements == pywikibot_item.claims
-        assert item.sitelinks == pywikibot_item.sitelinks
+        pwb_item = wikidatabot.pywikibot.ItemPage(wikidatabot.repo, item_id)
+        _ = pwb_item.get()
+        item = Item(pwb_item)
+        assert item.id == pwb_item.id
+        assert item.labels == pwb_item.labels
+        assert item.descriptions == pwb_item.descriptions
+        assert item.aliases == pwb_item.aliases
+        assert item.statements == pwb_item.claims
+        assert item.sitelinks == pwb_item.sitelinks
+
+    def test_init_from_id(self, wikidatabot):
+        from wikidatabot.types import Item
+        item_id = 'Q68'
+        item = Item(item_id)
+        # expected:
+        pwb_item = wikidatabot.pywikibot.ItemPage(wikidatabot.repo, item_id)
+        _ = pwb_item.get()
+        assert item.id == pwb_item.id
+        assert item.labels == pwb_item.labels
+        assert item.descriptions == pwb_item.descriptions
+        assert item.aliases == pwb_item.aliases
+        assert item.statements == pwb_item.claims
+        assert item.sitelinks == pwb_item.sitelinks
