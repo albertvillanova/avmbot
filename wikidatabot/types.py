@@ -161,6 +161,13 @@ class Item:
     """TODO"""
 
     def __init__(self, item=None):
+        self.id = item.id
+        self.labels = item.labels
+        self.descriptions = item.descriptions
+        self.aliases = item.aliases
+        self.statements = item.claims  # renamed
+        self.sitelinks = item.sitelinks
+        # pywikibot wrapper
         self._item = item
 
     def add_statement(self, statement: Statement = None, summary=None):
