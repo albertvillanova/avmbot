@@ -160,18 +160,26 @@ class Statement:
 class Item:
     """TODO"""
 
-    def __init__(self, item=None):
-        if isinstance(item, str):
-            item = pywikibot.ItemPage(repo, item)
-            _ = item.get()
-        self.id = item.id
-        self.labels = item.labels
-        self.descriptions = item.descriptions
-        self.aliases = item.aliases
-        self.statements = item.claims  # renamed
-        self.sitelinks = item.sitelinks
+    def __init__(self, id=None, labels=None, descriptions=None, aliases=None, statements=None, sitelinks=None):
+        self.id = id
+        self.labels = labels
+        self.descriptions = descriptions
+        self.aliases = aliases
+        self.statements = statements
+        self.sitelinks = sitelinks
+        # TODO: remove; Itpywikibot wrapper
+        self._item = None
+
+    @classmethod
+    def from_pwb(cls, pwb_item):
+        if isinstance(pwb_item, str):
+            pwb_item = pywikibot.ItemPage(repo, pwb_item)
+            _ = pwb_item.get()
+        item = cls(id=pwb_item.id, labels=pwb_item.labels, descriptions=pwb_item.descriptions, aliases=pwb_item.aliases,
+                   statements=pwb_item.claims, sitelinks=pwb_item.sitelinks)  # Renamed: statements = pwb_item.claims
         # pywikibot wrapper
-        self._item = item
+        item._item = pwb_item
+        return item
 
     def add_statement(self, statement: Statement = None, summary=None):
         if statement is None:

@@ -279,7 +279,7 @@ def main(query=None, summary=None, year=None, to=None, is_last=False, debug=True
             if not debug:
                 # pass
                 # add_statement(administrative_division, insee_code_statement, summary=summary)
-                administrative_division_item = Item(administrative_division)
+                administrative_division_item = Item.from_pwb(administrative_division)
                 administrative_division_item.add_statement(insee_code_statement, summary=summary)
 
             # break

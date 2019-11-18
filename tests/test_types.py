@@ -21,7 +21,7 @@ class TestItem:
         item_id = 'Q68'
         pwb_item = wikidatabot.pywikibot.ItemPage(wikidatabot.repo, item_id)
         _ = pwb_item.get()
-        item = Item(pwb_item)
+        item = Item.from_pwb(pwb_item)
         assert item.id == pwb_item.id
         assert item.labels == pwb_item.labels
         assert item.descriptions == pwb_item.descriptions
@@ -32,7 +32,7 @@ class TestItem:
     def test_init_from_id(self, wikidatabot):
         from wikidatabot.types import Item
         item_id = 'Q68'
-        item = Item(item_id)
+        item = Item.from_pwb(item_id)
         # expected:
         pwb_item = wikidatabot.pywikibot.ItemPage(wikidatabot.repo, item_id)
         _ = pwb_item.get()

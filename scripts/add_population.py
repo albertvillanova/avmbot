@@ -282,7 +282,7 @@ def main(query=None, summary=None, source_title=None, source_language=None, publ
         if not debug:
             # pass
             # add_statement(administrative_division, insee_code_statement, summary=summary)
-            administrative_division_item = Item(administrative_division)
+            administrative_division_item = Item.from_pwb(administrative_division)
             administrative_division_item.add_statement(population_statement, summary=summary)
 
 
