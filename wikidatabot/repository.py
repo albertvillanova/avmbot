@@ -1,31 +1,35 @@
 """Repository Pattern."""
-from abc import ABC, abstractmethod
+from abc import abstractmethod, ABCMeta
+from typing import Generic, List, TypeVar
 
 # TODO: import them directly here and remove from __init__
 from wikidatabot import pywikibot, site, repo
 from wikidatabot.types import Item
 
 
-class Repository(ABC):
+T = TypeVar('T')
+
+
+class Repository(Generic[T], metaclass=ABCMeta):
     """https://deviq.com/repository-pattern/"""
     @abstractmethod
-    def get(self, id): pass
+    def get(self, id: str) -> T: pass
     # @abstractmethod
-    def list(self): pass
+    def list(self) -> List[T]: pass
     # @abstractmethod
-    def add(self, entity): pass
+    def add(self, entity: T): pass
     # @abstractmethod
-    def delete(self, entity): pass
+    def delete(self, entity: T): pass
     # @abstractmethod
-    def edit(self, entity): pass
+    def edit(self, entity: T): pass
 
 
-class ItemPywikibotRepository(Repository):
+class ItemPywikibotRepository(Repository[Item]):
 
     def __init__(self, repo=repo):
         self.repo = repo
 
-    def get(self, item_id: str):
+    def get(self, item_id: str) -> Item:
         pwb_item = pywikibot.ItemPage(self.repo, item_id)
         _ = pwb_item.get()
         # Renamed: statements = pwb_item.claims
