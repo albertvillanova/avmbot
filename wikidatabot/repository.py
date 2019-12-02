@@ -1,11 +1,26 @@
 """Repository Pattern."""
+from abc import ABC, abstractmethod
 
 # TODO: import them directly here and remove from __init__
 from wikidatabot import pywikibot, site, repo
 from wikidatabot.types import Item
 
 
-class ItemPywikibotRepository:
+class Repository(ABC):
+    """https://deviq.com/repository-pattern/"""
+    @abstractmethod
+    def get(self, id): pass
+    # @abstractmethod
+    def list(self): pass
+    # @abstractmethod
+    def add(self, entity): pass
+    # @abstractmethod
+    def delete(self, entity): pass
+    # @abstractmethod
+    def edit(self, entity): pass
+
+
+class ItemPywikibotRepository(Repository):
 
     def __init__(self, repo=repo):
         self.repo = repo
