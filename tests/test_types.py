@@ -2,7 +2,7 @@
 class TestClaim:
 
     def test_init(self, wikidatabot):
-        from wikidatabot.types import Claim
+        from wikidatabot.models import Claim
         claim_property = 'P115'  # 'P488'
         claim_item = 'Q271'  # 'Q50'
         claim = Claim(property=claim_property, item=claim_item)
@@ -17,7 +17,7 @@ class TestClaim:
 class TestItem:
 
     def test_init_from_pwb_item(self, wikidatabot):
-        from wikidatabot.types import Item
+        from wikidatabot.models import Item
         item_id = 'Q68'
         pwb_item = wikidatabot.pywikibot.ItemPage(wikidatabot.repo, item_id)
         _ = pwb_item.get()
@@ -30,7 +30,7 @@ class TestItem:
         assert item.sitelinks == pwb_item.sitelinks
 
     def test_init_from_id(self, wikidatabot):
-        from wikidatabot.types import Item
+        from wikidatabot.models import Item
         item_id = 'Q68'
         item = Item.from_pwb(item_id)
         # expected:

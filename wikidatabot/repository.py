@@ -4,7 +4,7 @@ from typing import Generic, List, TypeVar
 
 # TODO: import them directly here and remove from __init__
 from wikidatabot import pywikibot, site, repo
-from wikidatabot.types import Item
+from wikidatabot.models import Item
 
 
 T = TypeVar('T')

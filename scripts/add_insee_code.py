@@ -13,7 +13,7 @@ from pywikibot import pagegenerators as pg
 import re
 
 import wikidatabot
-from wikidatabot.types import Claim, Statement, Item
+from wikidatabot.models import Claim, Statement, Item
 
 
 INSTANCE_OF = 'P31'
