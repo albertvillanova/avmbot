@@ -1,5 +1,5 @@
 """Repository Pattern."""
-from abc import abstractmethod, ABCMeta
+from abc import abstractmethod, ABC
 from typing import Generic, List, TypeVar
 
 # TODO: import them directly here and remove from __init__
@@ -10,8 +10,10 @@ from wikidatabot.models import Item
 T = TypeVar('T')
 
 
-class Repository(Generic[T], metaclass=ABCMeta):
-    """https://deviq.com/repository-pattern/"""
+class Repository(Generic[T], ABC):
+    """Repository interface.
+
+    https://deviq.com/repository-pattern/"""
     @abstractmethod
     def get(self, id: str) -> T: pass
     # @abstractmethod
@@ -24,8 +26,13 @@ class Repository(Generic[T], metaclass=ABCMeta):
     def edit(self, entity: T): pass
 
 
-class ItemPywikibotRepository(Repository[Item]):
+class ItemRepository(Repository[Item], ABC):
+    """Item Repository interface."""
+    pass
 
+
+class ItemPywikibotRepository(ItemRepository):
+    """Pywikibot implementation of ItemRepository."""
     def __init__(self, repo=repo):
         self.repo = repo
 
