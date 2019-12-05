@@ -1,6 +1,9 @@
 """"""
-from collections import defaultdict, OrderedDict
+from collections import defaultdict, OrderedDict, UserDict
 import copy
+from dataclasses import dataclass
+from typing import MutableMapping, List, AbstractSet
+
 import pywikibot
 
 from wikidatabot import site, repo
@@ -22,6 +25,45 @@ from wikidatabot import site, repo
 #
 # SITE = Site()
 # REPO = SITE.get_repo()
+
+
+@dataclass
+class Label:
+    language: str = ''
+    text: str = ''
+
+
+class LabelContainer(UserDict):
+    data: MutableMapping[str, str]
+
+    def get(self, language: str = '') -> Label:
+        return Label(language=language, text=self.data[language])
+
+
+@dataclass
+class Description:
+    language: str = ''
+    text: str = ''
+
+
+class DescriptionContainer(UserDict):
+    data: MutableMapping[str, str]
+
+    def get(self, language: str = '') -> Description:
+        return Description(language=language, text=self.data[language])
+
+
+@dataclass
+class Alias:
+    language: str = ''
+    text: str = ''
+
+
+class AliasContainer(UserDict):
+    data: MutableMapping[str, AbstractSet[str]]
+
+    def get(self, language: str = '') -> List[Alias]:
+        return [Alias(language=language, text=text) for text in self.data[language]]
 
 
 class Claim:
