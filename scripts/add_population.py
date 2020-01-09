@@ -122,12 +122,11 @@ SELECT DISTINCT ?item WHERE {
   OPTIONAL{?st pq:{end_time} ?end_time_date}
   FILTER(IF(BOUND(?end_time_date), ?end_time_date > "{cog_year}-01-01"^^xsd:dateTime, true))
   
-  ?item wdt:{located_in}+ wd:{location} .  # Recursive
+  {located_in_location}
 }
  """.replace('{instance_of}', INSTANCE_OF)
     .replace('{start_time}', START_TIME)
     .replace('{end_time}', END_TIME)
-    .replace('{located_in}', LOCATED_IN)
 )
 
 
@@ -360,8 +359,14 @@ if __name__ == '__main__':
     query = (QUERY
         .replace('{administrative_division}', PARAMS[args.year][args.at][args.to]['administrative_division'])
         .replace('{cog_year}', PARAMS[args.year][args.at]['cog_year'])
-        .replace('{location}', PARAMS[args.year][args.at]['location'])
     )
+    location = PARAMS[args.year][args.at]['location']
+    if location:
+        query = query.replace('{located_in_location}', '?item wdt:{located_in}+ wd:{location} .  # Recursive')\
+            .replace('{located_in}', LOCATED_IN)\
+            .replace('{location}', location)
+    else:
+        query = query.replace('{located_in_location}', '')
 
     # query = (CUSTOM_QUERY_ADDED_INSEE_CODE
     #     .replace('{administrative_division}', PARAMS[args.to]['administrative_division'])
