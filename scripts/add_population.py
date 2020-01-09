@@ -28,6 +28,8 @@ STATED_IN = 'P248'
 INSEE = 'Q156616'
 TITLE = 'P1476'
 PUBLICATION_DATE = 'P577'
+DETERMINATION_METHOD = 'P459'
+CENSUS = 'Q39825'
 
 PARAMS = {
     '2014': {
@@ -278,6 +280,8 @@ def main(query=None, summary=None, population_date=None, stated_in=None,
         if not population_date:
             population_date = {'year': int(year)}  # , 'month': 1, 'day': 1}
         point_in_time_claim = Claim(property=POINT_IN_TIME, **population_date)
+        determination_method_claim = Claim(property=DETERMINATION_METHOD, item=CENSUS)
+        qualifiers = [point_in_time_claim, determination_method_claim]
 
         # Create sources
         if stated_in:
@@ -293,7 +297,7 @@ def main(query=None, summary=None, population_date=None, stated_in=None,
         rank = 'preferred' if is_last else 'normal'
         population_statement = Statement(claim=population_claim,
                                          rank=rank,
-                                         qualifiers=[point_in_time_claim],
+                                         qualifiers=qualifiers,
                                          sources=sources)
 
         # Check duplicated target value
