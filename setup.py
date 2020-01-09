@@ -8,6 +8,8 @@ setup(
     packages=find_packages(),
     install_requires=[
         'pywikibot',
+        # Scripts:
+        'xlrd',  # Excel support
     ],
     extras_require={
         'dev': [
