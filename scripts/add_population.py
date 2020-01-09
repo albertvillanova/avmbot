@@ -301,9 +301,9 @@ def main(query=None, summary=None, population_date=None, stated_in=None,
                                          sources=sources)
 
         # Check duplicated target value
-        # is_duplicated = check_duplicates(administrative_division, population_statement._statement)
-        # if is_duplicated:
-        #     continue
+        is_duplicated = check_duplicates(administrative_division, population_statement._statement)
+        if is_duplicated:
+            continue
 
 
         # Downgrade rank of the other analogue statements
