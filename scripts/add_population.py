@@ -89,6 +89,24 @@ PARAMS = {
                 'column': 'Population municipale',
             },
         },
+        'france': {
+            'cog_year': '2019',
+            'location': None,  # 'Q142',  # France <- this gives TimeOut
+            'summary': "Add France 2017 population",
+            'population_date': {'year': 2017, 'month': 1, 'day': 1},
+            'stated_in': 'Q81204110',  # Populations légales 2017
+            # 'source_title': "Populations légales 2017",
+            # 'source_language': 'fr',
+            # 'publication_date': {'year': 2019, 'month': 12, 'day': 30},
+            'regions': {
+                'path': PATH_FRANCE_2017,
+                'administrative_division': 'Q36784',  # region of France
+                'insee_code': 'P2585',  # INSEE region code
+                'sheet_name': 'Régions',
+                'index': 'Code région',
+                'column': 'Population municipale',
+            },
+        },
 
     },
 }
