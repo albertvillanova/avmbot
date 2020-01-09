@@ -242,7 +242,8 @@ def downgrade_ranks(item, new_statement, from_rank='preferred', to_rank='normal'
                 statement.changeRank(to_rank, summary=summary)
 
 
-def main(query=None, summary=None, source_title=None, source_language=None, publication_date=None,
+def main(query=None, summary=None, population_date=None, stated_in=None,
+         source_title=None, source_language=None, publication_date=None,
          year=None, at=None, to=None, is_last=False, debug=DEBUG, params=None):
 
     if year is None or to is None:
@@ -274,22 +275,26 @@ def main(query=None, summary=None, source_title=None, source_language=None, publ
         population_claim = Claim(property=POPULATION, quantity=population_value)
 
         # Create qualifiers
-        date = {'year': int(year)}  # , 'month': 1, 'day': 1}
-        point_in_time_claim = Claim(property=POINT_IN_TIME, **date)
+        if not population_date:
+            population_date = {'year': int(year)}  # , 'month': 1, 'day': 1}
+        point_in_time_claim = Claim(property=POINT_IN_TIME, **population_date)
 
         # Create sources
-        stated_in_claim = Claim(property=STATED_IN, item=INSEE)
-
-        title_claim = Claim(property=TITLE, text=source_title, language=source_language)
-
-        publication_date_claim = Claim(property=PUBLICATION_DATE, **publication_date)
+        if stated_in:
+            stated_in_claim = Claim(property=STATED_IN, item=stated_in)
+            sources = [stated_in_claim]
+        else:
+            stated_in_claim = Claim(property=STATED_IN, item=INSEE)
+            title_claim = Claim(property=TITLE, text=source_title, language=source_language)
+            publication_date_claim = Claim(property=PUBLICATION_DATE, **publication_date)
+            sources = [stated_in_claim, title_claim, publication_date_claim]
 
         # Create population statement
         rank = 'preferred' if is_last else 'normal'
         population_statement = Statement(claim=population_claim,
                                          rank=rank,
                                          qualifiers=[point_in_time_claim],
-                                         sources=[stated_in_claim, title_claim, publication_date_claim])
+                                         sources=sources)
 
         # Check duplicated target value
         # is_duplicated = check_duplicates(administrative_division, population_statement._statement)
@@ -381,9 +386,13 @@ if __name__ == '__main__':
     #         )
 
     summary = PARAMS[args.year][args.at]['summary']
-    source_title = PARAMS[args.year][args.at]['source_title']
-    source_language = PARAMS[args.year][args.at]['source_language']
-    publication_date = PARAMS[args.year][args.at]['publication_date']
+    population_date = PARAMS[args.year][args.at].get('population_date')
+    stated_in = PARAMS[args.year][args.at].get('stated_in')
+    # Legacy:
+    source_title = PARAMS[args.year][args.at].get('source_title')
+    source_language = PARAMS[args.year][args.at].get('source_language')
+    publication_date = PARAMS[args.year][args.at].get('publication_date')
+
     params = PARAMS[args.year][args.at][args.to]
     print(query)
     print(summary)
@@ -392,8 +401,9 @@ if __name__ == '__main__':
     main(query=query,
          year=args.year, at=args.at, to=args.to,
          is_last=args.is_last, debug=args.debug,
-         summary=summary, source_title=source_title, source_language=source_language,
-         publication_date=publication_date,
+         summary=summary,
+         population_date=population_date, stated_in=stated_in,
+         source_title=source_title, source_language=source_language, publication_date=publication_date,
          params=params
          )
 
