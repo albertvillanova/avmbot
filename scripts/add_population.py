@@ -3,6 +3,7 @@
 import argparse
 from collections import defaultdict
 import os
+from pathlib import Path
 import pandas as pd
 import pywikibot
 from pywikibot import pagegenerators as pg
@@ -10,6 +11,9 @@ import re
 
 import wikidatabot
 from wikidatabot.models import Claim, Statement, Item
+
+
+PATH_FRANCE_2017 = Path('D:/data/insee/populations/2017/ensemble.xls')
 
 # Constants
 INSTANCE_OF = 'P31'
@@ -121,16 +125,19 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+
 def load_data(path=None, sheet_name=None, index=None, column=None, **kwargs):
-    path = os.path.expanduser(path)
+    path = Path(path)
+    if '~' in str(path):
+        path = path.expanduser()
     if isinstance(index, str):
         to_dtype = {index: str}
     else:
         to_dtype = {idx: str for idx in index}
     # Read
-    if path.endswith('xls'):
+    if path.suffix.endswith('xls'):
         df = pd.read_excel(path, sheet_name=sheet_name, header=7, dtype=to_dtype)
-    elif path.endswith('csv'):
+    elif path.suffix.endswith('csv'):
         df = pd.read_csv(path, sep='\t', dtype=to_dtype)
     # Set index
     if isinstance(index, str):
