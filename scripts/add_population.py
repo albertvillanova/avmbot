@@ -125,6 +125,14 @@ PARAMS = {
                 'index': ['Code département', 'Code arrondissement'],
                 'column': 'Population municipale',
             },
+            'cantons': {
+                'path': PATH_FRANCE_2017,
+                'administrative_division': 'Q18524218',  # canton of France (starting March 2015)
+                'insee_code': 'P2506',  # INSEE canton code
+                'sheet_name': 'Cantons et métropoles',
+                'index': ['Code département', 'Code canton'],
+                'column': 'Population municipale',
+            },
         },
 
     },
@@ -354,6 +362,9 @@ if __name__ == '__main__':
 
     python ./scripts/add_population.py -y 2017 -a france -t arrondissements -l --debug
     python ./scripts/add_population.py -y 2017 -a france -t arrondissements -l | tee logs/add_population_2017_france_arrondissements.log
+
+    python ./scripts/add_population.py -y 2017 -a france -t cantons -l --debug
+    python ./scripts/add_population.py -y 2017 -a france -t cantons -l | tee logs/add_population_2017_france_cantons.log
 
 
     python ./scripts/add_population.py -y 2017 -a mayotte -t cantons -l --debug
