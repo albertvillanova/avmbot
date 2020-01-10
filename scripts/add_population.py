@@ -334,8 +334,10 @@ def main(query=None, summary=None, population_date=None, stated_in=None,
             # add_statement(administrative_division, insee_code_statement, summary=summary)
             administrative_division_item = Item.from_pwb(administrative_division)
             administrative_division_item.add_statement(population_statement, summary=summary)
-        # else:
-        #     print(population_statement._statement, summary)
+        else:
+            # print(population_statement._statement, summary)
+            if i >= 20:
+                break
 
 
 if __name__ == '__main__':
@@ -345,6 +347,9 @@ if __name__ == '__main__':
 
     python ./scripts/add_population.py -y 2017 -a france -t departements -l --debug
     python ./scripts/add_population.py -y 2017 -a france -t departements -l | tee logs/add_population_2017_france_departements.log
+
+    python ./scripts/add_population.py -y 2017 -a france -t arrondissements -l --debug
+    python ./scripts/add_population.py -y 2017 -a france -t arrondissements -l | tee logs/add_population_2017_france_arrondissements.log
 
 
     python ./scripts/add_population.py -y 2017 -a mayotte -t cantons -l --debug
