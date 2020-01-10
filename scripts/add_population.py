@@ -108,6 +108,14 @@ PARAMS = {
                 'index': 'Code région',
                 'column': 'Population municipale',
             },
+            'departements': {
+                'path': PATH_FRANCE_2017,
+                'administrative_division': 'Q6465',  # department of France
+                'insee_code': 'P2586',  # INSEE department code
+                'sheet_name': 'Départements',
+                'index': 'Code département',
+                'column': 'Population municipale',
+            },
         },
 
     },
@@ -317,8 +325,8 @@ def main(query=None, summary=None, population_date=None, stated_in=None,
             # add_statement(administrative_division, insee_code_statement, summary=summary)
             administrative_division_item = Item.from_pwb(administrative_division)
             administrative_division_item.add_statement(population_statement, summary=summary)
-        else:
-            print(population_statement._statement, summary)
+        # else:
+        #     print(population_statement._statement, summary)
 
 
 if __name__ == '__main__':
