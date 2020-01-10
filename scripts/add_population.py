@@ -230,7 +230,7 @@ def check_duplicates(item, new_statement):
                             statement_qualifier_claim = statement.qualifiers[pid][0]
                             new_statement_qualifier_claim = new_statement.qualifiers[pid][0]
                             if statement_qualifier_claim.getTarget().year == new_statement_qualifier_claim.getTarget().year:
-                                print('WARNING: duplicated:', item.getID(), ':', item.labels['fr'])
+                                print('WARNING: duplicated:', item.getID(), ':', item.labels.get('fr'))
                                 return True
             # elif statement.getRank() == 'preferred':
             #     print('- preferred', item.labels['fr'])
@@ -257,7 +257,7 @@ def downgrade_ranks(item, new_statement, from_rank='preferred', to_rank='normal'
             #     return True
             if statement.getRank() == from_rank:
                 # print('- ' + from_rank, item.labels['fr'])
-                print('WARNING: downgraded from rank', from_rank, ':', item.getID(), ':', item.labels['fr'])
+                print('WARNING: downgraded from rank', from_rank, ':', item.getID(), ':', item.labels.get('fr'))
                 statement.changeRank(to_rank, summary=summary)
 
 
@@ -278,7 +278,11 @@ def main(query=None, summary=None, population_date=None, stated_in=None,
     insee_codes = []
     for i, administrative_division in enumerate(administrative_divisions):
         administrative_division.get()
-        print(i + 1, administrative_division.labels['fr'])
+        administrative_division_label = administrative_division.labels.get('fr')
+        if not administrative_division_label:
+            print(f"WARNING: No fr label for {administrative_division.getID()}")
+            administrative_division_label = administrative_division.getID()
+        print(i + 1, administrative_division_label)
 
         # Get insee_code from item
         insee_code = get_insee_code(administrative_division, params['insee_code'])
@@ -286,7 +290,7 @@ def main(query=None, summary=None, population_date=None, stated_in=None,
         # Check if insee code value is in INSEE population file
         if insee_code not in to_population_value:
             # Wikidata entity wrongly stated as instance of this type of administrative division
-            print('ERROR: to_population_value does not contain INSSE code:', insee_code, ':', administrative_division.getID(), ':', administrative_division.labels['fr'])
+            print('ERROR: to_population_value does not contain INSSE code:', insee_code, ':', administrative_division.getID(), ':', administrative_division_label)
             continue
 
         # Create population claim
