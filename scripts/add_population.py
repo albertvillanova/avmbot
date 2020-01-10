@@ -324,6 +324,7 @@ def main(query=None, summary=None, population_date=None, stated_in=None,
 if __name__ == '__main__':
     """
     python ./scripts/add_population.py -y 2017 -a france -t regions -l --debug
+    python ./scripts/add_population.py -y 2017 -a france -t regions -l | tee logs/add_population_2017_france_regions.log
 
 
     python ./scripts/add_population.py -y 2017 -a mayotte -t cantons -l --debug
