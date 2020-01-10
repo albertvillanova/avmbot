@@ -116,6 +116,15 @@ PARAMS = {
                 'index': 'Code département',
                 'column': 'Population municipale',
             },
+            # 'droms': They are already included in regions
+            'arrondissements': {
+                'path': PATH_FRANCE_2017,
+                'administrative_division': 'Q194203',  # arrondissement of France
+                'insee_code': 'P3423',  # INSEE arrondissement code
+                'sheet_name': 'Arrondissements',
+                'index': ['Code département', 'Code arrondissement'],
+                'column': 'Population municipale',
+            },
         },
 
     },
