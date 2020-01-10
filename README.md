@@ -5,7 +5,17 @@ Wikidata bot
 
 ## TODO
 
-- Fix bug: use 2017 COG instead of current
+- cantons before/after 2015 should be different items?
+  - Q66364085 is *canton of Denain* AFTER 2015 (in DE Wikipedia)
+
+- canton of Avesnes-le-Comte
+  - no ca description and ca label starts with capital *Cantó*
+  - in 2015 it changed:
+    - surface: 177 -> 643
+    - number of municipalities: 31 -> 108
+  - fix ALL cantons
+
+- DONE: Fix bug: use 2017 COG instead of current
   - Now population is wrongly added to new communes created after 2017 (with INSEE code equal to the one of a previous commune), while population is not added to the previous commune
   
 - Administrative divisions without INSEE code
