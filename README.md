@@ -1,9 +1,17 @@
-# avmbot
+# WikidataBot
 
-Wikidata bot
+Wikidata bot: AVMbot
 
 
 ## TODO
+
+- subclasses of *commune of France*:
+  - *commune nouvelle*: to be solved with instance/subclass*
+  - *commune of France with specific status*: in Communes sheet, population appears per arrondissement
+    - Paris: population added from Departments sheet
+    - Marseille
+    - Lyon
+  - *commune in merger-association*: no instances yet
 
 - cantons before/after 2015 should be different items?
   - Q66364085 is *canton of Denain* AFTER 2015 (in DE Wikipedia)

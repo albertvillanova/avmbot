@@ -149,7 +149,7 @@ PARAMS = {
 QUERY = ("""
 SELECT DISTINCT ?item WHERE {
   ?item p:{instance_of} ?st .
-  ?st ps:{instance_of} wd:{administrative_division} .
+  ?st ps:{instance_of}/wdt:{subclass}* wd:{administrative_division} .
   
   OPTIONAL{?st pq:{start_time} ?start_time_date}
   FILTER(IF(BOUND(?start_time_date), ?start_time_date <= "{cog_year}-01-01"^^xsd:dateTime, true))
@@ -160,6 +160,7 @@ SELECT DISTINCT ?item WHERE {
   {located_in_location}
 }
  """.replace('{instance_of}', INSTANCE_OF)
+    .replace('{subclass}', SUBCLASS)
     .replace('{start_time}', START_TIME)
     .replace('{end_time}', END_TIME)
 )
@@ -238,6 +239,7 @@ def check_duplicates(item, new_statement):
     item_statements = item.claims
     if new_statement.getID() in item_statements:
         for statement in item_statements[new_statement.getID()]:
+            # TODO: warn if new statement has different amount but the same year (see Paris)
             if statement.getTarget().amount == new_statement.getTarget().amount:
                 # print('- duplicated:', item.getID(), ':', item.labels['fr'])
                 if new_statement.qualifiers:
@@ -298,7 +300,7 @@ def main(query=None, summary=None, population_date=None, stated_in=None,
         if not administrative_division_label:
             print(f"WARNING: No fr label for {administrative_division.getID()}")
             administrative_division_label = administrative_division.getID()
-        print(i + 1, administrative_division_label)
+        print(i + 1, administrative_division_label, administrative_division.getID())
 
         # Get insee_code from item
         insee_code = get_insee_code(administrative_division, params['insee_code'])
