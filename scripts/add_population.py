@@ -1,16 +1,18 @@
-
+"""Add population."""
 
 import argparse
-from collections import defaultdict
-import os
+import logging
 from pathlib import Path
+
 import pandas as pd
+
 import pywikibot
 from pywikibot import pagegenerators as pg
-import re
-
 import wikidatabot
 from wikidatabot.models import Claim, Statement, Item
+
+
+logger = logging.getLogger('add_population')
 
 
 PATH_FRANCE_2017 = Path('D:/data/insee/populations/2017/ensemble.xls')
@@ -166,6 +168,24 @@ SELECT DISTINCT ?item WHERE {
 )
 
 
+def config_logger(log_filename=''):
+    # Set logging level
+    logger.setLevel(logging.DEBUG)
+    # Create formatter
+    formatter = logging.Formatter('%(asctime)s [%(levelname)8s] %(message)s')
+    # Create console handler
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
+    if log_filename:
+        # Create file handler
+        fh = logging.FileHandler(filename=log_filename)
+        fh.setLevel(logging.DEBUG)
+        fh.setFormatter(formatter)
+        logger.addHandler(fh)
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Add population")
     parser.add_argument('-y', '--year', required=True)
@@ -174,6 +194,7 @@ def parse_args():
     parser.add_argument('-l', '--is-last', action='store_true')
     parser.add_argument('--debug', action='store_true')
     parser.add_argument('--check', action='store_true')
+    parser.add_argument('--log', default='')
 
     args = parser.parse_args()
     return args
@@ -248,7 +269,8 @@ def check_duplicates(item, new_statement):
                             statement_qualifier_claim = statement.qualifiers[pid][0]
                             new_statement_qualifier_claim = new_statement.qualifiers[pid][0]
                             if statement_qualifier_claim.getTarget().year == new_statement_qualifier_claim.getTarget().year:
-                                print('WARNING: duplicated:', item.getID(), ':', item.labels.get('fr'))
+                                logger.warning(f"Duplicated claim: item {item.labels.get('fr')} ({item.getID()}) "
+                                               f"already contains the same population claim")
                                 return True
             # elif statement.getRank() == 'preferred':
             #     print('- preferred', item.labels['fr'])
@@ -275,7 +297,7 @@ def downgrade_ranks(item, new_statement, from_rank='preferred', to_rank='normal'
             #     return True
             if statement.getRank() == from_rank:
                 # print('- ' + from_rank, item.labels['fr'])
-                print('WARNING: downgraded from rank', from_rank, ':', item.getID(), ':', item.labels.get('fr'))
+                logger.info(f"Downgrade rank: from rank {from_rank} in item {item.labels.get('fr')} ({item.getID()})")
                 statement.changeRank(to_rank, summary=summary)
 
 
@@ -298,9 +320,9 @@ def main(query=None, summary=None, population_date=None, stated_in=None,
         administrative_division.get()
         administrative_division_label = administrative_division.labels.get('fr')
         if not administrative_division_label:
-            print(f"WARNING: No fr label for {administrative_division.getID()}")
+            logger.warning(f"No fr label: item {administrative_division.getID()}")
             administrative_division_label = administrative_division.getID()
-        print(i + 1, administrative_division_label, administrative_division.getID())
+        logger.info(f"Item {i + 1}: {administrative_division_label} ({administrative_division.getID()})")
 
         # Get insee_code from item
         insee_code = get_insee_code(administrative_division, params['insee_code'])
@@ -308,7 +330,8 @@ def main(query=None, summary=None, population_date=None, stated_in=None,
         # Check if insee code value is in INSEE population file
         if insee_code not in to_population_value:
             # Wikidata entity wrongly stated as instance of this type of administrative division
-            print('ERROR: to_population_value does not contain INSSE code:', insee_code, ':', administrative_division.getID(), ':', administrative_division_label)
+            logger.error(f"Missing INSEE code: population file does not contain INSSE code {insee_code}, which is "
+                         f"present in entity {administrative_division_label} ({administrative_division.getID()})")
             continue
 
         # Create population claim
@@ -344,11 +367,9 @@ def main(query=None, summary=None, population_date=None, stated_in=None,
         if is_duplicated:
             continue
 
-
         # Downgrade rank of the other analogue statements
         if is_last and not debug:  # and not is_duplicated
             downgrade_ranks(administrative_division, population_statement._statement, summary=summary)
-
 
         # Add statement
         if not debug:
@@ -364,6 +385,9 @@ def main(query=None, summary=None, population_date=None, stated_in=None,
 
 if __name__ == '__main__':
     """
+    python ./scripts/add_population.py -y 2017 -a france -t communes -l --debug --log logs/test.log
+
+
     python ./scripts/add_population.py -y 2017 -a france -t regions -l --debug
     python ./scripts/add_population.py -y 2017 -a france -t regions -l | tee logs/add_population_2017_france_regions.log
 
@@ -378,6 +402,7 @@ if __name__ == '__main__':
 
     python ./scripts/add_population.py -y 2017 -a france -t communes -l --debug
     python ./scripts/add_population.py -y 2017 -a france -t communes -l | tee logs/add_population_2017_france_communes.log
+    python ./scripts/add_population.py -y 2017 -a france -t communes -l --log logs/add_population_2017_france_communes.log
 
 
     python ./scripts/add_population.py -y 2017 -a mayotte -t cantons -l --debug
@@ -410,7 +435,7 @@ if __name__ == '__main__':
     """
     # Parse arguments
     args = parse_args()
-    print(args.to)
+    logger.info(args.to)
 
     # if args.check:
     #     # Set check variables
@@ -421,6 +446,10 @@ if __name__ == '__main__':
     #     check(check_query)
     #
     # else:
+
+    # Configurate logger
+    config_logger(log_filename=args.log)
+    logger.info(f"START add_population")
 
     # Set variables
     query = (QUERY
@@ -456,9 +485,9 @@ if __name__ == '__main__':
     publication_date = PARAMS[args.year][args.at].get('publication_date')
 
     params = PARAMS[args.year][args.at][args.to]
-    print(query)
-    print(summary)
-    print(args.is_last)
+    logger.info(f"SPARQL query: {query}")
+    logger.info(f"Summary: {summary}")
+    # logger.info(args.is_last)
 
     main(query=query,
          year=args.year, at=args.at, to=args.to,
@@ -468,5 +497,4 @@ if __name__ == '__main__':
          source_title=source_title, source_language=source_language, publication_date=publication_date,
          params=params
          )
-
-
+    logger.info(f"END add_population")
