@@ -315,27 +315,30 @@ def main(query=None, summary=None, population_date=None, stated_in=None,
     administrative_divisions = pg.WikidataSPARQLPageGenerator(query, site=wikidatabot.site)
 
     # Iterate over administrative divisions (items)
-    insee_codes = []
     for i, administrative_division in enumerate(administrative_divisions):
         administrative_division.get()
         administrative_division_label = administrative_division.labels.get('fr')
         if not administrative_division_label:
             logger.warning(f"No fr label: item {administrative_division.getID()}")
             administrative_division_label = administrative_division.getID()
-        logger.info(f"Item {i + 1}: {administrative_division_label} ({administrative_division.getID()})")
+        # logger.info(f"Item {i + 1}: {administrative_division_label} ({administrative_division.getID()})")
 
         # Get insee_code from item
         insee_code = get_insee_code(administrative_division, params['insee_code'])
-        insee_codes.append(insee_code)
+
         # Check if insee code value is in INSEE population file
         if insee_code not in to_population_value:
             # Wikidata entity wrongly stated as instance of this type of administrative division
             logger.error(f"Missing INSEE code: population file does not contain INSSE code {insee_code}, which is "
-                         f"present in entity {administrative_division_label} ({administrative_division.getID()})")
+                         f"present in item {administrative_division_label} ({administrative_division.getID()})")
             continue
+        else:
+            # logger.info(f"Found INSEE code: population file contains INSEE code {insee_code}, which is present in "
+            #             f"item {administrative_division_label} ({administrative_division.getID()})")
+            logger.info(f"Item: {administrative_division_label} ({administrative_division.getID()}) with INSEE code {insee_code}")
 
         # Create population claim
-        population_value = to_population_value[insee_code]
+        population_value = to_population_value.pop(insee_code)
         population_claim = Claim(property=POPULATION, quantity=population_value)
 
         # Create qualifiers
@@ -381,6 +384,10 @@ def main(query=None, summary=None, population_date=None, stated_in=None,
             # print(population_statement._statement, summary)
             if i >= 20:
                 break
+
+    if to_population_value:
+        logger.error(f"Unused INSEE codes: population file contains unused INSEE codes "
+                     f"{list(to_population_value.keys())}")
 
 
 if __name__ == '__main__':
