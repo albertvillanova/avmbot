@@ -138,7 +138,7 @@ PARAMS = {
             },
             'communes': {
                 'path': PATH_FRANCE_2017,
-                'administrative_division': 'Q484170',  # commune of France
+                'administrative_division': ['Q484170', 'Q2989454'],  # [commune of France, commune nouvelle]
                 'insee_code': 'P374',  # INSEE municipality code
                 'sheet_name': 'Communes',
                 'index': ['Code département', 'Code commune'],
@@ -149,10 +149,12 @@ PARAMS = {
     },
 }
 
-QUERY = ("""
+QUERY = """
 SELECT DISTINCT ?item WHERE {
+  {values}
+
   ?item p:{instance_of} ?st .
-  ?st ps:{instance_of}/wdt:{subclass}* wd:{administrative_division} .
+  ?st ps:{instance_of} wd:{administrative_division} .
   
   OPTIONAL{?st pq:{start_time} ?start_time_date}
   FILTER(IF(BOUND(?start_time_date), ?start_time_date <= "{cog_year}-01-01"^^xsd:dateTime, true))
@@ -162,11 +164,10 @@ SELECT DISTINCT ?item WHERE {
   
   {located_in_location}
 }
- """.replace('{instance_of}', INSTANCE_OF)
-    .replace('{subclass}', SUBCLASS)
-    .replace('{start_time}', START_TIME)
+ """\
+    .replace('{instance_of}', INSTANCE_OF)\
+    .replace('{start_time}', START_TIME)\
     .replace('{end_time}', END_TIME)
-)
 
 
 def config_logger(log_filename=''):
@@ -460,10 +461,20 @@ if __name__ == '__main__':
     logger.info(f"START add_population")
 
     # Set variables
-    query = (QUERY
-        .replace('{administrative_division}', PARAMS[args.year][args.at][args.to]['administrative_division'])
-        .replace('{cog_year}', PARAMS[args.year][args.at]['cog_year'])
-    )
+    administrative_division = PARAMS[args.year][args.at][args.to]['administrative_division']
+    if isinstance(administrative_division, str):
+        query = QUERY \
+            .replace('{values}', '') \
+            .replace('{administrative_division}', administrative_division)\
+            .replace('{cog_year}', PARAMS[args.year][args.at]['cog_year'])
+    else:
+        administrative_division = ' '.join(f"wd:{q_code}" for q_code in administrative_division)
+        values = "VALUES ?administrative_division { " + administrative_division + " }"
+        query = QUERY \
+            .replace('{values}', values) \
+            .replace('wd:{administrative_division}', '?administrative_division') \
+            .replace('{cog_year}', PARAMS[args.year][args.at]['cog_year'])
+
     location = PARAMS[args.year][args.at]['location']
     if location:
         if 'MINUS' in location:
