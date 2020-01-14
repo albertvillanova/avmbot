@@ -95,7 +95,8 @@ PARAMS = {
         },
         'france': {
             'cog_year': '2019',
-            'location': None,  # 'Q142',  # France <- this gives TimeOut
+            'location': {'MINUS': ['Q17063', 'Q30971']},  # MINUS: [Mayotte, French Polynesia]
+            # None,  # 'Q142',  # France <- this gives TimeOut
             'summary': "Add France 2017 population",
             'population_date': {'year': 2017, 'month': 1, 'day': 1},
             'stated_in': 'Q81204110',  # Populations légales 2017
@@ -465,9 +466,17 @@ if __name__ == '__main__':
     )
     location = PARAMS[args.year][args.at]['location']
     if location:
-        query = query.replace('{located_in_location}', '?item wdt:{located_in}+ wd:{location} .  # Recursive')\
-            .replace('{located_in}', LOCATED_IN)\
-            .replace('{location}', location)
+        if 'MINUS' in location:
+            locations = location['MINUS']
+            located_in_location = ['']
+            for location in locations:
+                located_in_location.append('  MINUS {?item wdt:{located_in} wd:{location}}'
+                                           .replace('{located_in}', LOCATED_IN).replace('{location}', location))
+            query = query.replace('{located_in_location}', '\n'.join(located_in_location))
+        else:
+            query = query.replace('{located_in_location}', '?item wdt:{located_in}+ wd:{location} .  # Recursive')\
+                .replace('{located_in}', LOCATED_IN)\
+                .replace('{location}', location)
     else:
         query = query.replace('{located_in_location}', '')
 
