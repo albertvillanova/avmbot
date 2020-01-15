@@ -253,31 +253,29 @@ def get_insee_code(administrative_division, insee_code):
     return insee_code_value
 
 
-def check_duplicates(item, new_statement):
-    """
-
-    :param item:
-    :param new_statement:
-    :return:
-    """
+def check_duplicated_year(item, new_statement, point_in_time=POINT_IN_TIME):
+    """"""
+    # New statement
+    new_statement_point_in_time_qualifier_year = new_statement.qualifiers[point_in_time][0].getTarget().year
+    new_statement_population_amount = new_statement.getTarget().amount
+    # Item
     item_statements = item.claims
     if new_statement.getID() in item_statements:
-        for statement in item_statements[new_statement.getID()]:
-            # TODO: warn if new statement has different amount but the same year (see Paris)
-            if statement.getTarget().amount == new_statement.getTarget().amount:
-                # print('- duplicated:', item.getID(), ':', item.labels['fr'])
-                if new_statement.qualifiers:
-                    for pid in new_statement.qualifiers:
-                        if pid in statement.qualifiers:
-                            statement_qualifier_claim = statement.qualifiers[pid][0]
-                            new_statement_qualifier_claim = new_statement.qualifiers[pid][0]
-                            if statement_qualifier_claim.getTarget().year == new_statement_qualifier_claim.getTarget().year:
-                                logger.warning(f"Duplicated claim: item {item.labels.get('fr')} ({item.getID()}) "
-                                               f"already contains the same population claim")
-                                return True
-            # elif statement.getRank() == 'preferred':
-            #     print('- preferred', item.labels['fr'])
-            #     statement.changeRank('normal')
+        statements = item_statements[new_statement.getID()]
+        for statement in statements:
+            if point_in_time in statement.qualifiers:
+                statement_point_in_time_qualifier_year = statement.qualifiers[point_in_time][0].getTarget().year
+                if statement_point_in_time_qualifier_year == new_statement_point_in_time_qualifier_year:
+                    statement_population_amount = statement.getTarget().amount
+                    if statement_population_amount == new_statement_population_amount:
+                        logger.warning(f"Duplicated claim: item {item.labels.get('fr')} ({item.getID()}) already "
+                                       f"contains the same population claim")
+                    else:
+                        logger.error(f"Wrong duplicated claim: item {item.labels.get('fr')} ({item.getID()}) already "
+                                     f"contains a population claim for the same year "
+                                     f"({statement_point_in_time_qualifier_year}) but with different population amount "
+                                     f"({statement_population_amount} instead of {new_statement_population_amount})")
+                    return True
     return False
 
 
@@ -369,7 +367,7 @@ def main(query=None, summary=None, population_date=None, stated_in=None,
                                          sources=sources)
 
         # Check duplicated target value
-        is_duplicated = check_duplicates(administrative_division, population_statement._statement)
+        is_duplicated = check_duplicated_year(administrative_division, population_statement._statement)
         if is_duplicated:
             continue
 
