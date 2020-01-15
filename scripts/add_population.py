@@ -95,7 +95,8 @@ PARAMS = {
         },
         'france': {
             'cog_year': '2019',
-            'location': {'MINUS': ['Q17063', 'Q30971', 'Q33788']},  # MINUS: [Mayotte, French Polynesia, New Caledonia]
+            # MINUS: [Mayotte, French Polynesia, New Caledonia, Wallis and Futuna]
+            'location': {'MINUS': ['Q17063', 'Q30971', 'Q33788', 'Q35555']},
             # None,  # 'Q142',  # France <- this gives TimeOut
             'summary': "Add France 2017 population",
             'population_date': {'year': 2017, 'month': 1, 'day': 1},
