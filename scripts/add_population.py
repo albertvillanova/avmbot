@@ -139,7 +139,8 @@ PARAMS = {
             },
             'communes': {
                 'path': PATH_FRANCE_2017,
-                'administrative_division': ['Q484170', 'Q2989454'],  # [commune of France, commune nouvelle]
+                # [commune of France, commune nouvelle, municipal arrondissement]
+                'administrative_division': ['Q484170', 'Q2989454', 'Q702842'],
                 'insee_code': 'P374',  # INSEE municipality code
                 'sheet_name': 'Communes',
                 'index': ['Code département', 'Code commune'],
