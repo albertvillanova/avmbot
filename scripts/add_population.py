@@ -114,7 +114,8 @@ PARAMS = {
             },
             'departements': {
                 'path': PATH_FRANCE_2017,
-                'administrative_division': 'Q6465',  # department of France
+                # [department of France, overseas department of France]
+                'administrative_division': ['Q6465', 'Q202216'],
                 'insee_code': 'P2586',  # INSEE department code
                 'sheet_name': 'Départements',
                 'index': 'Code département',
