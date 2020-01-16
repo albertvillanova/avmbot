@@ -147,6 +147,14 @@ PARAMS = {
                 'index': ['Code département', 'Code commune'],
                 'column': 'Population municipale',
             },
+            'ad_communes': {
+                'path': PATH_FRANCE_2017,
+                'administrative_division': ['Q666943', 'Q21869758'],  # [associated commune, delegated commune]
+                'insee_code': 'P374',  # INSEE municipality code
+                'sheet_name': 'Communes associées ou déléguées',
+                'index': ['Code département', 'Code commune'],
+                'column': 'Population municipale',
+            },
         },
 
     },
@@ -413,6 +421,9 @@ if __name__ == '__main__':
     python ./scripts/add_population.py -y 2017 -a france -t communes -l --debug
     python ./scripts/add_population.py -y 2017 -a france -t communes -l | tee logs/add_population_2017_france_communes.log
     python ./scripts/add_population.py -y 2017 -a france -t communes -l --log logs/add_population_2017_france_communes.log
+
+    python ./scripts/add_population.py -y 2017 -a france -t ad_communes -l --debug
+    python ./scripts/add_population.py -y 2017 -a france -t ad_communes -l --log logs/add_population_2017_france_ad_communes.log
 
 
     python ./scripts/add_population.py -y 2017 -a mayotte -t cantons -l --debug
