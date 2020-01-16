@@ -493,7 +493,7 @@ if __name__ == '__main__':
             locations = location['MINUS']
             located_in_location = ['']
             for location in locations:
-                located_in_location.append('  MINUS {?item wdt:{located_in} wd:{location}}'
+                located_in_location.append('  MINUS {?item wdt:{located_in}+ wd:{location}}'
                                            .replace('{located_in}', LOCATED_IN).replace('{location}', location))
             query = query.replace('{located_in_location}', '\n'.join(located_in_location))
         else:
