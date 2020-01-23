@@ -9,8 +9,6 @@ python scripts/add_ca_label_description.py | tee log/20190108-tmp.log
 # # sys.setdefaultencoding() does not exist, here!
 # reload(sys)  # Reload does the trick!
 # sys.setdefaultencoding('UTF8')
-import random
-import time
 
 from pywikibot import pagegenerators as pg
 
@@ -50,7 +48,6 @@ def update_replaced_municipalities(item):
 
 
 def update_replaced_municipality(pwb_item):
-    time.sleep(5 + 10 * random.random())
     print(pwb_item)
     _ = pwb_item.get()
     data = {}
@@ -110,7 +107,6 @@ if __name__ == '__main__':
     pwb_items = pg.WikidataSPARQLPageGenerator(query, site=wikidatabot.site)
 
     for i, pwb_item in enumerate(pwb_items):
-        time.sleep(5 + 10 * random.random())
         print(pwb_item)
         pwb_item.get()
         print(i + 1, pwb_item.labels.get('fr'))
