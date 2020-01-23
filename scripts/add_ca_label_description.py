@@ -117,31 +117,28 @@ def update_replaced_municipality(pwb_item):
         logger.info(f"ca label already present for item {pwb_item.id}: {ca_label}")
 
     # Description
-    if 'fr' in pwb_item.descriptions:
-        fr_description = pwb_item.descriptions['fr']
-        if len(fr_description) > 8 and fr_description[:8] == 'ancienne':
-            if 'ca' in pwb_item.descriptions:
-                ca_description = pwb_item.descriptions['ca']
-                if len(ca_description) > 8 and ca_description[:8] == 'municipi':
-                    if len(ca_description) > 16:
-                        logger.info(f"ca description already present in {pwb_item.id} is: {ca_description}")
-                    ca_description = {'ca': f'antic {ca_description}'}
-                    data['descriptions'] = ca_description
-                    summary_what.append('description')
-                elif len(ca_description) > 5 and ca_description[:5] == 'antic':
-                    logger.info(f"ca description already updated in {pwb_item.id}")
-                else:
-                    logger.warning(f"ca description already present in {pwb_item.id}: {ca_description}")
-            else:
-                ca_description = {'ca': 'antic municipi francès'}
-                data['descriptions'] = ca_description
-                summary_what.append('description')
-            # else:
-            #     print(f"ca description already present in {pwb_item.id}")
-        else:
-            logger.error(f"fr description does not contain 'ancienne': item {pwb_item.id}")
+    ca_description = pwb_item.descriptions.get('ca')
+    if not ca_description:
+        ca_description = {'ca': 'antic municipi francès'}
+        data['descriptions'] = ca_description
+        summary_what.append('description')
     else:
-        logger.error(f"No fr description: item {pwb_item.id}")
+        if ca_description.startswith('municipi'):
+            if len(ca_description) > 16:
+                logger.warning(f"ca description longer than expected for item {pwb_item.id}: {ca_description}")
+            ca_description = {'ca': f'antic {ca_description}'}
+            data['descriptions'] = ca_description
+            summary_what.append('description')
+        elif ca_description.startswith('antic'):
+            logger.info(f"ca description already updated for item {pwb_item.id}: {ca_description}")
+        else:
+            logger.error(f"ca description different than expected for item {pwb_item.id}: {ca_description}")
+    fr_description = pwb_item.descriptions.get('fr')
+    if not fr_description:
+        logger.warning(f"No fr description for item {pwb_item.id}")
+    elif not fr_description.startswith('ancienne'):
+        logger.warning(f"fr description does not start with 'ancienne' for item {pwb_item.id}: {fr_description}")
+
     # Update data
     if data:
         # entity = {'id': item.id}
@@ -197,15 +194,20 @@ if __name__ == '__main__':
             logger.info(f"ca label already present for item {item.id}: {ca_label}")
 
         # Description
-        if 'fr' in item.descriptions:
-            if 'ca' not in item.descriptions:
-                ca_description = {'ca': 'municipi francès'}
-                data['descriptions'] = ca_description
-                summary_what.append('description')
-            else:
-                logger.info(f"ca description already present in {item.id}")
+        ca_description = item.descriptions.get('ca')
+        if not ca_description:
+            fr_description = item.descriptions.get('fr')
+            if not fr_description:
+                logger.warning(f"No fr description for item {item.id}")
+            elif not fr_description.startswith('commune'):
+                logger.warning(f"fr description does not start with 'commune' for item {item.id}: {fr_description}")
+            ca_description = {'ca': 'municipi francès'}
+            data['descriptions'] = ca_description
+            summary_what.append('description')
         else:
-            logger.error(f"No fr description: item {item.id}")
+            # TODO:
+            logger.info(f"ca description already present for item {item.id}: {ca_description}")
+
         # Update data
         if data:
             # entity = {'id': item.id}
