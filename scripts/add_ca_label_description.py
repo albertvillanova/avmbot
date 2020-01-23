@@ -98,8 +98,8 @@ def update_replaced_municipalities(item):
 
 
 def update_replaced_municipality(pwb_item):
-    logger.info(pwb_item)
     _ = pwb_item.get()
+    logger.info(f"Replaced item: {pwb_item.getID()}")
     data = {}
     summary_what = []
     # Label
@@ -111,7 +111,7 @@ def update_replaced_municipality(pwb_item):
         else:
             logger.info(f"ca label already present in {pwb_item.id}")
     else:
-        logger.error(f"fr label not in {pwb_item.id}")
+        logger.error(f"No fr label: item {pwb_item.id}")
     # Description
     if 'fr' in pwb_item.descriptions:
         fr_description = pwb_item.descriptions['fr']
@@ -135,9 +135,9 @@ def update_replaced_municipality(pwb_item):
             # else:
             #     print(f"ca description already present in {pwb_item.id}")
         else:
-            logger.error(f"fr description does not contain 'ancienne' in {pwb_item.id}")
+            logger.error(f"fr description does not contain 'ancienne': item {pwb_item.id}")
     else:
-        logger.error(f"fr description not in {pwb_item.id}")
+        logger.error(f"No fr description: item {pwb_item.id}")
     # Update data
     if data:
         # entity = {'id': item.id}
@@ -156,7 +156,7 @@ if __name__ == '__main__':
 
     # Configurate logger
     config_logger(log_filename=args.log)
-    logger.info('BEGIN')
+    logger.info('START add_ca_label_description')
 
     # Asof: today
     today = str(datetime.date.today())
@@ -168,15 +168,15 @@ if __name__ == '__main__':
     pwb_items = pg.WikidataSPARQLPageGenerator(query, site=wikidatabot.site)
 
     for i, pwb_item in enumerate(pwb_items):
-        logger.info(pwb_item)
+        # logger.info(pwb_item)
         pwb_item.get()
-        logger.info(f"{i + 1}, {pwb_item.labels.get('fr')}")
-        # print(municipality.labels['ca'])
+        # pwb_item_id = pwb_item.getID()
+        logger.info(f"Item: {pwb_item.getID()}")
         item = Item.from_pwb(pwb_item)
+
         # Update REPLACES municipalities
         update_replaced_municipalities(item)
         #
-        # print(item.labels)
         data = {}
         summary_what = []
         # Label
@@ -188,7 +188,7 @@ if __name__ == '__main__':
             else:
                 logger.info(f"ca label already present in {item.id}")
         else:
-            logger.error(f"fr label not in {item.id}")
+            logger.error(f"No fr label: item {item.id}")
         # Description
         if 'fr' in item.descriptions:
             if 'ca' not in item.descriptions:
@@ -198,7 +198,7 @@ if __name__ == '__main__':
             else:
                 logger.info(f"ca description already present in {item.id}")
         else:
-            logger.error(f"fr description not in {item.id}")
+            logger.error(f"No fr description: item {item.id}")
         # Update data
         if data:
             # entity = {'id': item.id}
@@ -211,4 +211,4 @@ if __name__ == '__main__':
 
         # if i >= 1:
         #     break
-    logger.info('END')
+    logger.info('END add_ca_label_description')
