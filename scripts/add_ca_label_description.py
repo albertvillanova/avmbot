@@ -102,16 +102,20 @@ def update_replaced_municipality(pwb_item):
     logger.info(f"Replaced item: {pwb_item.getID()}")
     data = {}
     summary_what = []
+
     # Label
-    if 'fr' in pwb_item.labels:
-        if 'ca' not in pwb_item.labels:
-            ca_label = {'ca': pwb_item.labels['fr']}
+    ca_label = pwb_item.labels.get('ca')
+    if not ca_label:
+        fr_label = pwb_item.labels.get('fr')
+        if fr_label:
+            ca_label = {'ca': fr_label}
             data['labels'] = ca_label
             summary_what.append('label')
         else:
-            logger.info(f"ca label already present in {pwb_item.id}")
+            logger.error(f"No fr label for item {pwb_item.id}")
     else:
-        logger.error(f"No fr label: item {pwb_item.id}")
+        logger.info(f"ca label already present for item {pwb_item.id}: {ca_label}")
+
     # Description
     if 'fr' in pwb_item.descriptions:
         fr_description = pwb_item.descriptions['fr']
@@ -176,19 +180,22 @@ if __name__ == '__main__':
 
         # Update REPLACES municipalities
         update_replaced_municipalities(item)
-        #
+
         data = {}
         summary_what = []
         # Label
-        if 'fr' in item.labels:
-            if 'ca' not in item.labels:
-                ca_label = {'ca': item.labels['fr']}
+        ca_label = item.labels.get('ca')
+        if not ca_label:
+            fr_label = item.labels.get('fr')
+            if fr_label:
+                ca_label = {'ca': fr_label}
                 data['labels'] = ca_label
                 summary_what.append('label')
             else:
-                logger.info(f"ca label already present in {item.id}")
+                logger.error(f"No fr label for item {item.id}")
         else:
-            logger.error(f"No fr label: item {item.id}")
+            logger.info(f"ca label already present for item {item.id}: {ca_label}")
+
         # Description
         if 'fr' in item.descriptions:
             if 'ca' not in item.descriptions:
@@ -206,8 +213,8 @@ if __name__ == '__main__':
             summary = f"Add ca {summary_what}"
             # response = wikidatabot.repo.editEntity(entity, data, summary=summary)
             # print(response)
-            pwb_item.editEntity(data, summary=summary)
             logger.info(summary)
+            pwb_item.editEntity(data, summary=summary)
 
         # if i >= 1:
         #     break
