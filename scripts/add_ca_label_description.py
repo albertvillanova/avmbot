@@ -9,6 +9,8 @@ python scripts/add_ca_label_description.py | tee log/20190108-tmp.log
 # # sys.setdefaultencoding() does not exist, here!
 # reload(sys)  # Reload does the trick!
 # sys.setdefaultencoding('UTF8')
+import argparse
+import datetime
 
 from pywikibot import pagegenerators as pg
 
@@ -19,21 +21,44 @@ from wikidatabot.models import Item
 INSTANCE_OF = 'P31'
 COMMUNE_NOUVELLE = 'Q2989454'
 START_TIME = 'P580'
+END_TIME = 'P582'
 
 REPLACES = 'P1365'
 
 QUERY = ("""
-SELECT ?item 
+SELECT ?item
 WHERE {
-    ?item p:{instance_of} ?instanceStatement.
-    ?instanceStatement ps:{instance_of} wd:{commune_nouvelle};
-                       pq:{start_time} ?date.
+    ?item p:{instance_of} ?statement.
+    ?statement ps:{instance_of} wd:{commune_nouvelle};
+               pq:{start_time} ?date.
     FILTER (YEAR(?date) >= 2019).
 }
 """.replace('{instance_of}', INSTANCE_OF)
    .replace('{commune_nouvelle}', COMMUNE_NOUVELLE)
    .replace('{start_time}', START_TIME)
 )
+
+QUERY = ("""
+SELECT DISTINCT ?item
+WHERE {
+  ?item p:{instance_of} ?st .
+  ?st ps:{instance_of} wd:{administrative_division} .
+
+  OPTIONAL{?st pq:{start_time} ?start_time_date}
+  FILTER(IF(BOUND(?start_time_date), ?start_time_date <= "{today}"^^xsd:dateTime, true))
+
+  OPTIONAL{?st pq:{end_time} ?end_time_date}
+  FILTER(IF(BOUND(?end_time_date), ?end_time_date > "{today}"^^xsd:dateTime, true))
+}
+""").replace('{instance_of}', INSTANCE_OF)\
+    .replace('{start_time}', START_TIME)\
+    .replace('{end_time}', END_TIME)
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Add ca label and description")
+    parser.add_argument('-t', '--to', default=COMMUNE_NOUVELLE)
+    return parser.parse_args()
 
 
 def update_replaced_municipalities(item):
@@ -101,7 +126,14 @@ def update_replaced_municipality(pwb_item):
 
 if __name__ == '__main__':
     print('BEGIN')
-    query = QUERY
+    # Parse arguments
+    args = parse_args()
+
+    # Asof: today
+    today = str(datetime.date.today())
+
+    # Query
+    query = QUERY.replace('{administrative_division}', args.to).replace('{today}', today)
 
     # Create item generator
     pwb_items = pg.WikidataSPARQLPageGenerator(query, site=wikidatabot.site)
