@@ -1,5 +1,7 @@
 """
 
+python ./scripts/add_ca_label_description.py --log logs/add_ca_label_description.log
+
 python scripts/add_ca_label_description.py | tee log/20190108.log
 python scripts/add_ca_label_description.py | tee log/20190108-tmp.log
 %run scripts/add_ca_label_description.py
@@ -11,11 +13,15 @@ python scripts/add_ca_label_description.py | tee log/20190108-tmp.log
 # sys.setdefaultencoding('UTF8')
 import argparse
 import datetime
+import logging
 
 from pywikibot import pagegenerators as pg
 
 import wikidatabot
 from wikidatabot.models import Item
+
+
+logger = logging.getLogger('add_ca_label_description')
 
 
 INSTANCE_OF = 'P31'
@@ -55,9 +61,28 @@ WHERE {
     .replace('{end_time}', END_TIME)
 
 
+def config_logger(log_filename=''):
+    # Set logging level
+    logger.setLevel(logging.DEBUG)
+    # Create formatter
+    formatter = logging.Formatter('%(asctime)s [%(levelname)8s] %(message)s')
+    # Create console handler
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
+    if log_filename:
+        # Create file handler
+        fh = logging.FileHandler(filename=log_filename)
+        fh.setLevel(logging.DEBUG)
+        fh.setFormatter(formatter)
+        logger.addHandler(fh)
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Add ca label and description")
     parser.add_argument('-t', '--to', default=COMMUNE_NOUVELLE)
+    parser.add_argument('--log', default='')
     return parser.parse_args()
 
 
@@ -65,15 +90,15 @@ def update_replaced_municipalities(item):
     replaced_statements = item.statements.get(REPLACES)
     if not replaced_statements:
         return
-    print("Start update of replaced municipalities")
+    logger.info("Start update of replaced municipalities")
     for statement in replaced_statements:
         replaced_municipality = statement.target
         update_replaced_municipality(replaced_municipality)
-    print("End update of replaced municipalities")
+    logger.info("End update of replaced municipalities")
 
 
 def update_replaced_municipality(pwb_item):
-    print(pwb_item)
+    logger.info(pwb_item)
     _ = pwb_item.get()
     data = {}
     summary_what = []
@@ -84,9 +109,9 @@ def update_replaced_municipality(pwb_item):
             data['labels'] = ca_label
             summary_what.append('label')
         else:
-            print(f"ca label already present in {pwb_item.id}")
+            logger.info(f"ca label already present in {pwb_item.id}")
     else:
-        print(f"fr label not in {pwb_item.id}")
+        logger.error(f"fr label not in {pwb_item.id}")
     # Description
     if 'fr' in pwb_item.descriptions:
         fr_description = pwb_item.descriptions['fr']
@@ -95,14 +120,14 @@ def update_replaced_municipality(pwb_item):
                 ca_description = pwb_item.descriptions['ca']
                 if len(ca_description) > 8 and ca_description[:8] == 'municipi':
                     if len(ca_description) > 16:
-                        print(f"ca description already present in {pwb_item.id} is: {ca_description}")
+                        logger.info(f"ca description already present in {pwb_item.id} is: {ca_description}")
                     ca_description = {'ca': f'antic {ca_description}'}
                     data['descriptions'] = ca_description
                     summary_what.append('description')
                 elif len(ca_description) > 5 and ca_description[:5] == 'antic':
-                    print(f"ca description already updated in {pwb_item.id}")
+                    logger.info(f"ca description already updated in {pwb_item.id}")
                 else:
-                    print(f"ca description already present in {pwb_item.id}: {ca_description}")
+                    logger.warning(f"ca description already present in {pwb_item.id}: {ca_description}")
             else:
                 ca_description = {'ca': 'antic municipi francès'}
                 data['descriptions'] = ca_description
@@ -110,9 +135,9 @@ def update_replaced_municipality(pwb_item):
             # else:
             #     print(f"ca description already present in {pwb_item.id}")
         else:
-            print(f"fr description does not contain 'ancienne' in {pwb_item.id}")
+            logger.error(f"fr description does not contain 'ancienne' in {pwb_item.id}")
     else:
-        print(f"fr description not in {pwb_item.id}")
+        logger.error(f"fr description not in {pwb_item.id}")
     # Update data
     if data:
         # entity = {'id': item.id}
@@ -121,13 +146,17 @@ def update_replaced_municipality(pwb_item):
         # response = wikidatabot.repo.editEntity(entity, data, summary=summary)
         # print(response)
         pwb_item.editEntity(data, summary=summary)
-        print(summary)
+        logger.info(summary)
 
 
 if __name__ == '__main__':
-    print('BEGIN')
+
     # Parse arguments
     args = parse_args()
+
+    # Configurate logger
+    config_logger(log_filename=args.log)
+    logger.info('BEGIN')
 
     # Asof: today
     today = str(datetime.date.today())
@@ -139,9 +168,9 @@ if __name__ == '__main__':
     pwb_items = pg.WikidataSPARQLPageGenerator(query, site=wikidatabot.site)
 
     for i, pwb_item in enumerate(pwb_items):
-        print(pwb_item)
+        logger.info(pwb_item)
         pwb_item.get()
-        print(i + 1, pwb_item.labels.get('fr'))
+        logger.info(f"{i + 1}, {pwb_item.labels.get('fr')}")
         # print(municipality.labels['ca'])
         item = Item.from_pwb(pwb_item)
         # Update REPLACES municipalities
@@ -157,9 +186,9 @@ if __name__ == '__main__':
                 data['labels'] = ca_label
                 summary_what.append('label')
             else:
-                print(f"ca label already present in {item.id}")
+                logger.info(f"ca label already present in {item.id}")
         else:
-            print(f"fr label not in {item.id}")
+            logger.error(f"fr label not in {item.id}")
         # Description
         if 'fr' in item.descriptions:
             if 'ca' not in item.descriptions:
@@ -167,9 +196,9 @@ if __name__ == '__main__':
                 data['descriptions'] = ca_description
                 summary_what.append('description')
             else:
-                print(f"ca description already present in {item.id}")
+                logger.info(f"ca description already present in {item.id}")
         else:
-            print(f"fr description not in {item.id}")
+            logger.error(f"fr description not in {item.id}")
         # Update data
         if data:
             # entity = {'id': item.id}
@@ -178,8 +207,8 @@ if __name__ == '__main__':
             # response = wikidatabot.repo.editEntity(entity, data, summary=summary)
             # print(response)
             pwb_item.editEntity(data, summary=summary)
-            print(summary)
+            logger.info(summary)
 
         # if i >= 1:
         #     break
-    print('END')
+    logger.info('END')
