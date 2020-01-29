@@ -16,6 +16,7 @@ import datetime
 import logging
 
 from pywikibot import pagegenerators as pg
+from pywikibot.exceptions import OtherPageSaveError
 
 import wikidatabot
 from wikidatabot.models import Item
@@ -30,6 +31,44 @@ START_TIME = 'P580'
 END_TIME = 'P582'
 
 REPLACES = 'P1365'
+
+LOCATED_IN = 'P131'
+DEPARTMENT_OF_FRANCE = 'Q6465'
+TNCC = {
+    'Ain': 5, 'Aisne': 5, 'Allier': 5, 'Alpes-de-Haute-Provence': 4, 'Hautes-Alpes': 4, 'Alpes-Maritimes': 4,
+    'Ardèche': 5, 'Ardennes': 4, 'Ariège': 5, 'Aube': 5, 'Aude': 5, 'Aveyron': 5, 'Bouches-du-Rhône': 4, 'Calvados': 2,
+    'Cantal': 2, 'Charente': 3, 'Charente-Maritime': 3, 'Cher': 2, 'Corrèze': 3, "Côte-d'Or": 3, "Côtes-d'Armor": 4,
+    'Creuse': 3, 'Dordogne': 3, 'Doubs': 2, 'Drôme': 3, 'Eure': 5, 'Eure-et-Loir': 1, 'Finistère': 2, 'Corse-du-Sud': 3,
+    'Haute-Corse': 3, 'Gard': 2, 'Haute-Garonne': 3, 'Gers': 2, 'Gironde': 3, 'Hérault': 5, 'Ille-et-Vilaine': 1,
+    'Indre': 5, 'Indre-et-Loire': 1, 'Isère': 5, 'Jura': 2, 'Landes': 4, 'Loir-et-Cher': 2, 'Loire': 3,
+    'Haute-Loire': 3, 'Loire-Atlantique': 3, 'Loiret': 2, 'Lot': 2, 'Lot-et-Garonne': 2, 'Lozère': 3,
+    'Maine-et-Loire': 2, 'Manche': 3, 'Marne': 3, 'Haute-Marne': 3, 'Mayenne': 3, 'Meurthe-et-Moselle': 0, 'Meuse': 3,
+    'Morbihan': 2, 'Moselle': 3, 'Nièvre': 3, 'Nord': 2, 'Oise': 5, 'Orne': 5, 'Pas-de-Calais': 2, 'Puy-de-Dôme': 2,
+    'Pyrénées-Atlantiques': 4, 'Hautes-Pyrénées': 4, 'Pyrénées-Orientales': 4, 'Bas-Rhin': 2, 'Haut-Rhin': 2,
+    'Rhône': 2, 'Haute-Saône': 3, 'Saône-et-Loire': 0, 'Sarthe': 3, 'Savoie': 3, 'Haute-Savoie': 3, 'Paris': 0,
+    'Seine-Maritime': 3, 'Seine-et-Marne': 0, 'Yvelines': 4, 'Deux-Sèvres': 4, 'Somme': 3, 'Tarn': 2,
+    'Tarn-et-Garonne': 2, 'Var': 2, 'Vaucluse': 2, 'Vendée': 3, 'Vienne': 3, 'Haute-Vienne': 3, 'Vosges': 4, 'Yonne': 5,
+    'Territoire de Belfort': 2, 'Essonne': 5, 'Hauts-de-Seine': 4, 'Seine-Saint-Denis': 3, 'Val-de-Marne': 2,
+    "Val-d'Oise": 2, 'Guadeloupe': 3, 'Martinique': 3, 'Guyane': 3, 'La Réunion': 0, 'Mayotte': 0}
+TNCC_CA = {**TNCC, **{
+    'Ardennes': 7, 'Bouches-du-Rhône': 7, 'Calvados': 0, 'Cantal': 0, 'Charente': 2, 'Charente-Maritime': 2,
+    "Côtes-d'Armor": 7, 'Finistère': 0, 'Corse-du-Sud': 0, 'Haute-Corse': 5, 'Haute-Garonne': 5, 'Isère': 3,
+    'Landes': 7, 'Loir-et-Cher': 0, 'Loire': 2, 'Haute-Loire': 5, 'Loire-Atlantique': 2, 'Lot': 5, 'Lot-et-Garonne': 1,
+    'Lozère': 2, 'Maine-et-Loire': 0, 'Marne': 2, 'Haute-Marne': 5, 'Mayenne': 2, 'Meuse': 2, 'Morbihan': 1,
+    'Moselle': 2, 'Nièvre': 2, 'Haut-Rhin': 5, 'Haute-Saône': 5, 'Sarthe': 2, 'Haute-Savoie': 5, 'Seine-Maritime': 2,
+    'Yvelines': 1, 'Deux-Sèvres': 0, 'Somme': 2, 'Tarn-et-Garonne': 0, 'Vaucluse': 0, 'Haute-Vienne': 5, 'Yonne': 2,
+    'Seine-Saint-Denis': 0, 'Val-de-Marne': 3, "Val-d'Oise": 3, 'Guadeloupe': 0, 'La Réunion': 5,
+}}
+
+DE = {0: "de ",
+      1: "d'",
+      2: "del ",
+      3: "de la ",
+      4: "dels ",
+      5: "de l'",
+      6: "dels ",
+      7: "de les ",
+      8: "dels "}
 
 QUERY = ("""
 SELECT ?item
@@ -84,6 +123,38 @@ def parse_args():
     parser.add_argument('-t', '--to', default=COMMUNE_NOUVELLE)
     parser.add_argument('--log', default='')
     return parser.parse_args()
+
+
+def update_label_description(item, data, summary_what):
+    summary = " and ".join(summary_what)
+    summary = f"Update ca {summary}"
+    try:
+        logger.info(summary)
+        item.editEntity(data, summary=summary)
+    except OtherPageSaveError:
+        logger.warning(f"Exception while updating item {item.id}")
+        location = item
+        instance_of = item.claims[INSTANCE_OF][0].target.id
+        iteration = 0
+        while instance_of != DEPARTMENT_OF_FRANCE and iteration < 5:
+            iteration += 1
+            location = location.claims[LOCATED_IN][0].target
+            _ = location.get()
+            instance_of = location.claims[INSTANCE_OF][0].target.id
+        if instance_of != DEPARTMENT_OF_FRANCE:
+            raise OtherPageSaveError
+        location_ca_label = location.labels.get('ca')
+        location_fr_label = location.labels.get('fr')
+        ca_description = data['descriptions']['ca'] if 'descriptions' in data else item.descriptions.get('ca')
+        ca_description += f" al departament {DE[TNCC_CA[location_fr_label]]}{location_ca_label}"
+        logger.warning(f"Retry updating with new description: {ca_description}")
+        ca_description = {'ca': ca_description}
+        data['descriptions'] = ca_description
+        summary_what = set(summary_what + ['description'])
+        summary = " and ".join(set(summary_what))
+        summary = f"Update ca {summary}"
+        logger.info(summary)
+        item.editEntity(data, summary=summary)
 
 
 def update_replaced_municipalities(item):
@@ -142,12 +213,9 @@ def update_replaced_municipality(pwb_item):
     # Update data
     if data:
         # entity = {'id': item.id}
-        summary_what = " and ".join(summary_what)
-        summary = f"Update ca {summary_what}"
         # response = wikidatabot.repo.editEntity(entity, data, summary=summary)
         # print(response)
-        pwb_item.editEntity(data, summary=summary)
-        logger.info(summary)
+        update_label_description(pwb_item, data, summary_what)
 
 
 if __name__ == '__main__':
@@ -167,8 +235,11 @@ if __name__ == '__main__':
 
     # Create item generator
     pwb_items = pg.WikidataSPARQLPageGenerator(query, site=wikidatabot.site)
+    # pwb_items = [1]
 
     for i, pwb_item in enumerate(pwb_items):
+        # pwb_item = wikidatabot.pywikibot.ItemPage(wikidatabot.repo, 'Q764858')
+        # pwb_item = wikidatabot.pywikibot.ItemPage(wikidatabot.repo, 'Q43781672')
         # logger.info(pwb_item)
         pwb_item.get()
         # pwb_item_id = pwb_item.getID()
@@ -211,13 +282,10 @@ if __name__ == '__main__':
         # Update data
         if data:
             # entity = {'id': item.id}
-            summary_what = " and ".join(summary_what)
-            summary = f"Add ca {summary_what}"
             # response = wikidatabot.repo.editEntity(entity, data, summary=summary)
             # print(response)
-            logger.info(summary)
-            pwb_item.editEntity(data, summary=summary)
+            update_label_description(pwb_item, data, summary_what)
 
-        # if i >= 1:
+        # if i >= 0:
         #     break
     logger.info('END add_ca_label_description')
