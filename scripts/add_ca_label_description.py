@@ -12,6 +12,7 @@ python scripts/add_ca_label_description.py | tee log/20190108-tmp.log
 # reload(sys)  # Reload does the trick!
 # sys.setdefaultencoding('UTF8')
 import argparse
+import copy
 import datetime
 import logging
 
@@ -130,7 +131,7 @@ def update_label_description(item, data, summary_what):
     summary = f"Update ca {summary}"
     try:
         logger.info(summary)
-        item.editEntity(data, summary=summary)
+        item.editEntity(copy.deepcopy(data), summary=summary)  # editEntity modifies data
     except OtherPageSaveError:
         logger.warning(f"Exception while updating item {item.id}")
         location = item
@@ -154,7 +155,7 @@ def update_label_description(item, data, summary_what):
         summary = " and ".join(set(summary_what))
         summary = f"Update ca {summary}"
         logger.info(summary)
-        item.editEntity(data, summary=summary)
+        item.editEntity(copy.deepcopy(data), summary=summary)  # editEntity modifies data
 
 
 def update_replaced_municipalities(item):
