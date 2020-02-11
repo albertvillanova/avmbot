@@ -310,9 +310,10 @@ def parse_position_value(position_value):
             else:
                 position_item = get_office_held_by_head_from_link(position_link)
         elif position_text.lower().startswith("diputa"):
-            # TODO
             if position_link == "Parlament de Catalunya":
                 position_item = MEMBER_OF_PARLIAMENT_OF_CATALONIA
+            else:
+                position_item = get_has_part_from_link(position_link)
         elif position_text.lower().startswith("ministr"):
             if position_link.lower().startswith("ministr"):
                 position_item = get_item_from_page_link(position_link)
