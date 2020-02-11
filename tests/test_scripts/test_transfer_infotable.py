@@ -30,6 +30,7 @@ class TestScriptTransferInfotable:
         ("[[23 de gener]] de [[1935]]", {'year': 1935, 'month': 1, 'day': 23}),
         ("[[7 d'agost]] de [[1926]]", {'year': 1926, 'month': 8, 'day': 7}),
         ("[[1918]]", {'year': 1918}),
+        ("[[octubre]] de [[1967]]", {'year': 1967, 'month': 10}),
     ])
     def test_parse_date(self, date, expected_date_claim_value):
         date_claim_value = parse_date(date)
