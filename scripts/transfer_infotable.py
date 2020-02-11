@@ -288,9 +288,9 @@ def parse_position_value(position_value):
         elif position_text.lower().startswith("ministr"):
             if position_link.lower().startswith("ministr"):
                 position_item = get_item_from_page_link(position_link)
-            # elif position_link == "Ministeri de Marina d'Espanya":
-            #     position_item = MINISTER_OF_THE_NAVY_OF_SPAIN
             else:
+                if position_link.lower().startswith("llista"):
+                    position_link = parse_list_link(position_link, "ministr", replace="Ministeri")
                 position_item = get_office_held_by_head_from_link(position_link)
         elif position_text.lower().startswith("president"):
             if position_link.lower().startswith("president"):
