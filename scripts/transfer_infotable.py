@@ -206,6 +206,9 @@ def get_office_held_by_head_from_link(link):
     if link.lower().startswith("llista"):
         logger.warning(f"Link is a list")
     organization_item = get_item_from_page_link(link)
+    if not organization_item:
+        logger.error(f"No organization item found from link {link}")
+        return
     office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_GOVERNMENT)
     if not office_claims:
         office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_THE_ORGANIZATION)
