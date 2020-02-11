@@ -268,8 +268,10 @@ def parse_position_value(position_value):
         position_link = matched_links[0][0]
         position_text = matched_links[0][1]
         if not position_text:
-            position_text = position_value.replace('[[', '').replace(']]', '')
-        if position_text.lower().startswith("alcalde"):
+            position_text = position_value
+        if position_text.lower().startswith("[["):
+            position_item = get_item_from_page_link(position_link)
+        elif position_text.lower().startswith("alcalde"):
             if position_link.lower().startswith("alcalde"):
                 position_item = get_item_from_page_link(position_link)
             else:
