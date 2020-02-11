@@ -29,6 +29,8 @@ ES_SITE = pw.Site('es', 'wikipedia')
 GL_SITE = pw.Site('gl', 'wikipedia')
 
 # Constants
+HAS_PART = 'P527'
+HAS_PARTS_OF_THE_CLASS = 'P2670'
 POSITION_HELD = 'P39'
 # Qualifiers
 START_TIME = 'P580'
@@ -220,6 +222,32 @@ def get_office_held_by_head_from_link(link):
             return
     else:
         logger.error(f"No office held by head found for item {organization_item}")
+        return
+    return position_item
+
+
+def get_has_part_from_link(link):
+    logger.info(f"Get has part from link {link}")
+    if not link:
+        logger.error(f"No link")
+        return
+    if link.lower().startswith("llista"):
+        logger.warning(f"Link is a list")
+    organization_item = get_item_from_page_link(link)
+    if not organization_item:
+        logger.error(f"No organization item found from link {link}")
+        return
+    part_claims = organization_item.claims.get(HAS_PART)
+    if not part_claims:
+        part_claims = organization_item.claims.get(HAS_PARTS_OF_THE_CLASS)
+    if part_claims:
+        if len(part_claims) == 1:
+            position_item = part_claims[0].getTarget()  # .id
+        else:
+            logger.error(f"More than one part found for item {organization_item}")
+            return
+    else:
+        logger.error(f"No part found for item {organization_item}")
         return
     return position_item
 
