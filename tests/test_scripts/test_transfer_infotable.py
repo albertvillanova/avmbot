@@ -14,6 +14,7 @@ AMBASSADOR_OF_SPAIN_TO_FRANCE = 'Q27969744'
 GENERAL_CAPTAIN_OF_VALENCIA = 'Q54875187'
 MAYOR_OF_A_CORUNA = 'Q12391919'
 MAYOR_OF_LA_VALL_D_UIXO = 'Q26693191'
+MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN = 'Q18171345'
 MEMBER_OF_THE_PARLIAMENT_OF_CATALONIA = 'Q18714088'
 MEMBER_OF_THE_SENATE_OF_SPAIN = 'Q19323171'
 MINISTER_OF_FOREIGN_AFFAIRS_OF_SPAIN = 'Q32969906'
@@ -38,6 +39,7 @@ class TestScriptTransferInfotable:
         ("[[Capità general de València]]", GENERAL_CAPTAIN_OF_VALENCIA, []),
         ("[[Llista dels Ministres d'Afers Exteriors d'Espanya|Ministre d'Estat]]", MINISTER_OF_FOREIGN_AFFAIRS_OF_SPAIN,
          []),
+        ("Diputat al [[Congrés dels Diputats]]", MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN, [])
     ])
     def test_parse_position_value(self, position_value, expected_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)
