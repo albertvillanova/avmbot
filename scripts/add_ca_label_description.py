@@ -113,7 +113,7 @@ def config_logger(log_filename=''):
     logger.addHandler(ch)
     if log_filename:
         # Create file handler
-        fh = logging.FileHandler(filename=log_filename)
+        fh = logging.FileHandler(filename=log_filename, encoding='utf-8')
         fh.setLevel(logging.DEBUG)
         fh.setFormatter(formatter)
         logger.addHandler(fh)
