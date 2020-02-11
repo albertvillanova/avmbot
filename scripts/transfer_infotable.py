@@ -263,13 +263,19 @@ def parse_date(value):
         claim_value = {'year': year}
     elif len(matches) == 2:
         year = int(matches[1][0])
+        claim_value = {'year': year}
         if " de " in matches[0][0]:
             day, month = matches[0][0].split(" de ")
         elif " d'" in matches[0][0]:
             day, month = matches[0][0].split(" d'")
-        day = int(day)
-        month = int(TO_MONTH_NUMBER[month])
-        claim_value = {'year': year, 'month': month, 'day': day}
+        else:
+            day, month = None, matches[0][0]
+        if month:
+            month = int(TO_MONTH_NUMBER[month])
+            claim_value['month'] = month
+        if day:
+            day = int(day)
+            claim_value['day'] = day
     else:
         logger.error(f"Unforeseen date case for value: {value}")
         return
