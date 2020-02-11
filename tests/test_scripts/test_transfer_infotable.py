@@ -4,7 +4,7 @@ python -m pytest -s tests/test_scripts
 
 import pytest
 
-from transfer_infotable import parse_position_value
+from transfer_infotable import parse_date, parse_position_value
 
 # Constants
 # P
@@ -25,6 +25,15 @@ PRESIDENT_OF_THE_COUNCIL_OF_CASTILE = 'Q6360109'
 
 
 class TestScriptTransferInfotable:
+
+    @pytest.mark.parametrize("date, expected_date_claim_value", [
+        ("[[23 de gener]] de [[1935]]", {'year': 1935, 'month': 1, 'day': 23}),
+        ("[[7 d'agost]] de [[1926]]", {'year': 1926, 'month': 8, 'day': 7}),
+        ("[[1918]]", {'year': 1918}),
+    ])
+    def test_parse_date(self, date, expected_date_claim_value):
+        date_claim_value = parse_date(date)
+        assert date_claim_value == expected_date_claim_value
 
     @pytest.mark.parametrize("position_value, expected_claim_id, expected_qualifiers", [
         ("[[Ministeri de Marina d'Espanya|Ministre de Marina]]", MINISTER_OF_THE_NAVY, []),
