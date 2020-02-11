@@ -11,6 +11,7 @@ from transfer_infotable import parse_position_value
 APPOINTED_BY = 'P748'
 # Q
 AMBASSADOR_OF_SPAIN_TO_FRANCE = 'Q27969744'
+GENERAL_CAPTAIN_OF_VALENCIA = 'Q54875187'
 MAYOR_OF_A_CORUNA = 'Q12391919'
 MAYOR_OF_LA_VALL_D_UIXO = 'Q26693191'
 MEMBER_OF_THE_PARLIAMENT_OF_CATALONIA = 'Q18714088'
@@ -33,6 +34,7 @@ class TestScriptTransferInfotable:
         ("[[Llista de presidents de Colòmbia|President de Colòmbia]]", PRESIDENT_OF_COLOMBIA, []),
         ("[[President del Consell de Castella]]", PRESIDENT_OF_THE_COUNCIL_OF_CASTILE, []),
         ("Ambaixador del regne d'Espanya al Regne de França", AMBASSADOR_OF_SPAIN_TO_FRANCE, []),
+        ("[[Capità general de València]]", GENERAL_CAPTAIN_OF_VALENCIA, [])
     ])
     def test_parse_position_value(self, position_value, expected_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)
