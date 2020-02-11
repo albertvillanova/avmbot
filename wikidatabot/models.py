@@ -68,11 +68,18 @@ class AliasContainer(UserDict):
 
 class Claim:
 
-    def __init__(self, property=None, value=None, item=None, quantity=None,
-                     year=None, month=None, day=None, text=None, language=None):
+    def __init__(self, property=None, value=None, item=None, quantity=None, year=None, month=None, day=None, text=None,
+                 language=None):
         self.property = property
         if item is not None:
-            value = pywikibot.ItemPage(repo, item)
+            # TODO: refactorize this; now both str 'Q123' and ItemPage instance are accepted
+            if isinstance(item, str):
+                value = pywikibot.ItemPage(repo, item)
+            elif isinstance(item, pywikibot.ItemPage):
+                value = item
+            else:
+                # TODO
+                raise NotImplementedError
         elif quantity is not None:
             value = pywikibot.WbQuantity(quantity, site=site)
         elif year is not None:

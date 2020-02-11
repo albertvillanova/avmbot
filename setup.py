@@ -9,6 +9,7 @@ setup(
     install_requires=[
         'pywikibot',
         # Scripts:
+        'mwparserfromhell',  # Parse tamplates in Wikipedia Pages (transfer_infotable: extract_templates_and_params)
         'xlrd',  # Excel support
     ],
     extras_require={
