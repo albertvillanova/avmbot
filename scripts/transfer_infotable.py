@@ -248,14 +248,16 @@ def parse_date(value):
     return claim_value
 
 
-def parse_list_link(link, word):
+def parse_list_link(link, word, replace=None):
     logger.info(f"Parse list link {link}, using word {word}")
-    pattern = r".+" + word + r"\w+ (?:de |d')(.+)"
-    match = re.match(pattern, link)
+    pattern = r".+" + word + r"\w+ (?P<preposition>de |d')(?P<organization>.+)"
+    match = re.match(pattern, link, re.I)
     if not match:
         logger.error(f"Failed parsing list link {link}, using word {word}")
         return
-    result = match.group(1)
+    result = match.group('organization')
+    if replace:
+        result = f"{replace} {match.group('preposition')}{result}"
     logger.info(f"Parsed list link result: {result}")
     return result
 
