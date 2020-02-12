@@ -29,8 +29,8 @@ ES_SITE = pw.Site('es', 'wikipedia')
 GL_SITE = pw.Site('gl', 'wikipedia')
 
 # Constants
-HAS_PART = 'P527'
-HAS_PARTS_OF_THE_CLASS = 'P2670'
+
+# Infotable parameters
 POSITION_HELD = 'P39'
 # Qualifiers
 START_TIME = 'P580'
@@ -39,11 +39,12 @@ REPLACES = 'P1365'
 REPLACED_BY = 'P1366'
 #
 COAT_OF_ARMS_IMAGE = 'P94'
+SEAL_IMAGE = 'P158'
 #
 ELECTED_IN = 'P2715'
 ELECTORAL_DISTRICT = 'P768'
-PARLIAMENTARY_TERM = 'P2937'
-PARLIAMENTARY_GROUP = 'P4100'
+PARLIAMENTARY_TERM = 'P2937'  # not in Infotaula
+PARLIAMENTARY_GROUP = 'P4100'  # not in Infotaula
 APPOINTED_BY = 'P748'
 #
 CABINET = 'P5054'
@@ -55,12 +56,17 @@ TOGETHER_WITH = 'P1706'
 END_CAUSE = 'P1534'
 #
 DIOCESE = 'P708'
+
 # Resources
 IMPORTED_FROM_WIKIMEDIA_PROJECT = 'P143'
 CATALAN_WIKIPEDIA = 'Q199693'
 
+# Utils to find position from organization
 OFFICE_HELD_BY_HEAD_OF_GOVERNMENT = 'P1313'
 OFFICE_HELD_BY_HEAD_OF_THE_ORGANIZATION = 'P2388'
+HAS_PART = 'P527'
+HAS_PARTS_OF_THE_CLASS = 'P2670'
+
 # Congress of Deputies
 MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN = 'Q18171345'
 # Parliament of Catalonia
@@ -72,6 +78,7 @@ MEMBER_OF_THE_SENATE_OF_SPAIN = 'Q19323171'
 MINISTER_OF_THE_NAVY_OF_SPAIN = 'Q15895305'
 
 INFOTABLE_PARAMS = {
+    # From: https://ca.wikipedia.org/wiki/Plantilla:Infotaula_persona/%C3%BAs
     'carrec': POSITION_HELD,
     'escut_carrec': COAT_OF_ARMS_IMAGE,
     'inici': START_TIME,
@@ -80,6 +87,22 @@ INFOTABLE_PARAMS = {
     'successor': REPLACED_BY,
     'k_etiqueta': None,
     'k_nom': None,
+    # From: https://ca.wikipedia.org/wiki/Plantilla:Infotaula_persona?action=edit
+    # From: https://ca.wikipedia.org/wiki/Plantilla:Infotaula_de_pol%C3%ADtic/bloc_carrec
+    'ordre': SERIES_ORDINAL,
+    'junt_a': TOGETHER_WITH,
+    'nominat': APPOINTED_BY,
+    'designat': APPOINTED_BY,
+    'a_etiqueta': None,
+    'a_nom': None,
+    'b_etiqueta': None,
+    'b_nom': None,
+    'e_etiqueta': None,
+    'e_nom': None,
+    'f_etiqueta': None,
+    'f_nom': None,
+    'l_etiqueta': None,
+    'l_nom': None,
 }
 
 LINK_REGEX = re.compile(r'\[\[(?P<link>[^\]|[<>{}]*)(?:\|(?P<text>.*?))?\]\]')
@@ -338,7 +361,7 @@ def parse_position_value(position_value):
             if position_link == "Senat d'Espanya":
                 position_item = MEMBER_OF_THE_SENATE_OF_SPAIN
         if not position_item:
-            logger.error(f"Failed parsing position value: {position_link}, {position_text}")
+            logger.error(f"Failed parsing position value: {position_link}; {position_text}")
         position_claim = Claim(property=POSITION_HELD, item=position_item) if position_item else None
         if position_claim:
             logger.info(f"Position held claim: {position_claim.value}")
@@ -406,6 +429,7 @@ def parse_position_qualifier(key, value):
             if claim_item:
                 claim_value = {'item': claim_item}
     else:
+        # TODO: ordre, junt_a, nominat, designat
         logger.error(f"Unforeseen case for position qualifier: {key}: {value}")
     if claim_value:
         logger.info(f"Found claim value {claim_value} for position qualifier: {key}: {value}")
@@ -423,24 +447,44 @@ def parse_position(position):
         logger.error(f"Malformed position does not contain 'carrec': {position}")
         return None, []
     position_claim, qualifiers = parse_position_value(position['carrec'])
+    # Position qualifiers
+    logger.info("Parse position qualifiers")
     for position_key, position_value in position.items():
+        qualifier_claim = None
         # carrec
         if position_key == 'carrec':
             continue
+        # k_etiqueta
         elif position_key == 'k_etiqueta':
             if 'k_nom' not in position:
-                logger.warning(f"")
+                logger.error(f"Missing position qualifier key k_nom for corresponding k_etiqueta: {position_value}")
                 continue
             # TODO
+            logger.error(f"TODO: parse k_etiqueta")
         elif position_key == 'k_nom':
             if 'k_etiqueta' not in position:
-                logger.warning(f"")
-            continue
+                logger.error(f"Missing position qualifier key k_etiqueta for corresponding k_nom: {position_value}")
+            continue # already parsed
+        # _etiqueta
+        elif position_key.contains('_etiqueta'):
+            name = position_key.replace('_etiqueta', '_nom')
+            if name not in position:
+                logger.error(f"Missing position qualifier key {name} for corresponding {position_key}: {position_value}")
+            # TODO
+            logger.error(f"TODO: parse {position_key}")
+        elif position_key.contains('_nom'):
+            label = position_key.replace('_nom', '_etiqueta')
+            if label not in position:
+                logger.error(f"Missing position qualifier key {label} for corresponding {position_key}: {position_value}")
+            continue  # already parsed
+        # rest
         elif position_key in INFOTABLE_PARAMS:
             # TODO: parse position_value
             qualifier_claim = parse_position_qualifier(position_key, position_value)
-            if qualifier_claim:
-                qualifiers.append(qualifier_claim)
+        else:
+            logger.error(f"Unknown position qualifier key, value: {position_key}; {position_value}")
+        if qualifier_claim:
+            qualifiers.append(qualifier_claim)
     return position_claim, qualifiers
 
 
