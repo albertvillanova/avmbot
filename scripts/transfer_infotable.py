@@ -105,7 +105,9 @@ INFOTABLE_PARAMS = {
     'l_nom': None,
 }
 
+# Regex
 LINK_REGEX = re.compile(r'\[\[(?P<link>[^\]|[<>{}]*)(?:\|(?P<text>.*?))?\]\]')
+PREPOSITION_REGEX = re.compile(r"(?: de | d')")
 
 COUNTRIES = ["Espanya", "França", "Portugal"]
 AMBASSADOR_OF_SPAIN_TO_FRANCE = 'Q27969744'
@@ -279,37 +281,15 @@ def parse_date(value):
     logger.info(f"Parse date")
     if value.startswith('{{'):
         date_parts = value.replace('{{', '').replace('}}', '').split('|')
-        if len(date_parts) < 2 or len(date_parts) > 4:
-            logger.error(f"Unknown data template format: {value}")
-            return
-        date_parts = date_parts[1:]
-        claim_value = {k: int(v) for k, v in zip(['year', 'month', 'day'], date_parts)}
+        date_parts = date_parts[1:] if len(date_parts) > 1 else []
     else:
-        matches = LINK_REGEX.findall(value)
-        if not matches:
-            logger.error(f"Failed parsing as date: {value}")
-            return
-        if len(matches) == 1:
-            year = int(matches[0][0])
-            claim_value = {'year': year}
-        elif len(matches) == 2:
-            year = int(matches[1][0])
-            claim_value = {'year': year}
-            if " de " in matches[0][0]:
-                day, month = matches[0][0].split(" de ")
-            elif " d'" in matches[0][0]:
-                day, month = matches[0][0].split(" d'")
-            else:
-                day, month = None, matches[0][0]
-            if month:
-                month = int(TO_MONTH_NUMBER[month])
-                claim_value['month'] = month
-            if day:
-                day = int(day)
-                claim_value['day'] = day
-        else:
-            logger.error(f"Unforeseen date case for value: {value}")
-            return
+        value = value.replace('[[', '').replace(']]', '')
+        date_parts = PREPOSITION_REGEX.split(value)[::-1]
+    if len(date_parts) < 1 or len(date_parts) > 3:
+        logger.error(f"Failed parsing date: {value}")
+        return
+    date_parts = [int(part) if part.isdigit() else TO_MONTH_NUMBER[part] for part in date_parts]
+    claim_value = {k: v for k, v in zip(['year', 'month', 'day'], date_parts)}
     return claim_value
 
 
