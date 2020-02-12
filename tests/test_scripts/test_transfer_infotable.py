@@ -10,9 +10,11 @@ from transfer_infotable import extract_positions, parse_date, parse_position, pa
 # Constants
 # P
 APPOINTED_BY = 'P748'
+SERIES_ORDINAL = 'P1545'
 # Q
 AMBASSADOR_OF_SPAIN_TO_FRANCE = 'Q27969744'
 GENERAL_CAPTAIN_OF_VALENCIA = 'Q54875187'
+GOVERNOR_OF_HAWAII = 'Q5589655'
 MAYOR_OF_A_CORUNA = 'Q12391919'
 MAYOR_OF_LA_VALL_D_UIXO = 'Q26693191'
 MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN = 'Q18171345'
@@ -104,7 +106,8 @@ class TestScriptTransferInfotable:
         ("[[Capità general de València]]", GENERAL_CAPTAIN_OF_VALENCIA, []),
         ("[[Llista dels Ministres d'Afers Exteriors d'Espanya|Ministre d'Estat]]", MINISTER_OF_FOREIGN_AFFAIRS_OF_SPAIN,
          []),
-        ("Diputat al [[Congrés dels Diputats]]", MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN, [])
+        ("Diputat al [[Congrés dels Diputats]]", MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN, []),
+        ("7è [[Governador]] de [[Hawaii]]", GOVERNOR_OF_HAWAII, [(SERIES_ORDINAL, 7)]),
     ])
     def test_parse_position_value(self, position_value, expected_position_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)
