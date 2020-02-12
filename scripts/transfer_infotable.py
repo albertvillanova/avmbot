@@ -316,6 +316,7 @@ def parse_position_value(position_value):
     qualifiers = []
     # Match links
     matched_links = LINK_REGEX.findall(position_value)
+    # From links
     if matched_links:
         position_link = matched_links[0][0]
         position_text = matched_links[0][1]
@@ -323,16 +324,24 @@ def parse_position_value(position_value):
             position_text = position_value
         if position_text.lower().startswith("[["):
             position_item = get_item_from_page_link(position_link)
+        # alcalde
         elif position_text.lower().startswith("alcalde"):
             if position_link.lower().startswith("alcalde"):
                 position_item = get_item_from_page_link(position_link)
             else:
                 position_item = get_office_held_by_head_from_link(position_link)
+        # diputa
         elif position_text.lower().startswith("diputa"):
             if position_link == "Parlament de Catalunya":
                 position_item = MEMBER_OF_PARLIAMENT_OF_CATALONIA
             else:
                 position_item = get_has_part_from_link(position_link)
+        # governador
+        elif position_link.lower().startswith("governador"):
+            if len(matched_links) == 2:
+                state_link = matched_links[1][0]
+                position_item = get_office_held_by_head_from_link(state_link)
+        # ministr
         elif position_text.lower().startswith("ministr"):
             if position_link.lower().startswith("ministr"):
                 position_item = get_item_from_page_link(position_link)
@@ -340,6 +349,7 @@ def parse_position_value(position_value):
                 if position_link.lower().startswith("llista"):
                     position_link = parse_list_link(position_link, "ministr", replace="Ministeri")
                 position_item = get_office_held_by_head_from_link(position_link)
+        # president
         elif position_text.lower().startswith("president"):
             if position_link.lower().startswith("president"):
                 position_item = get_item_from_page_link(position_link)
@@ -347,9 +357,11 @@ def parse_position_value(position_value):
                 if position_link.lower().startswith("llista"):
                     position_link = parse_list_link(position_link, "president")
                 position_item = get_office_held_by_head_from_link(position_link)
+        # senador
         elif position_text.lower().startswith("senador"):
             if position_link == "Senat d'Espanya":
                 position_item = MEMBER_OF_THE_SENATE_OF_SPAIN
+        # Position claim
         if not position_item:
             logger.error(f"Failed parsing position value: {position_link}; {position_text}")
         position_claim = Claim(property=POSITION_HELD, item=position_item) if position_item else None
@@ -365,6 +377,7 @@ def parse_position_value(position_value):
                     appointed_by_claim = Claim(property=APPOINTED_BY, item=appointed_by_item)
                     logger.info(f"Appointed by claim: {appointed_by_claim.value}")
                     qualifiers.append(appointed_by_claim)
+    # Without links
     else:
         if position_value.lower().startswith("ambaixador"):
             # Join multi-word countries
