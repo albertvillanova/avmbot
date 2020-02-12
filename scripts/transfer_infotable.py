@@ -277,31 +277,39 @@ def get_has_part_from_link(link):
 
 def parse_date(value):
     logger.info(f"Parse date")
-    matches = LINK_REGEX.findall(value)
-    if not matches:
-        logger.error(f"Failed parsing as date: {value}")
-        return
-    if len(matches) == 1:
-        year = int(matches[0][0])
-        claim_value = {'year': year}
-    elif len(matches) == 2:
-        year = int(matches[1][0])
-        claim_value = {'year': year}
-        if " de " in matches[0][0]:
-            day, month = matches[0][0].split(" de ")
-        elif " d'" in matches[0][0]:
-            day, month = matches[0][0].split(" d'")
-        else:
-            day, month = None, matches[0][0]
-        if month:
-            month = int(TO_MONTH_NUMBER[month])
-            claim_value['month'] = month
-        if day:
-            day = int(day)
-            claim_value['day'] = day
+    if value.startswith('{{'):
+        date_parts = value.replace('{{', '').replace('}}', '').split('|')
+        if len(date_parts) < 2 or len(date_parts) > 4:
+            logger.error(f"Unknown data template format: {value}")
+            return
+        date_parts = date_parts[1:]
+        claim_value = {k: int(v) for k, v in zip(['year', 'month', 'day'], date_parts)}
     else:
-        logger.error(f"Unforeseen date case for value: {value}")
-        return
+        matches = LINK_REGEX.findall(value)
+        if not matches:
+            logger.error(f"Failed parsing as date: {value}")
+            return
+        if len(matches) == 1:
+            year = int(matches[0][0])
+            claim_value = {'year': year}
+        elif len(matches) == 2:
+            year = int(matches[1][0])
+            claim_value = {'year': year}
+            if " de " in matches[0][0]:
+                day, month = matches[0][0].split(" de ")
+            elif " d'" in matches[0][0]:
+                day, month = matches[0][0].split(" d'")
+            else:
+                day, month = None, matches[0][0]
+            if month:
+                month = int(TO_MONTH_NUMBER[month])
+                claim_value['month'] = month
+            if day:
+                day = int(day)
+                claim_value['day'] = day
+        else:
+            logger.error(f"Unforeseen date case for value: {value}")
+            return
     return claim_value
 
 
@@ -401,22 +409,6 @@ def parse_position_qualifier(key, value):
     elif key == 'inici' or key == 'final':
         # Date
         claim_value = parse_date(value)
-        # logger.info(f"Parse as date")
-        # matches = LINK_REGEX.findall(value)
-        # if len(matches) == 1:
-        #     year = int(matches[0][0])
-        #     claim_value = {'year': year}
-        # elif len(matches) == 2:
-        #     year = int(matches[1][0])
-        #     if " de " in matches[0][0]:
-        #         day, month = matches[0][0].split(" de ")
-        #     elif " d'" in matches[0][0]:
-        #         day, month = matches[0][0].split(" d'")
-        #     day = int(day)
-        #     month = int(TO_MONTH_NUMBER[month])
-        #     claim_value = {'year': year, 'month': month, 'day': day}
-        # else:
-        #     logger.error(f"Unforeseen date case for position qualifier: {key}: {value}")
     elif key == 'predecessor' or key == 'successor':
         # Item
         logger.info(f"Parse as item")
