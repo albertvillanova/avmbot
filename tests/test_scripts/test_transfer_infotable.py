@@ -5,7 +5,7 @@ from collections import OrderedDict
 
 import pytest
 
-from transfer_infotable import parse_date, parse_position, parse_position_value
+from transfer_infotable import extract_positions, parse_date, parse_position, parse_position_value
 
 # Constants
 # P
@@ -26,6 +26,40 @@ PRESIDENT_OF_THE_COUNCIL_OF_CASTILE = 'Q6360109'
 
 
 class TestScriptTransferInfotable:
+
+    def test_extract_positions(self):
+        infotable_params = OrderedDict([
+            ('nom', 'Neil Abercrombie'), ('imatge', 'Neil Abercrombie.jpg'), ('1', '250px\n'),
+            ('carrec', '7è [[Governador]] de [[Hawaii]]'), ('escut_carrec', 'Seal of the State of Hawaii.svg'),
+            ('inici', '{{Data inici|2010|12|6}}'), ('a_etiqueta', 'President'), ('predecessor', '[[Linda Lingle]]'),
+            ('carrec2',
+             '[[Cambra de Representants dels Estats Units | Membre de la Cambra de Representants dels Estats Units]]'),
+            ('escut_carrec2', 'Seal of the United States House of Representatives.svg'),
+            ('inici2', '{{Data inici|1991|1|3}}'), ('final2', '{{Data inici|2010|2|28}}'),
+            ('predecessor2', '[[Pat Saiki]]'), ('successor2', '[[Charles Djou]]'),
+            ('inici3', '{{Data inici|1986|12|20}}'), ('final3', '{{Data inici|1987|1|3}}'),
+            ('predecessor3', '[[Cecil Heftel]]'), ('successor3', '[[Pat Saiki]]'),
+            ('data_naixement', '{{Data naixement|1938|6|26}}'),
+            ('lloc_naixement', '[[Buffalo (Nova York)|Buffalo]], [[Nova York]], {{bandera|EUA}} [[Estats Units]]'),
+            ('conjuge', 'Nancie Caraway'), ('partit_politic', '[[Partit Demòcrata dels Estats Units | Demòcrata]]'),
+            ('e_etiqueta', 'Vicepresident'), ('ocupacio', 'Assessor de negocis'),
+            ('nacionalitat', '{{bandera|EUA}} [[Estatunidenc]]')])
+        positions = extract_positions(infotable_params)
+        assert isinstance(positions, list)
+        assert len(positions) == 3
+        assert 'a_etiqueta' in positions[0]
+        assert 'predecessor' in positions[0]
+        assert positions[0]['predecessor'] == '[[Linda Lingle]]'
+        # # TODO
+        # assert 'e_etiqueta' in positions[0]
+        # assert 'predecessor' in positions[1]
+        # assert positions[1]['predecessor'] == '[[Pat Saiki]]'
+        # assert 'predecessor' in positions[2]
+        # assert positions[2]['predecessor'] == '[[Cecil Heftel]]'
+        # # TODO
+        # assert 'carrec' in positions[2]
+        # assert 'carrec' in positions[1]
+        # assert positions[2]['carrec'] == positions[1]['carrec']
 
     @pytest.mark.parametrize("date, expected_date_claim_value", [
         ("[[23 de gener]] de [[1935]]", {'year': 1935, 'month': 1, 'day': 23}),
