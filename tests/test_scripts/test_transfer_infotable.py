@@ -1,10 +1,11 @@
 """
 python -m pytest -s tests/test_scripts
 """
+from collections import OrderedDict
 
 import pytest
 
-from transfer_infotable import parse_date, parse_position_value
+from transfer_infotable import parse_date, parse_position, parse_position_value
 
 # Constants
 # P
@@ -36,7 +37,23 @@ class TestScriptTransferInfotable:
         date_claim_value = parse_date(date)
         assert date_claim_value == expected_date_claim_value
 
-    @pytest.mark.parametrize("position_value, expected_claim_id, expected_qualifiers", [
+    @pytest.mark.parametrize("position, expected_position_claim_id, expected_qualifiers", [
+        (OrderedDict([('predecessor', '[[Linda Lingle]]')]), None, []),
+    ])
+    def test_parse_position(self, position, expected_position_claim_id, expected_qualifiers):
+        position_claim, qualifiers = parse_position(position)
+        if position_claim:
+            assert position_claim.value.id == expected_position_claim_id
+        else:
+            assert position_claim is expected_position_claim_id
+        if qualifiers:
+            for claim, (pid, qid) in zip(qualifiers, expected_qualifiers):
+                assert claim.property == pid
+                assert claim.value.id == qid
+        else:
+            assert qualifiers == expected_qualifiers
+
+    @pytest.mark.parametrize("position_value, expected_position_claim_id, expected_qualifiers", [
         ("[[Ministeri de Marina d'Espanya|Ministre de Marina]]", MINISTER_OF_THE_NAVY, []),
         ("[[La Corunya|Alcalde de La Corunya]]", MAYOR_OF_A_CORUNA, []),
         ("Diputada al [[Parlament de Catalunya]]", MEMBER_OF_THE_PARLIAMENT_OF_CATALONIA, []),
@@ -51,9 +68,12 @@ class TestScriptTransferInfotable:
          []),
         ("Diputat al [[Congrés dels Diputats]]", MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN, [])
     ])
-    def test_parse_position_value(self, position_value, expected_claim_id, expected_qualifiers):
+    def test_parse_position_value(self, position_value, expected_position_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)
-        assert position_claim.value.id == expected_claim_id
+        if position_claim:
+            assert position_claim.value.id == expected_position_claim_id
+        else:
+            assert position_claim is expected_position_claim_id
         if qualifiers:
             for claim, (pid, qid) in zip(qualifiers, expected_qualifiers):
                 assert claim.property == pid
