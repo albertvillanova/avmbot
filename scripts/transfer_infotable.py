@@ -109,12 +109,14 @@ INFOTABLE_PARAMS = {
 LINK_REGEX = re.compile(r'\[\[(?P<link>[^\]|[<>{}]*)(?:\|(?P<text>.*?))?\]\]')
 PREPOSITION_REGEX = re.compile(r"(?: de | d')")
 
-COUNTRIES = ["Espanya", "França", "Portugal"]
+COUNTRIES = ["Espanya", "França", "Portugal", "Regne_Unit"]
 AMBASSADOR_OF_SPAIN_TO_FRANCE = 'Q27969744'
 AMBASSADOR_OF_SPAIN_TO_PORTUGAL = 'Q37140063'
+AMBASSADOR_OF_SPAIN_TO_THE_UNITED_KINGDOM = 'Q43542408'
 AMBASSADOR_OF_TO = {
     ("Espanya", "França"): AMBASSADOR_OF_SPAIN_TO_FRANCE,
     ("Espanya", "Portugal"): AMBASSADOR_OF_SPAIN_TO_PORTUGAL,
+    ("Espanya", "Regne_Unit"): AMBASSADOR_OF_SPAIN_TO_THE_UNITED_KINGDOM,
 }
 
 POSITION_MAPPING = {
@@ -365,6 +367,8 @@ def parse_position_value(position_value):
                     qualifiers.append(appointed_by_claim)
     else:
         if position_value.lower().startswith("ambaixador"):
+            # Join multi-word countries
+            position_value = position_value.replace("Regne Unit", "Regne_Unit")
             words = re.split(r"[\s']", position_value)
             of_to = tuple(word for word in words if word in COUNTRIES)
             if len(of_to) != 2:
