@@ -419,6 +419,9 @@ def parse_position_qualifier(key, value):
 
 def parse_position(position):
     logger.info(f"Parse position: {position}")
+    if 'carrec' not in position:
+        logger.error(f"Malformed position does not contain 'carrec': {position}")
+        return None, []
     position_claim, qualifiers = parse_position_value(position['carrec'])
     for position_key, position_value in position.items():
         # carrec
@@ -445,14 +448,9 @@ def create_position_claims(positions):
     claims = []
     for position in positions:
         position_claim, qualifiers = parse_position(position)
-        # for position_param, position_value in position.items():
-        #     # carrec
-        #     if position_param == 'carrec':
-        #         position_claim, qualifiers = parse_position_value(position_value)
-        #     else:
-        #         qualifier = parse_position_qualifier(position_param, position_value)
-        #         if qualifier:
-        #             qualifiers.append(qualifier)
+        if not position_claim:
+            logger.error(f"No position claim: skipped position {position}")
+            continue
         claims.append((position_claim, qualifiers))
     return claims
 
