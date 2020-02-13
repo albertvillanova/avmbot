@@ -355,54 +355,57 @@ def parse_position_value(position_value):
     # From links
     if matched_links:
         position_link = matched_links[0][0]
+        position_page = get_page_from_link(position_link)
+        position_page_title = position_page.title() if position_page else ''
         position_text = matched_links[0][1]
         if not position_text:
             position_text = position_value
-        if position_text.lower().startswith("[["):
-            position_item = get_item_from_page_link(position_link)
+        # No page link
+        if not position_page_title:
+            position_item = None
+        # Page link
+        elif position_text.lower().startswith("[["):
+            position_item = get_item_from_page(position_page)
         # alcalde
         elif position_text.lower().startswith("alcalde"):
-            if position_link.lower().startswith("alcalde"):
-                position_item = get_item_from_page_link(position_link)
+            if position_page_title.lower().startswith("alcalde"):
+                position_item = get_item_from_page(position_page)
             else:
-                position_item = get_office_held_by_head_from_link(position_link)
+                position_item = get_office_held_by_head_from_page(position_page)
         # diputa
         elif position_text.lower().startswith("diputa"):
-            if position_link == "Parlament de Catalunya":
+            if position_page_title == "Parlament de Catalunya":
                 position_item = MEMBER_OF_PARLIAMENT_OF_CATALONIA
             else:
                 position_item = get_has_part_from_link(position_link)
         # governador
-        elif position_link.lower().startswith("governador"):
+        elif position_page_title.lower().startswith("governador"):
             if len(matched_links) == 2:
                 state_link = matched_links[1][0]
                 position_item = get_office_held_by_head_from_link(state_link)
         # ministr
         elif position_text.lower().startswith("ministr"):
-            if position_link.lower().startswith("ministr"):
-                position_item = get_item_from_page_link(position_link)
+            if position_page_title.lower().startswith("ministr"):
+                position_item = get_item_from_page(position_page)
             else:
-                if position_link.lower().startswith("llista"):
-                    position_link = parse_list_link(position_link, "ministr", replace="Ministeri")
+                if position_page_title.lower().startswith("llista"):
+                    position_link = parse_list_link(position_link, "ministr", replace="Ministeri")  # TODO
                 position_item = get_office_held_by_head_from_link(position_link)
         # president
         elif position_text.lower().startswith("president"):
-            if position_link.lower().startswith("president"):
-                position_item = get_item_from_page_link(position_link)
+            if position_page_title.lower().startswith("president"):
+                position_item = get_item_from_page(position_page)
             else:
-                if position_link.lower().startswith("llista"):
-                    position_link = parse_list_link(position_link, "president")
+                if position_page_title.lower().startswith("llista"):
+                    position_link = parse_list_link(position_link, "president")  # TODO
                 position_item = get_office_held_by_head_from_link(position_link)
         # senador
         elif position_text.lower().startswith("senador"):
-            if position_link == "Senat d'Espanya":
+            if position_page_title == "Senat d'Espanya":
                 position_item = MEMBER_OF_THE_SENATE_OF_SPAIN
         # Position claim
         if not position_item:
             logger.error(f"Failed parsing position value: {position_link}; {position_text}")
-        position_claim = Claim(property=POSITION_HELD, item=position_item) if position_item else None
-        if position_claim:
-            logger.info(f"Position held claim: {position_claim.value}")
         # Eventual qualifiers in position value
         if len(matched_links) == 2:
             if 'designa' in position_value:
@@ -436,7 +439,9 @@ def parse_position_value(position_value):
                     position_item = AMBASSADOR_OF_TO.get(of_to)
         if not position_item:
             logger.error(f"Failed parsing position value: {position_value}")
-        position_claim = Claim(property=POSITION_HELD, item=position_item) if position_item else None
+    if position_item:
+        position_claim = Claim(property=POSITION_HELD, item=position_item)
+        logger.info(f"Position held claim: {position_claim.value}")
     return position_claim, qualifiers
 
 
