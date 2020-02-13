@@ -371,6 +371,9 @@ def parse_position_value(position_value):
             if position_page_title.lower().startswith("alcalde"):
                 position_item = get_item_from_page(position_page)
             else:
+                if position_page_title.lower().startswith("llista"):
+                    position_link = parse_list_link(position_page_title.lower(), "alcalde")  # TODO
+                    position_page = get_page_from_link(position_link)
                 position_item = get_office_held_by_head_from_page(position_page)
         # diputa
         elif position_text.lower().startswith("diputa"):
