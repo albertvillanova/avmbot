@@ -17,6 +17,7 @@ SERIES_ORDINAL = 'P1545'
 START_TIME = 'P580'
 # Q
 AMBASSADOR_OF_SPAIN_TO_FRANCE = 'Q27969744'
+ELECTORAL_DISTRICT = 'P768'
 GENERAL_CAPTAIN_OF_VALENCIA = 'Q54875187'
 GOVERNOR_OF_HAWAII = 'Q5589655'
 MAYOR_OF_A_CORUNA = 'Q12391919'
@@ -103,6 +104,8 @@ class TestScriptTransferInfotable:
         ("predecessor", "[[Irene Rigau i Oliver]]", REPLACES, {'id': 'Q15743807'}),
         ("successor", "[[Irene Rigau i Oliver]]", REPLACED_BY, {'id': 'Q15743807'}),
         ("successor", "-", None, {}),
+        ("Circumscripció", "[[circumscripció electoral de Barcelona|Barcelona]]", ELECTORAL_DISTRICT,
+         {'id': 'Q28496610'}),
     ])
     def test_parse_position_qualifier(self, key, value, expected_property, expected_value):
         qualifier_claim = parse_position_qualifier(key, value)
