@@ -410,16 +410,22 @@ def parse_position_qualifier(key, value):
     claim_value = None
     if key == 'escut_carrec':
         # Ignore it: this should be in the position item
+        logger.warning(f"Skipped position qualifier because of key 'escut_carrec': value: {value}")
         return
     elif key == 'inici' or key == 'final':
         # Date
         claim_value = parse_date(value)
     elif key == 'predecessor' or key == 'successor':
+        if value == "-":
+            # Ignore it: this is uninformative
+            logger.warning(f"Skipped position qualifier because of value '-': key: {key}")
+            return
         # Item
         logger.info(f"Parse as item")
         matches = LINK_REGEX.findall(value)
-        if not matches:  # No matches: -
+        if not matches:
             logger.error(f"Failed parsing as item: {value}")
+            return
         else:
             claim_link = matches[0][0]
             claim_item = get_item_from_page_link(claim_link)
@@ -428,13 +434,13 @@ def parse_position_qualifier(key, value):
     else:
         # TODO: ordre, junt_a, nominat, designat
         logger.error(f"Unforeseen case for position qualifier: {key}: {value}")
+        return
     if claim_value:
         logger.info(f"Found claim value {claim_value} for position qualifier: {key}: {value}")
+        qualifier_claim = Claim(property=INFOTABLE_PARAMS[key], **claim_value)
     else:
         logger.error(f"No claim value found for position qualifier: {key}: {value}")
         return
-    qualifier_claim = Claim(property=INFOTABLE_PARAMS[key], **claim_value)
-    # logger.info(f"Qualifier claim: property {qualifier_claim.property}, value {qualifier_claim.value}")
     return qualifier_claim
 
 
