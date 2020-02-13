@@ -237,6 +237,32 @@ def get_item_from_page_link(link):
     return item
 
 
+def get_office_held_by_head_from_page(page):
+    logger.info(f"Get office held by head from page {page}")
+    if not page:
+        logger.error(f"No page")
+        return
+    if page.title().lower().startswith("llista"):
+        logger.warning(f"Link is a list")
+    organization_item = get_item_from_page(page)
+    if not organization_item:
+        logger.error(f"No organization item found from page {page}")
+        return
+    office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_GOVERNMENT)
+    if not office_claims:
+        office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_THE_ORGANIZATION)
+    if office_claims:
+        if len(office_claims) == 1:
+            position_item = office_claims[0].getTarget()  # .id
+        else:
+            logger.error(f"More than one office held by head found for item {organization_item}")
+            return
+    else:
+        logger.error(f"No office held by head found for item {organization_item}")
+        return
+    return position_item
+
+
 def get_office_held_by_head_from_link(link):
     logger.info(f"Get office held by head from link {link}")
     if not link:
