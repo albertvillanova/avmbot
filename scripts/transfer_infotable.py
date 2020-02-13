@@ -229,27 +229,11 @@ def get_item_from_page(page):
 
 def get_item_from_page_link(link):
     logger.info(f"Get item from page link {link}")
-    try:
-        item = pw.ItemPage.fromPage(pw.Page(pw.Link(link, source=CA_SITE)))
-        logger.info(f"Found Wikidata item from ca page link: {item}")
-    except pw.NoPage:
-        logger.warning(f"No Wikidata item from ca page link: {link}")
-        try:
-            item = pw.ItemPage.fromPage(pw.Page(pw.Link(link, source=ES_SITE)))
-            logger.info(f"Found Wikidata item from es page link: {item}")
-        except pw.NoPage:
-            logger.warning(f"No Wikidata item from es page link: {link}")
-            try:
-                item = pw.ItemPage.fromPage(pw.Page(pw.Link(link, source=GL_SITE)))
-                logger.info(f"Found Wikidata item from gl page link: {item}")
-            except pw.NoPage:
-                logger.warning(f"No Wikidata item from gl page link: {link}")
-                try:
-                    item = pw.ItemPage.fromPage(pw.Page(pw.Link(link, source=EN_SITE)))
-                    logger.info(f"Found Wikidata item from en page link: {item}")
-                except pw.NoPage:
-                    logger.error(f"No Wikidata item from (ca, es, gl, en) page links: {link}")
-                    return
+    page = get_page_from_link(link)
+    if not page:
+        logger.error(f"No Wikidata item because no Wikipedia page from page link: {link}")
+        return
+    item = get_item_from_page(page)
     return item
 
 
