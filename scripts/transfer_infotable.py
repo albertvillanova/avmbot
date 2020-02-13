@@ -216,6 +216,17 @@ def get_page_from_link(link):
     logger.error(f"No Wikipedia page from (ca, es, gl, en) page links: {link}")
 
 
+def get_item_from_page(page):
+    logger.info(f"Get item from page {page}")
+    try:
+        item = pw.ItemPage.fromPage(page)
+    except pw.NoPage:
+        logger.error(f"No Wikidata item from page: {page}")
+        return
+    logger.info(f"Found Wikidata item from page {page}: {item}")
+    return item
+
+
 def get_item_from_page_link(link):
     logger.info(f"Get item from page link {link}")
     try:
