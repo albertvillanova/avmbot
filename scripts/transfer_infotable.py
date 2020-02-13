@@ -202,6 +202,20 @@ def extract_positions(template_params):
     return positions
 
 
+def get_page_from_link(link):
+    logger.info(f"Get page from page link {link}")
+    for lang, site in [('ca', CA_SITE), ('es', ES_SITE), ('gl', GL_SITE), ('en', EN_SITE)]:
+        page = pw.Page(pw.Link(link, source=site))
+        if page.isRedirectPage():
+            page = page.getRedirectTarget()
+        if page.exists():
+            logger.info(f"Found Wikipedia page from {lang} page link {link}: {page}")
+            return page
+        else:
+            logger.warning(f"No Wikipedia page from {lang} page link {link}")
+    logger.error(f"No Wikipedia page from (ca, es, gl, en) page links: {link}")
+
+
 def get_item_from_page_link(link):
     logger.info(f"Get item from page link {link}")
     try:
