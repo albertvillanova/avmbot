@@ -413,6 +413,10 @@ def parse_position_qualifier(key, value):
         logger.warning(f"Skipped position qualifier because of key 'escut_carrec': value: {value}")
         return
     elif key == 'inici' or key == 'final':
+        if value == "present":
+            # Ignore it: this is uninformative
+            logger.warning(f"Skipped position qualifier because of value 'present': key: {key}")
+            return
         # Date
         claim_value = parse_date(value)
     elif key == 'predecessor' or key == 'successor':
