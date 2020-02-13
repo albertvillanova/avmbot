@@ -431,13 +431,29 @@ def parse_position_qualifier(key, value):
             claim_item = get_item_from_page_link(claim_link)
             if claim_item:
                 claim_value = {'item': claim_item}
+    elif key.lower() == "circumscripció":
+        # Item
+        logger.info(f"Parse as item")
+        matches = LINK_REGEX.findall(value)
+        if not matches:
+            logger.error(f"Failed parsing as item: {value}")
+            return
+        else:
+            claim_link = matches[0][0]
+            claim_item = get_item_from_page_link(claim_link)
+            if claim_item:
+                claim_value = {'item': claim_item}
+                claim_property = ELECTORAL_DISTRICT
     else:
         # TODO: ordre, junt_a, nominat, designat
         logger.error(f"Unforeseen case for position qualifier: {key}: {value}")
         return
     if claim_value:
         logger.info(f"Found claim value {claim_value} for position qualifier: {key}: {value}")
-        qualifier_claim = Claim(property=INFOTABLE_PARAMS[key], **claim_value)
+        if key in INFOTABLE_PARAMS:
+            qualifier_claim = Claim(property=INFOTABLE_PARAMS[key], **claim_value)
+        else:
+            qualifier_claim = Claim(property=claim_property, **claim_value)
     else:
         logger.error(f"No claim value found for position qualifier: {key}: {value}")
         return
