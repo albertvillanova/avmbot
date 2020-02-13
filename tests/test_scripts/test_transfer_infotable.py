@@ -107,7 +107,7 @@ class TestScriptTransferInfotable:
         ("[[Llista dels Ministres d'Afers Exteriors d'Espanya|Ministre d'Estat]]", MINISTER_OF_FOREIGN_AFFAIRS_OF_SPAIN,
          []),
         ("Diputat al [[Congrés dels Diputats]]", MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN, []),
-        ("7è [[Governador]] de [[Hawaii]]", GOVERNOR_OF_HAWAII, [(SERIES_ORDINAL, 7)]),
+        ("7è [[Governador]] de [[Hawaii]]", GOVERNOR_OF_HAWAII, [(SERIES_ORDINAL, '7')]),
     ])
     def test_parse_position_value(self, position_value, expected_position_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)
@@ -116,9 +116,13 @@ class TestScriptTransferInfotable:
         else:
             assert position_claim is expected_position_claim_id
         if qualifiers:
-            for claim, (pid, qid) in zip(qualifiers, expected_qualifiers):
+            for claim, (pid, value) in zip(qualifiers, expected_qualifiers):
                 assert claim.property == pid
-                assert claim.value.id == qid
+                if isinstance(claim.value, str):
+                    assert claim.value == value
+                else:
+                    qid = value
+                    assert claim.value.id == qid
         else:
             assert qualifiers == expected_qualifiers
 
