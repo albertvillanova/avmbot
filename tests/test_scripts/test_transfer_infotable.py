@@ -5,12 +5,16 @@ from collections import OrderedDict
 
 import pytest
 
-from transfer_infotable import extract_positions, parse_date, parse_position, parse_position_value
+from transfer_infotable import extract_positions, parse_date, parse_position, parse_position_qualifier, parse_position_value
 
 # Constants
 # P
 APPOINTED_BY = 'P748'
+END_TIME = 'P582'
+REPLACED_BY = 'P1366'
+REPLACES = 'P1365'
 SERIES_ORDINAL = 'P1545'
+START_TIME = 'P580'
 # Q
 AMBASSADOR_OF_SPAIN_TO_FRANCE = 'Q27969744'
 GENERAL_CAPTAIN_OF_VALENCIA = 'Q54875187'
@@ -92,6 +96,22 @@ class TestScriptTransferInfotable:
                 assert claim.value.id == qid
         else:
             assert qualifiers == expected_qualifiers
+
+    @pytest.mark.parametrize("key, value, expected_property, expected_value", [
+        ("inici", "[[17 de febrer]] de [[2011]]", START_TIME, {'year': 2011, 'month': 2, 'day': 17}),
+        ("final", "[[17 de febrer]] de [[2011]]", END_TIME, {'year': 2011, 'month': 2, 'day': 17}),
+        ("predecessor", "[[Irene Rigau i Oliver]]", REPLACES, {'id': 'Q15743807'}),
+        ("successor", "[[Irene Rigau i Oliver]]", REPLACED_BY, {'id': 'Q15743807'}),
+        ("successor", "-", None, {}),
+    ])
+    def test_parse_position_qualifier(self, key, value, expected_property, expected_value):
+        qualifier_claim = parse_position_qualifier(key, value)
+        if qualifier_claim:
+            assert qualifier_claim.property == expected_property
+            for attr, value in expected_value.items():
+                assert getattr(qualifier_claim.value, attr, None) == value
+        else:  # is None
+            assert qualifier_claim is expected_property
 
     @pytest.mark.parametrize("position_value, expected_position_claim_id, expected_qualifiers", [
         ("[[Ministeri de Marina d'Espanya|Ministre de Marina]]", MINISTER_OF_THE_NAVY, []),
