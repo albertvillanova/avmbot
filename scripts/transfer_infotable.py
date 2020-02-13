@@ -107,6 +107,7 @@ INFOTABLE_PARAMS = {
 
 # Regex
 LINK_REGEX = re.compile(r'\[\[(?P<link>[^\]|[<>{}]*)(?:\|(?P<text>.*?))?\]\]')
+ORDINAL_REGEX = re.compile(r"(\d+)[rntéèa]\.? .+")
 PREPOSITION_REGEX = re.compile(r"(?: de | d')")
 
 COUNTRIES = ["Espanya", "França", "Portugal", "Regne_Unit"]
@@ -377,6 +378,13 @@ def parse_position_value(position_value):
                     appointed_by_claim = Claim(property=APPOINTED_BY, item=appointed_by_item)
                     logger.info(f"Appointed by claim: {appointed_by_claim.value}")
                     qualifiers.append(appointed_by_claim)
+        if position_text[0].isdigit():
+            match = ORDINAL_REGEX.match(position_text)
+            if match:
+                series_ordinal_quantity = match.group(1)  # must be value=str
+                series_ordinal_claim = Claim(property=SERIES_ORDINAL, value=series_ordinal_quantity)
+                logger.info(f"Series ordinal claim: {series_ordinal_claim.value}")
+                qualifiers.append(series_ordinal_claim)
     # Without links
     else:
         if position_value.lower().startswith("ambaixador"):
