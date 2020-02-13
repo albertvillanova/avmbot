@@ -459,30 +459,46 @@ def parse_position(position):
             continue
         # k_etiqueta
         elif position_key == 'k_etiqueta':
-            if 'k_nom' not in position:
-                logger.error(f"Missing position qualifier key k_nom for corresponding k_etiqueta: {position_value}")
+            label_key = position_key
+            label_value = position_value
+            name_key = 'k_nom'  # position_key.replace('_etiqueta', '_nom')
+            if name_key not in position:
+                logger.error(
+                    f"Missing member of k_(label, name) pair: no name {name_key} for label {label_key}: {label_value}")
                 continue
-            # TODO
-            logger.error(f"TODO: parse k_etiqueta")
+            name_value = position[name_key]
+            logger.info(f"Parse k_(label, name) pair: ({label_value}, {name_value})")
+            qualifier_claim = parse_position_qualifier(label_value, name_value)
         elif position_key == 'k_nom':
-            if 'k_etiqueta' not in position:
-                logger.error(f"Missing position qualifier key k_etiqueta for corresponding k_nom: {position_value}")
+            name_key = position_key
+            name_value = position_value
+            label_key = 'k_etiqueta'  # position_key.replace('_nom', '_etiqueta')
+            if label_key not in position:
+                logger.error(
+                    f"Missing member of k_(label, name) pair: no label {label_key} for name {name_key}: {name_value}")
             continue # already parsed
         # _etiqueta
         elif position_key.contains('_etiqueta'):
-            name = position_key.replace('_etiqueta', '_nom')
-            if name not in position:
-                logger.error(f"Missing position qualifier key {name} for corresponding {position_key}: {position_value}")
-            # TODO
-            logger.error(f"TODO: parse {position_key}")
+            label_key = position_key
+            label_value = position_value
+            name_key = position_key.replace('_etiqueta', '_nom')
+            if name_key not in position:
+                logger.error(
+                    f"Missing member of (label, name) pair: no name {name_key} for label {label_key}: {label_value}")
+                continue
+            # TODO: parse pair
+            name_value = position[name_key]
+            logger.error(f"TODO: Parse (label, name) pair ({label_key}, {name_key}): ({label_value}, {name_value})")
         elif position_key.contains('_nom'):
-            label = position_key.replace('_nom', '_etiqueta')
-            if label not in position:
-                logger.error(f"Missing position qualifier key {label} for corresponding {position_key}: {position_value}")
+            name_key = position_key
+            name_value = position_value
+            label_key = position_key.replace('_nom', '_etiqueta')
+            if label_key not in position:
+                logger.error(
+                    f"Missing member of (label, name) pair: no label {label_key} for name {name_key}: {name_value}")
             continue  # already parsed
         # rest
         elif position_key in INFOTABLE_PARAMS:
-            # TODO: parse position_value
             qualifier_claim = parse_position_qualifier(position_key, position_value)
         else:
             logger.error(f"Unknown position qualifier key, value: {position_key}; {position_value}")
