@@ -5,7 +5,8 @@ from collections import OrderedDict
 
 import pytest
 
-from transfer_infotable import extract_positions, parse_date, parse_position, parse_position_qualifier, parse_position_value
+from transfer_infotable import extract_positions, get_item_from_page_link, parse_date, parse_position, \
+    parse_position_qualifier, parse_position_value
 
 # Constants
 # P
@@ -20,6 +21,7 @@ AMBASSADOR_OF_SPAIN_TO_FRANCE = 'Q27969744'
 ELECTORAL_DISTRICT = 'P768'
 GENERAL_CAPTAIN_OF_VALENCIA = 'Q54875187'
 GOVERNOR_OF_HAWAII = 'Q5589655'
+IRENE_RIGAU_I_OLIVER = 'Q15743807'
 MAYOR_OF_A_CORUNA = 'Q12391919'
 MAYOR_OF_LA_VALL_D_UIXO = 'Q26693191'
 MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN = 'Q18171345'
@@ -68,6 +70,20 @@ class TestScriptTransferInfotable:
         # assert 'carrec' in positions[1]
         # assert positions[2]['carrec'] == positions[1]['carrec']
 
+    @pytest.mark.parametrize("link, expected_item_id", [
+        ("Irene Rigau i Oliver", IRENE_RIGAU_I_OLIVER),  # from ca.wikipedia
+        ("Manuel Casas Fernández", 'Q20535931'),  # from es.wkipedia
+        ("Juan González Rodríguez", 'Q12391239'),  # from gl.wikipedia
+        ("Rangin Dadfar Spanta", 'Q77348'),  # from en.wikipedia
+        ("José Solernou Lapuerta", None),
+    ])
+    def test_get_item_from_page_link(self, link, expected_item_id):
+        item = get_item_from_page_link(link)
+        if item:
+            assert item.id == expected_item_id
+        else:  # is None
+            assert item is expected_item_id
+
     @pytest.mark.parametrize("date, expected_date_claim_value", [
         ("[[23 de gener]] de [[1935]]", {'year': 1935, 'month': 1, 'day': 23}),
         ("[[7 d'agost]] de [[1926]]", {'year': 1926, 'month': 8, 'day': 7}),
@@ -101,8 +117,8 @@ class TestScriptTransferInfotable:
     @pytest.mark.parametrize("key, value, expected_property, expected_value", [
         ("inici", "[[17 de febrer]] de [[2011]]", START_TIME, {'year': 2011, 'month': 2, 'day': 17}),
         ("final", "[[17 de febrer]] de [[2011]]", END_TIME, {'year': 2011, 'month': 2, 'day': 17}),
-        ("predecessor", "[[Irene Rigau i Oliver]]", REPLACES, {'id': 'Q15743807'}),
-        ("successor", "[[Irene Rigau i Oliver]]", REPLACED_BY, {'id': 'Q15743807'}),
+        ("predecessor", "[[Irene Rigau i Oliver]]", REPLACES, {'id': IRENE_RIGAU_I_OLIVER}),
+        ("successor", "[[Irene Rigau i Oliver]]", REPLACED_BY, {'id': IRENE_RIGAU_I_OLIVER}),
         ("successor", "-", None, {}),
         ("Circumscripció", "[[circumscripció electoral de Barcelona|Barcelona]]", ELECTORAL_DISTRICT,
          {'id': 'Q28496610'}),
