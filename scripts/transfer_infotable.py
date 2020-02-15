@@ -428,7 +428,12 @@ def parse_position_value(position_value):
                 qualifiers.append(series_ordinal_claim)
     # Without links
     else:
-        if position_value.lower().startswith("ambaixador"):
+        if position_value.lower().startswith("alcalde"):
+            regex = "alcalde" + r"\S*\s(?:de |d')(?P<organization>.+)"
+            match = re.match(regex, position_value, re.I)
+            if match:
+                position_item = get_office_held_by_head_from_link(match.group('organization'))
+        elif position_value.lower().startswith("ambaixador"):
             # Join multi-word countries
             position_value = position_value.replace("Regne Unit", "Regne_Unit")
             words = re.split(r"[\s']", position_value)
