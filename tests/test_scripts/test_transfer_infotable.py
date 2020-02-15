@@ -24,6 +24,7 @@ GOVERNOR_OF_HAWAII = 'Q5589655'
 IRENE_RIGAU_I_OLIVER = 'Q15743807'
 MAYOR_OF_A_CORUNA = 'Q12391919'
 MAYOR_OF_LA_VALL_D_UIXO = 'Q26693191'
+MAYOR_OF_REUS = 'Q26698306'
 MAYOR_OF_SOLSONA = 'Q26698375'
 MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN = 'Q18171345'
 MEMBER_OF_THE_PARLIAMENT_OF_CATALONIA = 'Q18714088'
@@ -149,6 +150,7 @@ class TestScriptTransferInfotable:
         ("Diputat al [[Congrés dels Diputats]]", MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN, []),
         ("7è [[Governador]] de [[Hawaii]]", GOVERNOR_OF_HAWAII, [(SERIES_ORDINAL, '7')]),
         ("[[Alcalde de Solsona|Alcalde accidental de Solsona]]", MAYOR_OF_SOLSONA, []),
+        ("[[Llista d'alcaldes de Reus|Alcalde de Reus]]", MAYOR_OF_REUS, []),
     ])
     def test_parse_position_value(self, position_value, expected_position_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)
