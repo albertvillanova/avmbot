@@ -108,7 +108,7 @@ INFOTABLE_PARAMS = {
 # Regex
 LINK_REGEX = re.compile(r'\[\[(?P<link>[^\]|[<>{}]*)(?:\|(?P<text>.*?))?\]\]')
 ORDINAL_REGEX = re.compile(r"(\d+)[rntéèa]\.? .+")
-PREPOSITION_REGEX = re.compile(r"(?: de | d')")
+PREPOSITION_REGEX = re.compile(r"(?: de | d'|\s)")
 
 COUNTRIES = ["Espanya", "França", "Portugal", "Regne_Unit"]
 AMBASSADOR_OF_SPAIN_TO_FRANCE = 'Q27969744'
