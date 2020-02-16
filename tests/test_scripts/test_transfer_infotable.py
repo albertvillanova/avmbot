@@ -22,6 +22,7 @@ ELECTORAL_DISTRICT = 'P768'
 GENERAL_CAPTAIN_OF_VALENCIA = 'Q54875187'
 GOVERNOR_OF_HAWAII = 'Q5589655'
 IRENE_RIGAU_I_OLIVER = 'Q15743807'
+KING_OF_JORDAN = 'Q14625123'
 MAYOR_OF_A_CORUNA = 'Q12391919'
 MAYOR_OF_LA_VALL_D_UIXO = 'Q26693191'
 MAYOR_OF_REUS = 'Q26698306'
@@ -155,6 +156,9 @@ class TestScriptTransferInfotable:
         ("[[Alcalde de Solsona|Alcalde accidental de Solsona]]", MAYOR_OF_SOLSONA, []),
         ("[[Llista d'alcaldes de Reus|Alcalde de Reus]]", MAYOR_OF_REUS, []),
         ("Alcalde-President de Melilla", MAYOR_PRESIDENT_OF_MELILLA, []),
+        ("[[Rei de Jordània|Rei]] de [[Jordània]]", KING_OF_JORDAN, []),
+        ("Rei de [[Jordània]]", KING_OF_JORDAN, []),
+        ("Rei de Jordània", KING_OF_JORDAN, []),
     ])
     def test_parse_position_value(self, position_value, expected_position_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)
