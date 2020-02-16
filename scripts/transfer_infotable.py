@@ -338,18 +338,25 @@ def parse_date(value):
     return claim_value
 
 
-def parse_list_link(link, word, replace=None):
-    logger.info(f"Parse list link {link}, using word {word}")
-    pattern = r".+" + word + r"\w+ (?P<preposition>de |d')(?P<organization>.+)"
+def get_organization_link_from_list_link(link, word, replace=None):
+    logger.info(f"Get organization link from list link {link}, using word {word}")
+    pattern = r".*" + word + r"\w+ (?P<preposition>de |d')(?P<organization>.+)"
     match = re.match(pattern, link, re.I)
     if not match:
-        logger.error(f"Failed parsing list link {link}, using word {word}")
+        logger.error(f"Failed getting organization link from list link {link}, using word {word}")
         return
-    result = match.group('organization')
+    organization_link = match.group('organization')
     if replace:
-        result = f"{replace} {match.group('preposition')}{result}"
-    logger.info(f"Parsed list link result: {result}")
-    return result
+        # To cope with: Llista de ministres [(d')(Hisenda)] -> Llista de ministres del [Ministeri (d')(Hisenda)]
+        organization_link = f"{replace} {match.group('preposition')}{organization_link}"
+    logger.info(f"Got organization link {organization_link} from list link {link}")
+    return organization_link
+
+
+def get_organization_page_from_list_link(link, word, replace=None):
+    organization_link = get_organization_link_from_list_link(link, word, replace=replace)
+    organization_page = get_page_from_link(organization_link)
+    return organization_page
 
 
 def parse_position_value(position_value):
@@ -378,10 +385,10 @@ def parse_position_value(position_value):
             if position_page_title.lower().startswith("alcalde"):
                 position_item = get_item_from_page(position_page)
             else:
+                organization_page = position_page
                 if position_page_title.lower().startswith("llista"):
-                    position_link = parse_list_link(position_page_title.lower(), "alcalde")  # TODO
-                    position_page = get_page_from_link(position_link)
-                position_item = get_office_held_by_head_from_page(position_page)
+                    organization_page = get_organization_page_from_list_link(position_page_title, "alcalde")
+                position_item = get_office_held_by_head_from_page(organization_page)
         # diputa
         elif position_text.lower().startswith("diputa"):
             if position_page_title == "Parlament de Catalunya":
@@ -398,17 +405,20 @@ def parse_position_value(position_value):
             if position_page_title.lower().startswith("ministr"):
                 position_item = get_item_from_page(position_page)
             else:
+                organization_page = position_page
                 if position_page_title.lower().startswith("llista"):
-                    position_link = parse_list_link(position_link, "ministr", replace="Ministeri")  # TODO
-                position_item = get_office_held_by_head_from_link(position_link)
+                    organization_page = get_organization_page_from_list_link(position_page_title, "ministr",
+                                                                             replace="Ministeri")
+                position_item = get_office_held_by_head_from_page(organization_page)
         # president
         elif position_text.lower().startswith("president"):
             if position_page_title.lower().startswith("president"):
                 position_item = get_item_from_page(position_page)
             else:
+                organization_page = position_page
                 if position_page_title.lower().startswith("llista"):
-                    position_link = parse_list_link(position_link, "president")  # TODO
-                position_item = get_office_held_by_head_from_link(position_link)
+                    organization_page = get_organization_page_from_list_link(position_page_title, "president")
+                position_item = get_office_held_by_head_from_page(organization_page)
         # senador
         elif position_text.lower().startswith("senador"):
             if position_page_title == "Senat d'Espanya":
