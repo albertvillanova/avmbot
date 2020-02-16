@@ -238,6 +238,18 @@ def get_item_from_page_link(link):
     return item
 
 
+# def get_item(page):
+#     logger.info(f"Get item from {page}")
+#     if isinstance(page, str):
+#         link = page
+#         page = get_page_from_link(link)
+#     if not page:
+#         logger.error(f"No Wikidata item because no Wikipedia page from link: {link}")
+#         return
+#     item = get_item_from_page(page)
+#     return item
+
+
 def get_office_held_by_head_from_page(page, of=None):
     logger.info(f"Get office held by head from page {page}")
     if not page:
@@ -279,6 +291,45 @@ def get_office_held_by_head_from_link(link, of=None):
         logger.error(f"No organization item found from link {link}")
         return
     if of == 'state':
+        office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_STATE)
+    else:
+        office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_GOVERNMENT)
+        if not office_claims:
+            office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_THE_ORGANIZATION)
+    if office_claims:
+        if len(office_claims) == 1:
+            position_item = office_claims[0].getTarget()  # .id
+        else:
+            logger.error(f"More than one office held by head found for item {organization_item}")
+            return
+    else:
+        logger.error(f"No office held by head found for item {organization_item}")
+        return
+    return position_item
+
+
+def get_office_held_by_head(organization_page, head_of=None, from_list_of=None, prepend_to_list_of=None):
+    logger.info(f"Get office held by head from organization: {organization_page}")
+    if not organization_page:
+        logger.error(f"No organization: {organization_page}")
+        return
+    if isinstance(organization_page, str):
+        organization_link = organization_page
+        organization_page = get_page_from_link(organization_link)
+    if not organization_page:
+        logger.error(f"No Wikidata item because no Wikipedia page from link: {organization_link}")
+        return
+    # From list of
+    if from_list_of and (organization_page.title().lower().startswith("llista") or
+                         organization_page.title().lower().startswith(from_list_of + "s")):
+        organization_page = get_organization_page_from_list_link(organization_page.title(), from_list_of,
+                                                                 prepend=prepend_to_list_of)
+    # Organization item
+    organization_item = get_item_from_page(organization_page)
+    if not organization_item:
+        logger.error(f"No organization item found from organization: {organization_page}")
+        return
+    if head_of == 'state':
         office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_STATE)
     else:
         office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_GOVERNMENT)
@@ -338,7 +389,7 @@ def parse_date(value):
     return claim_value
 
 
-def get_organization_link_from_list_link(link, word, replace=None):
+def get_organization_link_from_list_link(link, word, prepend=None):
     logger.info(f"Get organization link from list link {link}, using word {word}")
     pattern = r".*" + word + r"\w+ (?P<preposition>de |d')(?P<organization>.+)"
     match = re.match(pattern, link, re.I)
@@ -346,15 +397,15 @@ def get_organization_link_from_list_link(link, word, replace=None):
         logger.error(f"Failed getting organization link from list link {link}, using word {word}")
         return
     organization_link = match.group('organization')
-    if replace:
+    if prepend:
         # To cope with: Llista de ministres [(d')(Hisenda)] -> Llista de ministres del [Ministeri (d')(Hisenda)]
-        organization_link = f"{replace} {match.group('preposition')}{organization_link}"
+        organization_link = f"{prepend} {match.group('preposition')}{organization_link}"
     logger.info(f"Got organization link {organization_link} from list link {link}")
     return organization_link
 
 
-def get_organization_page_from_list_link(link, word, replace=None):
-    organization_link = get_organization_link_from_list_link(link, word, replace=replace)
+def get_organization_page_from_list_link(link, word, prepend=None):
+    organization_link = get_organization_link_from_list_link(link, word, prepend=prepend)
     organization_page = get_page_from_link(organization_link)
     return organization_page
 
@@ -385,10 +436,7 @@ def parse_position_value(position_value):
             if position_page_title.lower().startswith("alcalde"):
                 position_item = get_item_from_page(position_page)
             else:
-                organization_page = position_page
-                if position_page_title.lower().startswith("llista"):
-                    organization_page = get_organization_page_from_list_link(position_page_title, "alcalde")
-                position_item = get_office_held_by_head_from_page(organization_page)
+                position_item = get_office_held_by_head(position_page, from_list_of="alcalde")
         # diputa
         elif position_text.lower().startswith("diputa"):
             if position_page_title == "Parlament de Catalunya":
@@ -405,31 +453,21 @@ def parse_position_value(position_value):
             if position_page_title.lower().startswith("ministr"):
                 position_item = get_item_from_page(position_page)
             else:
-                organization_page = position_page
-                if position_page_title.lower().startswith("llista"):
-                    organization_page = get_organization_page_from_list_link(position_page_title, "ministr",
-                                                                             replace="Ministeri")
-                position_item = get_office_held_by_head_from_page(organization_page)
+                position_item = get_office_held_by_head(position_page, from_list_of="ministr",
+                                                        prepend_to_list_of="Ministeri")
         # president
         elif position_text.lower().startswith("president"):
             if position_page_title.lower().startswith("president"):
                 position_item = get_item_from_page(position_page)
             else:
-                organization_page = position_page
-                if position_page_title.lower().startswith("llista"):
-                    organization_page = get_organization_page_from_list_link(position_page_title, "president")
-                position_item = get_office_held_by_head_from_page(organization_page)
+                position_item = get_office_held_by_head(position_page, from_list_of="president")
         # rei
         elif position_text.lower().startswith("rei"):
             if position_page_title.lower().startswith("rei") and not \
                     position_page_title.lower().startswith("rei" + "s"):
                 position_item = get_item_from_page(position_page)
             else:
-                organization_page = position_page
-                if position_page_title.lower().startswith("llista") or \
-                        position_page_title.lower().startswith("rei" + "s"):
-                    organization_page = get_organization_page_from_list_link(position_page_title, "rei")
-                position_item = get_office_held_by_head_from_page(organization_page, of="state")
+                position_item = get_office_held_by_head(position_page, head_of="state", from_list_of="rei")
         # senador
         elif position_text.lower().startswith("senador"):
             if position_page_title == "Senat d'Espanya":
