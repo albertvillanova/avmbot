@@ -64,6 +64,7 @@ CATALAN_WIKIPEDIA = 'Q199693'
 # Utils to find position from organization
 OFFICE_HELD_BY_HEAD_OF_GOVERNMENT = 'P1313'
 OFFICE_HELD_BY_HEAD_OF_THE_ORGANIZATION = 'P2388'
+OFFICE_HELD_BY_HEAD_OF_STATE = 'P1906'
 HAS_PART = 'P527'
 HAS_PARTS_OF_THE_CLASS = 'P2670'
 
@@ -237,7 +238,7 @@ def get_item_from_page_link(link):
     return item
 
 
-def get_office_held_by_head_from_page(page):
+def get_office_held_by_head_from_page(page, of=None):
     logger.info(f"Get office held by head from page {page}")
     if not page:
         logger.error(f"No page")
@@ -248,9 +249,12 @@ def get_office_held_by_head_from_page(page):
     if not organization_item:
         logger.error(f"No organization item found from page {page}")
         return
-    office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_GOVERNMENT)
-    if not office_claims:
-        office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_THE_ORGANIZATION)
+    if of == 'state':
+        office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_STATE)
+    else:
+        office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_GOVERNMENT)
+        if not office_claims:
+            office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_THE_ORGANIZATION)
     if office_claims:
         if len(office_claims) == 1:
             position_item = office_claims[0].getTarget()  # .id
@@ -263,7 +267,7 @@ def get_office_held_by_head_from_page(page):
     return position_item
 
 
-def get_office_held_by_head_from_link(link):
+def get_office_held_by_head_from_link(link, of=None):
     logger.info(f"Get office held by head from link {link}")
     if not link:
         logger.error(f"No link")
@@ -274,9 +278,12 @@ def get_office_held_by_head_from_link(link):
     if not organization_item:
         logger.error(f"No organization item found from link {link}")
         return
-    office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_GOVERNMENT)
-    if not office_claims:
-        office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_THE_ORGANIZATION)
+    if of == 'state':
+        office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_STATE)
+    else:
+        office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_GOVERNMENT)
+        if not office_claims:
+            office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_THE_ORGANIZATION)
     if office_claims:
         if len(office_claims) == 1:
             position_item = office_claims[0].getTarget()  # .id
