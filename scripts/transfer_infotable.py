@@ -419,6 +419,17 @@ def parse_position_value(position_value):
                 if position_page_title.lower().startswith("llista"):
                     organization_page = get_organization_page_from_list_link(position_page_title, "president")
                 position_item = get_office_held_by_head_from_page(organization_page)
+        # rei
+        elif position_text.lower().startswith("rei"):
+            if position_page_title.lower().startswith("rei") and not \
+                    position_page_title.lower().startswith("rei" + "s"):
+                position_item = get_item_from_page(position_page)
+            else:
+                organization_page = position_page
+                if position_page_title.lower().startswith("llista") or \
+                        position_page_title.lower().startswith("rei" + "s"):
+                    organization_page = get_organization_page_from_list_link(position_page_title, "rei")
+                position_item = get_office_held_by_head_from_page(organization_page, of="state")
         # senador
         elif position_text.lower().startswith("senador"):
             if position_page_title == "Senat d'Espanya":
@@ -450,6 +461,11 @@ def parse_position_value(position_value):
             match = re.match(regex, position_value, re.I)
             if match:
                 position_item = get_office_held_by_head_from_link(match.group('organization'))
+        if position_value.lower().startswith("rei"):
+            regex = "rei" + r"\S*\s(?:de |d')(?P<organization>.+)"
+            match = re.match(regex, position_value, re.I)
+            if match:
+                position_item = get_office_held_by_head_from_link(match.group('organization'), of='state')
         elif position_value.lower().startswith("ambaixador"):
             # Join multi-word countries
             position_value = position_value.replace("Regne Unit", "Regne_Unit")
