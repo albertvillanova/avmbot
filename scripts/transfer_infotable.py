@@ -505,7 +505,7 @@ def parse_position_value(position_value):
             if match:
                 position_item = get_office_held_by_head_from_link(match.group('organization'))
         elif position_value.lower().startswith("president"):
-            regex = "president" + r"\S*\s(?:de |d'|del |de la )(?P<organization>.+)"
+            regex = "president" + r"\S*\s(?:de la |de |d'|del )(?P<organization>.+)"
             match = re.match(regex, position_value, re.I)
             if match:
                 organization = match.group('organization')
@@ -514,7 +514,7 @@ def parse_position_value(position_value):
                 position_item = get_office_held_by_head_from_link(organization, of='state')
         elif position_value.lower().startswith("primer ministr") or \
                 position_value.lower().startswith("primera ministr"):
-            regex = "primera? ministr" + r"\S*\s(?:de |d'|del |de la )(?P<organization>.+)"
+            regex = "primera? ministr" + r"\S*\s(?:de la |de |d'|del )(?P<organization>.+)"
             match = re.match(regex, position_value, re.I)
             if match:
                 position_item = get_office_held_by_head_from_link(match.group('organization'))
@@ -536,7 +536,7 @@ def parse_position_value(position_value):
                 else:
                     position_item = AMBASSADOR_OF_TO.get(of_to)
         elif position_value.lower().startswith("soldà"):
-            regex = "soldà" + r"\S*\s(?:de |d'|del |de la )(?P<organization>.+)"
+            regex = "soldà" + r"\S*\s(?:de la |de |d'|del )(?P<organization>.+)"
             match = re.match(regex, position_value, re.I)
             if match:
                 organization = match.group('organization')
