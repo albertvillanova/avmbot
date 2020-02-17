@@ -39,6 +39,7 @@ PRESIDENT_OF_COLOMBIA = 'Q853475'
 PRESIDENT_OF_THE_COUNCIL_OF_CASTILE = 'Q6360109'
 PRESIDENT_OF_THE_PALESTINIAN_NATIONAL_AUTHORITY = 'Q2336111'
 PRIME_MINISTER_OF_PAKISTAN = 'Q735575'
+SULTAN_OF_MOROCCO = 'Q14566713'
 
 
 class TestScriptTransferInfotable:
@@ -165,6 +166,7 @@ class TestScriptTransferInfotable:
         ("President de l'[[Autoritat Nacional Palestina]]", PRESIDENT_OF_THE_PALESTINIAN_NATIONAL_AUTHORITY, []),
         ("[[Kediv]] d'Egipte i el Sudan", KHEDIVE, []),
         ("Primer Ministre del Pakistan", PRIME_MINISTER_OF_PAKISTAN, []),
+        ("Soldà del Marroc", SULTAN_OF_MOROCCO, []),
     ])
     def test_parse_position_value(self, position_value, expected_position_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)

@@ -120,6 +120,7 @@ AMBASSADOR_OF_TO = {
     ("Espanya", "Portugal"): AMBASSADOR_OF_SPAIN_TO_PORTUGAL,
     ("Espanya", "Regne_Unit"): AMBASSADOR_OF_SPAIN_TO_THE_UNITED_KINGDOM,
 }
+SULTAN_OF_MOROCCO = 'Q14566713'
 
 POSITION_MAPPING = {
 
@@ -502,13 +503,13 @@ def parse_position_value(position_value):
             match = re.match(regex, position_value, re.I)
             if match:
                 position_item = get_office_held_by_head_from_link(match.group('organization'))
-        if position_value.lower().startswith("primer ministr") or \
+        elif position_value.lower().startswith("primer ministr") or \
                 position_value.lower().startswith("primera ministr"):
             regex = "primera? ministr" + r"\S*\s(?:de |d'|del |de la )(?P<organization>.+)"
             match = re.match(regex, position_value, re.I)
             if match:
                 position_item = get_office_held_by_head_from_link(match.group('organization'))
-        if position_value.lower().startswith("rei"):
+        elif position_value.lower().startswith("rei"):
             regex = "rei" + r"\S*\s(?:de |d')(?P<organization>.+)"
             match = re.match(regex, position_value, re.I)
             if match:
@@ -525,6 +526,13 @@ def parse_position_value(position_value):
                     logger.error(f"Missing ambassador of_to {of_to}")
                 else:
                     position_item = AMBASSADOR_OF_TO.get(of_to)
+        elif position_value.lower().startswith("soldà"):
+            regex = "soldà" + r"\S*\s(?:de |d'|del |de la )(?P<organization>.+)"
+            match = re.match(regex, position_value, re.I)
+            if match:
+                organization = match.group('organization')
+                if organization == "Marroc":
+                    position_item = SULTAN_OF_MOROCCO
         if not position_item:
             logger.error(f"Failed parsing position value: {position_value}")
     if position_item:
