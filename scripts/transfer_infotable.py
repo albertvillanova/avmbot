@@ -502,6 +502,12 @@ def parse_position_value(position_value):
             match = re.match(regex, position_value, re.I)
             if match:
                 position_item = get_office_held_by_head_from_link(match.group('organization'))
+        if position_value.lower().startswith("primer ministr") or \
+                position_value.lower().startswith("primera ministr"):
+            regex = "primera? ministr" + r"\S*\s(?:de |d'|del |de la )(?P<organization>.+)"
+            match = re.match(regex, position_value, re.I)
+            if match:
+                position_item = get_office_held_by_head_from_link(match.group('organization'))
         if position_value.lower().startswith("rei"):
             regex = "rei" + r"\S*\s(?:de |d')(?P<organization>.+)"
             match = re.match(regex, position_value, re.I)
