@@ -22,6 +22,7 @@ ELECTORAL_DISTRICT = 'P768'
 GENERAL_CAPTAIN_OF_VALENCIA = 'Q54875187'
 GOVERNOR_OF_HAWAII = 'Q5589655'
 IRENE_RIGAU_I_OLIVER = 'Q15743807'
+KHEDIVE = 'Q127878'
 KING_OF_JORDAN = 'Q14625123'
 MAYOR_OF_A_CORUNA = 'Q12391919'
 MAYOR_OF_LA_VALL_D_UIXO = 'Q26693191'
@@ -36,6 +37,8 @@ MINISTER_OF_THE_NAVY = 'Q15895305'
 PARLIAMENT_OF_CATALONIA = 'Q135630'
 PRESIDENT_OF_COLOMBIA = 'Q853475'
 PRESIDENT_OF_THE_COUNCIL_OF_CASTILE = 'Q6360109'
+PRESIDENT_OF_THE_PALESTINIAN_NATIONAL_AUTHORITY = 'Q2336111'
+PRIME_MINISTER_OF_PAKISTAN = 'Q735575'
 
 
 class TestScriptTransferInfotable:
@@ -159,6 +162,9 @@ class TestScriptTransferInfotable:
         ("[[Rei de Jordània|Rei]] de [[Jordània]]", KING_OF_JORDAN, []),
         ("Rei de [[Jordània]]", KING_OF_JORDAN, []),
         ("Rei de Jordània", KING_OF_JORDAN, []),
+        ("President de l'[[Autoritat Nacional Palestina]]", PRESIDENT_OF_THE_PALESTINIAN_NATIONAL_AUTHORITY, []),
+        ("[[Kediv]] d'Egipte i el Sudan", KHEDIVE, []),
+        ("Primer Ministre del Pakistan", PRIME_MINISTER_OF_PAKISTAN, []),
     ])
     def test_parse_position_value(self, position_value, expected_position_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)
