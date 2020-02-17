@@ -392,7 +392,7 @@ def parse_date(value):
 
 def get_organization_link_from_list_link(link, word, prepend=None):
     logger.info(f"Get organization link from list link {link}, using word {word}")
-    pattern = r".*" + word + r"\w+ (?P<preposition>de |d')(?P<organization>.+)"
+    pattern = r".*" + word + r"\w+ (?P<preposition>de la |de |d')(?P<organization>.+)"
     match = re.match(pattern, link, re.I)
     if not match:
         logger.error(f"Failed getting organization link from list link {link}, using word {word}")
