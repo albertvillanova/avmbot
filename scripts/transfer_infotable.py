@@ -464,6 +464,7 @@ def parse_position_value(position_value):
             if position_page_title.lower().startswith("president"):
                 position_item = get_item_from_page(position_page)
             else:
+                # TODO: of='state'?
                 position_item = get_office_held_by_head(position_page, from_list_of="president")
         # rei
         elif position_text.lower().startswith("rei"):
@@ -503,6 +504,14 @@ def parse_position_value(position_value):
             match = re.match(regex, position_value, re.I)
             if match:
                 position_item = get_office_held_by_head_from_link(match.group('organization'))
+        elif position_value.lower().startswith("president"):
+            regex = "president" + r"\S*\s(?:de |d'|del |de la )(?P<organization>.+)"
+            match = re.match(regex, position_value, re.I)
+            if match:
+                organization = match.group('organization')
+                if organization == "Malta":
+                    organization = "República de Malta"
+                position_item = get_office_held_by_head_from_link(organization, of='state')
         elif position_value.lower().startswith("primer ministr") or \
                 position_value.lower().startswith("primera ministr"):
             regex = "primera? ministr" + r"\S*\s(?:de |d'|del |de la )(?P<organization>.+)"
