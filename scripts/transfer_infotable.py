@@ -448,6 +448,9 @@ def parse_position_value(position_value):
             if len(matched_links) == 2:
                 state_link = matched_links[1][0]
                 position_item = get_office_held_by_head_from_link(state_link)
+        # khediv
+        elif position_page_title.lower().startswith("khediv") or position_page_title.lower().startswith("kediv"):
+                position_item = get_item_from_page(position_page)
         # ministr
         elif position_text.lower().startswith("ministr"):
             if position_page_title.lower().startswith("ministr"):
