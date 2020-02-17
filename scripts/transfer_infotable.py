@@ -634,7 +634,7 @@ def parse_position(position):
                     f"Missing member of k_(label, name) pair: no label {label_key} for name {name_key}: {name_value}")
             continue # already parsed
         # _etiqueta
-        elif position_key.contains('_etiqueta'):
+        elif '_etiqueta' in position_key:
             label_key = position_key
             label_value = position_value
             name_key = position_key.replace('_etiqueta', '_nom')
@@ -645,7 +645,7 @@ def parse_position(position):
             # TODO: parse pair
             name_value = position[name_key]
             logger.error(f"TODO: Parse (label, name) pair ({label_key}, {name_key}): ({label_value}, {name_value})")
-        elif position_key.contains('_nom'):
+        elif '_nom' in position_key:
             name_key = position_key
             name_value = position_value
             label_key = position_key.replace('_nom', '_etiqueta')
