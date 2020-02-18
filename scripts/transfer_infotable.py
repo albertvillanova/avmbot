@@ -431,10 +431,10 @@ def parse_position_value(position_value):
     matched_links = LINK_REGEX.findall(position_value)
     # From links
     if matched_links:
-        position_link = matched_links[0][0]
+        position_link = matched_links[0][0].strip()
         position_page = get_page_from_link(position_link)
         position_page_title = position_page.title() if position_page else ''
-        position_text = matched_links[0][1]
+        position_text = matched_links[0][1].strip()
         if not position_text:
             position_text = position_value
         # No page link
@@ -458,7 +458,7 @@ def parse_position_value(position_value):
         # governador
         elif position_page_title.lower().startswith("governador"):
             if len(matched_links) == 2:
-                state_link = matched_links[1][0]
+                state_link = matched_links[1][0].strip()
                 position_item = get_office_held_by_head_from_link(state_link)
         # khediv
         elif position_page_title.lower().startswith("khediv") or position_page_title.lower().startswith("kediv"):
@@ -498,7 +498,7 @@ def parse_position_value(position_value):
         if len(matched_links) == 2:
             if 'designa' in position_value:
                 logger.info(f"Parse appointed by")
-                appointed_by_link = matched_links[1][0]
+                appointed_by_link = matched_links[1][0].strip()
                 appointed_by_item = get_item_from_page_link(appointed_by_link)
                 if appointed_by_item:
                     appointed_by_claim = Claim(property=APPOINTED_BY, item=appointed_by_item)
@@ -590,7 +590,7 @@ def parse_position_qualifier(key, value):
             logger.error(f"Failed parsing as item: {value}")
             return
         else:
-            claim_link = matches[0][0]
+            claim_link = matches[0][0].strip()
             claim_item = get_item_from_page_link(claim_link)
             if claim_item:
                 claim_value = {'item': claim_item}
@@ -602,7 +602,7 @@ def parse_position_qualifier(key, value):
             logger.error(f"Failed parsing as item: {value}")
             return
         else:
-            claim_link = matches[0][0]
+            claim_link = matches[0][0].strip()
             claim_item = get_item_from_page_link(claim_link)
             if claim_item:
                 claim_value = {'item': claim_item}
