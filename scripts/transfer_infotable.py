@@ -626,6 +626,9 @@ def parse_position(position):
         logger.error(f"Malformed position does not contain 'carrec': {position}")
         return None, []
     position_claim, qualifiers = parse_position_value(position['carrec'])
+    if not position_claim:
+        logger.error(f"Skip parsing position qualifiers: no position claim found for {position['carrec']}")
+        return None, []
     # Position qualifiers
     logger.info("Parse position qualifiers")
     for position_key, position_value in position.items():
