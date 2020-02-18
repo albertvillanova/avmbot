@@ -463,6 +463,9 @@ def parse_position_value(position_value):
         # khediv
         elif position_page_title.lower().startswith("khediv") or position_page_title.lower().startswith("kediv"):
                 position_item = get_item_from_page(position_page)
+        # membre
+        elif position_text.lower().startswith("membre"):
+            position_item = get_has_part_from_link(position_link)
         # ministr
         elif position_text.lower().startswith("ministr"):
             if position_page_title.lower().startswith("ministr"):

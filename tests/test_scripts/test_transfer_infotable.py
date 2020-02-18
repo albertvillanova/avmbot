@@ -35,6 +35,7 @@ MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN = 'Q18171345'
 MEMBER_OF_THE_PARLIAMENT_OF_CATALONIA = 'Q18714088'
 MEMBER_OF_THE_PARLIAMENT_OF_GALICIA = 'Q43198218'
 MEMBER_OF_THE_SENATE_OF_SPAIN = 'Q19323171'
+MEMBER_OF_THE_UNITED_STATES_HOUSE_OF_REPRESENTATIVES = 'Q13218630'
 MINISTER_OF_FOREIGN_AFFAIRS_OF_SPAIN = 'Q32969906'
 MINISTER_OF_THE_NAVY = 'Q15895305'
 PARLIAMENT_OF_CATALONIA = 'Q135630'
@@ -174,7 +175,9 @@ class TestScriptTransferInfotable:
         # ("[[Ajuntament de Solsona|Regidor de l'Ajuntament de Solsona]]", CITY_COUNCILLOR_OF_SOLSONA, []),
         ("[[Llista d'alcaldes de la Ciutat de Luxemburg|Alcalde de la Ciutat de Luxemburg<br/>Primer mandat]]",
          MAYOR_OF_LUXEMBOURG, []),
-        ("[[Llista d'alcaldes de la Ciutat de Fake-city|Alcalde de la Ciutat de Fake-city]]", None, [])
+        ("[[Llista d'alcaldes de la Ciutat de Fake-city|Alcalde de la Ciutat de Fake-city]]", None, []),
+        ("[[Cambra de Representants dels Estats Units | Membre de la Cambra de Representants dels Estats Units]]",
+         MEMBER_OF_THE_UNITED_STATES_HOUSE_OF_REPRESENTATIVES, []),
     ])
     def test_parse_position_value(self, position_value, expected_position_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)
