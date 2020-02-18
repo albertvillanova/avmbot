@@ -71,12 +71,11 @@ class TestScriptTransferInfotable:
         assert 'a_etiqueta' in positions[0]
         assert 'predecessor' in positions[0]
         assert positions[0]['predecessor'] == '[[Linda Lingle]]'
-        # # TODO
-        # assert 'e_etiqueta' in positions[0]
-        # assert 'predecessor' in positions[1]
-        # assert positions[1]['predecessor'] == '[[Pat Saiki]]'
-        # assert 'predecessor' in positions[2]
-        # assert positions[2]['predecessor'] == '[[Cecil Heftel]]'
+        assert 'e_etiqueta' in positions[0]
+        assert 'predecessor' in positions[1]
+        assert positions[1]['predecessor'] == '[[Pat Saiki]]'
+        assert 'predecessor' in positions[2]
+        assert positions[2]['predecessor'] == '[[Cecil Heftel]]'
         # # TODO
         # assert 'carrec' in positions[2]
         # assert 'carrec' in positions[1]

@@ -14,6 +14,7 @@ TEST:
 import argparse
 import logging
 import re
+from collections import defaultdict
 
 import pywikibot as pw
 from pywikibot import pagegenerators as pg
@@ -107,6 +108,7 @@ INFOTABLE_PARAMS = {
 }
 
 # Regex
+DIGIT_REGEX = re.compile(r"(\d+)")
 LINK_REGEX = re.compile(r'\[\[(?P<link>[^\]|[<>{}]*)(?:\|(?P<text>.*?))?\]\]')
 ORDINAL_REGEX = re.compile(r"(\d+)[rntéèa]\.? .+")
 PREPOSITION_REGEX = re.compile(r"(?: de | d'|\s)")
@@ -187,20 +189,15 @@ def parse_infotable(page, infotable="Infotaula persona"):
 
 
 def extract_positions(template_params):
-    positions = []
-    position = {}
+    positions = defaultdict(dict)
     for param_name, param_value in template_params.items():
-        param_name = param_name if param_name[-1].isalpha() else param_name[:-1]
-        if param_name == 'carrec':
-            if position:
-                positions.append(position)
-            position = {param_name: param_value}
-        elif param_name in INFOTABLE_PARAMS:
-            position[param_name] = param_value
-        else:
-            if position:
-                positions.append(position)
-            position = {}
+        param_name, *param_num = DIGIT_REGEX.split(param_name)
+        param_num = param_num[0] if param_num else '1'
+        if param_name in INFOTABLE_PARAMS:
+            positions[param_num][param_name] = param_value
+    if not positions:
+        return []
+    positions = [positions[position_num] for position_num in sorted(positions)]
     return positions
 
 
