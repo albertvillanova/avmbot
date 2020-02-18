@@ -76,10 +76,9 @@ class TestScriptTransferInfotable:
         assert positions[1]['predecessor'] == '[[Pat Saiki]]'
         assert 'predecessor' in positions[2]
         assert positions[2]['predecessor'] == '[[Cecil Heftel]]'
-        # # TODO
-        # assert 'carrec' in positions[2]
-        # assert 'carrec' in positions[1]
-        # assert positions[2]['carrec'] == positions[1]['carrec']
+        assert 'carrec' in positions[2]
+        assert 'carrec' in positions[1]
+        assert positions[2]['carrec'] == positions[1]['carrec']
 
     @pytest.mark.parametrize("link, expected_item_id", [
         ("Irene Rigau i Oliver", IRENE_RIGAU_I_OLIVER),  # from ca.wikipedia

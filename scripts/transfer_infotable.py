@@ -198,6 +198,10 @@ def extract_positions(template_params):
     if not positions:
         return []
     positions = [positions[position_num] for position_num in sorted(positions)]
+    # Propagate 'carrec'
+    for i, position in enumerate(positions):
+        if 'carrec' not in position:
+            position['carrec'] = positions[i - 1]['carrec']
     return positions
 
 
