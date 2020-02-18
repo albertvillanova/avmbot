@@ -176,6 +176,7 @@ class TestScriptTransferInfotable:
         # ("[[Ajuntament de Solsona|Regidor de l'Ajuntament de Solsona]]", CITY_COUNCILLOR_OF_SOLSONA, []),
         ("[[Llista d'alcaldes de la Ciutat de Luxemburg|Alcalde de la Ciutat de Luxemburg<br/>Primer mandat]]",
          MAYOR_OF_LUXEMBOURG, []),
+        ("[[Llista d'alcaldes de la Ciutat de Fake-city|Alcalde de la Ciutat de Fake-city]]", None, [])
     ])
     def test_parse_position_value(self, position_value, expected_position_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)

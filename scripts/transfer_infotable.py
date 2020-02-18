@@ -325,6 +325,9 @@ def get_office_held_by_head(organization_page, head_of=None, from_list_of=None, 
                          organization_page.title().lower().startswith(from_list_of + "s")):
         organization_page = get_organization_page_from_list_link(organization_page.title(), from_list_of,
                                                                  prepend=prepend_to_list_of)
+        if not organization_page:
+            logger.error(f"No organization page from list link: {organization_link}")
+            return
     # Organization item
     organization_item = get_item_from_page(organization_page)
     if not organization_item:
@@ -406,8 +409,15 @@ def get_organization_link_from_list_link(link, word, prepend=None):
 
 
 def get_organization_page_from_list_link(link, word, prepend=None):
+    logger.info(f"Get organization page from list link: {link}")
     organization_link = get_organization_link_from_list_link(link, word, prepend=prepend)
+    if not organization_link:
+        logger.error(f"No organization link from list link: {link}")
+        return
     organization_page = get_page_from_link(organization_link)
+    if not organization_page:
+        logger.error(f"No organization page from organization link: {organization_link}")
+        return
     return organization_page
 
 
