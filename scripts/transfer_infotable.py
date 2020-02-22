@@ -205,9 +205,13 @@ def extract_positions(template_params):
     return positions
 
 
-def get_page_from_link(link):
+def get_page_from_link(link, langs=None):
+    if not langs:
+        langs = ['ca', 'es', 'gl', 'en']
+    sites = {'ca': CA_SITE, 'es': ES_SITE, 'gl': GL_SITE, 'en': EN_SITE}
     logger.info(f"Get page from page link {link}")
-    for lang, site in [('ca', CA_SITE), ('es', ES_SITE), ('gl', GL_SITE), ('en', EN_SITE)]:
+    for lang in langs:
+        site = sites[lang]
         page = pw.Page(pw.Link(link, source=site))
         if page.isRedirectPage():
             page = page.getRedirectTarget()
@@ -230,9 +234,9 @@ def get_item_from_page(page):
     return item
 
 
-def get_item_from_page_link(link):
+def get_item_from_page_link(link, langs=None):
     logger.info(f"Get item from page link {link}")
-    page = get_page_from_link(link)
+    page = get_page_from_link(link, langs=langs)
     if not page:
         logger.error(f"No Wikidata item because no Wikipedia page from page link: {link}")
         return
