@@ -135,6 +135,7 @@ class TestScriptTransferInfotable:
         ("successor", "-", None, {}),
         ("Circumscripció", "[[circumscripció electoral de Barcelona|Barcelona]]", ELECTORAL_DISTRICT,
          {'id': 'Q28496610'}),
+        ("Proclamació", "[[30 de novembre]] de [[1822]]", START_TIME, {'year': 1822, 'month': 11, 'day': 30}),
     ])
     def test_parse_position_qualifier(self, key, value, expected_property, expected_value):
         qualifier_claim = parse_position_qualifier(key, value)

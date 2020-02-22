@@ -567,6 +567,10 @@ def parse_position_value(position_value):
 def parse_position_qualifier(key, value):
     logger.info(f"Parse position qualifier: {key}: {value}")
     claim_value = None
+    # Equivalences
+    if key.lower() == "proclamació":
+        key = "inici"
+    # Cases
     if key == 'escut_carrec':
         # Ignore it: this should be in the position item
         logger.warning(f"Skipped position qualifier because of key 'escut_carrec': value: {value}")
