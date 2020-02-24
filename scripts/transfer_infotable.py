@@ -484,6 +484,9 @@ def parse_position_value(position_value):
             else:
                 # TODO: of='state'?
                 position_item = get_office_held_by_head(position_page, from_list_of="president")
+        # # regidor  # TODO: not yet a clearly established structure in Wikidata
+        # elif position_text.lower().startswith("regidor"):
+        #     position_item = get_has_part_from_link(position_link)
         # rei
         elif position_text.lower().startswith("rei"):
             if position_page_title.lower().startswith("rei") and not \
@@ -614,7 +617,7 @@ def parse_position_qualifier(key, value):
                 claim_property = ELECTORAL_DISTRICT
         else:
             if value.lower()[0] in ['a', 'e', 'i', 'o', 'u']:
-                claim_link = f"Circumscripció electoral d'{value}"  # KAKA
+                claim_link = f"Circumscripció electoral d'{value}"
             else:
                 claim_link = f"Circumscripció electoral de {value}"
             claim_item = get_item_from_page_link(claim_link, langs=['ca'])
@@ -738,7 +741,7 @@ if __name__ == '__main__':
     # Generator
     generator = create_generator(groupsize=1)  # TODO: remove groupsize in prod
     for i, page in enumerate(generator):
-        logger.info(f"Page: {page}")
+        logger.info(f"{i + 1} Page: {page}")
         infotable_params = parse_infotable(page)
         logger.info(f"Infotable parameters: {infotable_params}")
         positions = extract_positions(infotable_params)
