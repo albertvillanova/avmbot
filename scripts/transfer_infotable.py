@@ -711,8 +711,12 @@ def create_position_claims(positions):
     for position in positions:
         position_claim, qualifiers = parse_position(position)
         if not position_claim:
-            logger.error(f"No position claim: skipped position {position}")
-            continue
+            # 1. Create the maximum number of claims
+            # logger.error(f"No position claim: skipped position {position}")
+            # continue
+            # 2. Create either all or no claims
+            logger.error(f"No position claim: skipped all positions because of position {position}")
+            return
         claims.append((position_claim, qualifiers))
     return claims
 
@@ -735,7 +739,9 @@ if __name__ == '__main__':
         positions = extract_positions(infotable_params)
         logger.info(f"Positions: {positions}")
         position_claims = create_position_claims(positions)
-
+        if not position_claims:
+            logger.error(f"No position claims. ")
+            continue
         # DEBUG
         if args.debug:
             # import pdb;pdb.set_trace()
