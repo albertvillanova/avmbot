@@ -706,19 +706,24 @@ def parse_position(position):
     return position_claim, qualifiers
 
 
-def create_position_claims(positions):
-    claims = []
+def create_position_statements(positions):
+    statements = []
+    # Parse each position
     for position in positions:
         position_claim, qualifiers = parse_position(position)
         if not position_claim:
-            # 1. Create the maximum number of claims
+            # 1. Create the maximum number of statements
             # logger.error(f"No position claim: skipped position {position}")
             # continue
-            # 2. Create either all or no claims
+            # 2. Create either all or no statements
             logger.error(f"No position claim: skipped all positions because of position {position}")
             return
-        claims.append((position_claim, qualifiers))
-    return claims
+        statements.append((position_claim, qualifiers))
+    # Create statements
+    sources = [Claim(property=IMPORTED_FROM_WIKIMEDIA_PROJECT, item=CATALAN_WIKIPEDIA)]
+    statements = [Statement(claim=position_claim, qualifiers=qualifiers, sources=sources)
+                  for position_claim, qualifiers in statements]
+    return statements
 
 
 if __name__ == '__main__':
@@ -738,9 +743,9 @@ if __name__ == '__main__':
         logger.info(f"Infotable parameters: {infotable_params}")
         positions = extract_positions(infotable_params)
         logger.info(f"Positions: {positions}")
-        position_claims = create_position_claims(positions)
-        if not position_claims:
-            logger.error(f"No position claims. ")
+        position_statements = create_position_statements(positions)
+        if not position_statements:
+            logger.error(f"No position statements. ")
             continue
         # DEBUG
         if args.debug:
