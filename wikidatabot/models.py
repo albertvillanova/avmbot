@@ -160,13 +160,13 @@ class Statement:
         self.rank = rank
         self.qualifiers = qualifiers
         self.sources = sources
-
+        # TODO: refactorize to repo
         self._statement = copy.deepcopy(claim._claim)
-        self.set_rank(rank)
+        self._set_rank(rank)
         if qualifiers is not None:
-            self.set_qualifiers(qualifiers)
+            self._set_qualifiers(qualifiers)
         if sources is not None:
-            self.set_sources(sources)
+            self._set_sources(sources)
 
     @property
     def claim(self):
@@ -176,10 +176,10 @@ class Statement:
     def claim(self, claim):
         self._claim = claim
 
-    def set_rank(self, rank):
+    def _set_rank(self, rank):
         self._statement.rank = rank
 
-    def set_qualifiers(self, qualifiers):
+    def _set_qualifiers(self, qualifiers):
         # def set_qualifiers(claim, qualifiers):
         #     for qualifier in qualifiers:
         #         qualifier.isQualifier = True
@@ -190,7 +190,7 @@ class Statement:
             qualifier_claim.isQualifier = True
             self._statement.qualifiers[qualifier_claim.getID()] = [qualifier_claim]
 
-    def set_sources(self, sources):
+    def _set_sources(self, sources):
         # def set_sources(claim, sources):
         #     source_group = defaultdict(list)
         #     for source in sources:
