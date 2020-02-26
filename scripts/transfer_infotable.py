@@ -735,7 +735,7 @@ def create_position_statements(positions):
     return statements
 
 
-def get_item(page):
+def get_main_item(page):
     item = get_item_from_page(page)
     item = Item.from_pwb(item)
     logger.info(f"Main item {item.id} from page: {page}")
@@ -743,7 +743,7 @@ def get_item(page):
 
 
 def add_statements(item, statements, summary=''):
-    logger.info("Try to add new statement to main item")
+    logger.info("Try to add new statements to main item")
     for statement in statements:
         add_statement(item, statement, summary=summary)
 
@@ -844,7 +844,7 @@ if __name__ == '__main__':
             logger.error(f"No position statements. ")
             continue
         # Get item
-        item = get_item(page)
+        item = get_main_item(page)
         # Add statements
         add_statements(item, position_statements, summary="Import from Catalan Wikipedia")
         # Remove infotable params
@@ -852,5 +852,6 @@ if __name__ == '__main__':
         # DEBUG
         if args.debug:
             # import pdb;pdb.set_trace()
-            if i >= 49:
+            if i >= 3:
                 break
+    logger.info("END transfer_infotable")
