@@ -809,6 +809,19 @@ def check_duplicate(item, new_statement, summary=''):
     return False
 
 
+def remove_positions_from_page(page, infotable_params, summary=""):
+    logger.info(f"Remove positions from page: {page}")
+    text = page.text
+    for param_key, param_value in infotable_params.items():
+        param_name, *_ = DIGIT_REGEX.split(param_key)
+        # param_num = param_num[0] if param_num else '1'
+        if param_name in INFOTABLE_PARAMS:
+            text = re.sub(fr"^\|\s*{re.escape(param_key)}\s*=\s*{re.escape(param_value)}\s*$\n", '', text, count=1,
+                          flags=re.MULTILINE)
+    page.text = text
+    page.save(summary=summary, botflag=True)
+
+
 if __name__ == '__main__':
 
     # Parse arguments
@@ -834,6 +847,8 @@ if __name__ == '__main__':
         item = get_item(page)
         # Add statements
         add_statements(item, position_statements, summary="Import from Catalan Wikipedia")
+        # Remove infotable params
+        remove_positions_from_page(page, infotable_params, summary="Exporta a Wikidata")
         # DEBUG
         if args.debug:
             # import pdb;pdb.set_trace()
