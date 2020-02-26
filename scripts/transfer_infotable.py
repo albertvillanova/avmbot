@@ -581,19 +581,19 @@ def parse_position_qualifier(key, value):
     if key == 'escut_carrec':
         # Ignore it: this should be in the position item
         logger.warning(f"Skipped position qualifier because of key 'escut_carrec': value: {value}")
-        return
+        return 'CONTINUE'
     elif key == 'inici' or key == 'final':
         if value == "present":
             # Ignore it: this is uninformative
             logger.warning(f"Skipped position qualifier because of value 'present': key: {key}")
-            return
+            return 'CONTINUE'
         # Date
         claim_value = parse_date(value)
     elif key == 'predecessor' or key == 'successor':
         if value == "-":
             # Ignore it: this is uninformative
             logger.warning(f"Skipped position qualifier because of value '-': key: {key}")
-            return
+            return 'CONTINUE'
         # Item
         logger.info(f"Parse as item")
         matches = LINK_REGEX.findall(value)
@@ -691,6 +691,7 @@ def parse_position(position):
             # TODO: parse pair
             name_value = position[name_key]
             logger.error(f"TODO: Parse (label, name) pair ({label_key}, {name_key}): ({label_value}, {name_value})")
+            return None, []
         elif '_nom' in position_key:
             name_key = position_key
             name_value = position_value
@@ -704,8 +705,13 @@ def parse_position(position):
             qualifier_claim = parse_position_qualifier(position_key, position_value)
         else:
             logger.error(f"Unknown position qualifier key, value: {position_key}; {position_value}")
-        if qualifier_claim:
-            qualifiers.append(qualifier_claim)
+            return None, []
+        if not qualifier_claim:
+            logger.error(f"No qualifier claim")
+            return None, []
+        elif qualifier_claim == 'CONTINUE':
+            continue
+        qualifiers.append(qualifier_claim)
     return position_claim, qualifiers
 
 
