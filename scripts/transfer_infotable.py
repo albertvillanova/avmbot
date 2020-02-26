@@ -735,6 +735,13 @@ def create_position_statements(positions):
     return statements
 
 
+def get_item(page):
+    item = get_item_from_page(page)
+    item = Item.from_pwb(item)
+    logger.info(f"Main item {item.id} from page: {page}")
+    return item
+
+
 if __name__ == '__main__':
 
     # Parse arguments
@@ -756,6 +763,8 @@ if __name__ == '__main__':
         if not position_statements:
             logger.error(f"No position statements. ")
             continue
+        # Get item
+        item = get_item(page)
         # DEBUG
         if args.debug:
             # import pdb;pdb.set_trace()
