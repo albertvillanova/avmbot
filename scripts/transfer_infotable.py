@@ -742,6 +742,73 @@ def get_item(page):
     return item
 
 
+def add_statements(item, statements, summary=''):
+    logger.info("Try to add new statement to main item")
+    for statement in statements:
+        add_statement(item, statement, summary=summary)
+
+
+def add_statement(item, new_statement, summary=''):
+    logger.info(f"Try to add new statement: {new_statement}")
+    duplicated = check_duplicate(item, new_statement, summary=summary)
+    if not duplicated:
+        logger.info(f"Add statement: {new_statement}")
+        item.add_statement(new_statement, summary=summary)
+
+
+def check_duplicate(item, new_statement, summary=''):
+    logger.info("Chew if new statement is duplicated in main item")
+    # pwb_item = item._item
+    # pwb_new_statement = new_statement._statement
+    # New statement
+    new_statement_claim_property = new_statement.claim.property
+    new_statement_claim_id = new_statement.claim.value.id
+    # Item
+    if new_statement_claim_property in item.statements:
+        statements = item.statements[new_statement_claim_property]
+        for statement in statements:
+            if new_statement_claim_id == statement.target.id:
+                logger.warning(f"Equal position value {new_statement_claim_id} already exists for item {item.id}")
+                # TODO: Additional equality conditions
+                if not statement.qualifiers:
+                    if not new_statement.qualifiers:
+                        return True
+                    else:
+                        pass  # Add new qualifiers
+                else:
+                    # TODO: when to skip?
+                    pass
+                # Add qualifiers
+                add_source = False
+                for new_statement_qualifier in new_statement.qualifiers:
+                    add_qualifier = True
+                    for qualifier in statement.qualifiers:
+                        if new_statement_qualifier.property in qualifier:
+                            add_qualifier = False
+                            # for claim in qualifier[new_statement_qualifier.property]:
+                            #     if new_statement_qualifier.value.id == claim.target.id:
+                            #         add_qualifier = False
+                    if add_qualifier:
+                        add_source = True
+                        logger.warning(f"Add qualifier ({new_statement_qualifier.property}, "
+                                       f"{new_statement_qualifier.value}) to already present equal position value "
+                                       f"{new_statement_claim_id} for item {item.id}")
+                        statement.addQualifier(new_statement_qualifier._claim, summary=summary)
+                    else:
+                        logger.info(f"Skip already present qualifier ({new_statement_qualifier.property}, "
+                                    f"{new_statement_qualifier.value}) to already present equal position value "
+                                    f"{new_statement_claim_id} for item {item.id}")
+                if add_source:
+                    new_statement_source = new_statement.sources[0]
+                    logger.warning(f"Add source to already present equal position value {new_statement_claim_id} for "
+                                   f"item {item.id}")
+                    statement.addSource(new_statement_source._claim, summary=summary)
+                else:
+                    logger.info(f"Nothing added to item {item.id}")
+                return True
+    return False
+
+
 if __name__ == '__main__':
 
     # Parse arguments
@@ -765,6 +832,8 @@ if __name__ == '__main__':
             continue
         # Get item
         item = get_item(page)
+        # Add statements
+        add_statements(item, position_statements, summary="Import from Catalan Wikipedia")
         # DEBUG
         if args.debug:
             # import pdb;pdb.set_trace()
