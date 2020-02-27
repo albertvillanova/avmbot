@@ -242,6 +242,8 @@ class Item:
         item._item = pwb_item
         return item
 
+    # TODO: refactorize to _persist_statement as Statement._persist_qualifier/source
+    # TODO: add statement to Item.statements
     def add_statement(self, statement: Statement = None, summary=None):
         if statement is None:
             return
@@ -285,4 +287,8 @@ class Item:
         data = {'claims': [statement._statement.toJSON()]}  # add the statement on property: use []
         # to overwrite statement on property: do not use []  # FALSE; use snak instead
         response = repo.editEntity(identification, data, summary=summary)
+        # response is a dict: {'entity': {'labels': {'ca': {'language': 'ca', 'value': 'Joaquim Abargues i Feliu'}},
+        #                      'descriptions': {}, 'aliases': {}, 'sitelinks': {'cawiki': {'site': 'cawiki',
+        #                       'title': 'Joaquim Abargues i Feliu', 'badges': []}},
+        #                       'claims': {'P31': [{'mainsnak': {'snaktype': 'value', 'property': 'P31',
         return response
