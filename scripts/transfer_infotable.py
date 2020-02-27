@@ -776,8 +776,17 @@ def check_duplicate(item, new_statement, summary=''):
                     else:
                         pass  # Add new qualifiers
                 else:
-                    # TODO: when to skip?
-                    pass
+                    # TODO: when to skip? return False
+                    for new_statement_qualifier in new_statement.qualifiers:
+                        if new_statement_qualifier.property == START_TIME:
+                            if new_statement_qualifier.property in statement.qualifiers:
+                                for claim in statement.qualifiers[new_statement_qualifier.property]:
+                                    if (new_statement_qualifier.value.year == claim.target.year and
+                                            new_statement_qualifier.value.month == claim.target.month and
+                                            new_statement_qualifier.value.day == claim.target.day):
+                                        return True
+                                    else:
+                                        return False
                 # Add qualifiers
                 add_source = False
                 for new_statement_qualifier in new_statement.qualifiers:
