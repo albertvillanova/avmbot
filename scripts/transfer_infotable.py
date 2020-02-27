@@ -880,18 +880,19 @@ if __name__ == '__main__':
         positions = extract_positions(infotable_params)
         logger.info(f"Positions: {positions}")
         position_statements = create_position_statements(positions)
-        if not position_statements:
-            logger.error(f"No position statements. ")
-            continue
-        # Get item
-        item = get_main_item(page)
-        # Add statements
-        add_statements(item, position_statements, summary="Import from Catalan Wikipedia")
-        # Remove infotable params
-        remove_positions_from_page(page, infotable_params, summary="Exporta a Wikidata")
+        if position_statements:
+            # Get item
+            item = get_main_item(page)
+            # Add statements
+            add_statements(item, position_statements, summary="Import from Catalan Wikipedia")
+            # Remove infotable params
+            remove_positions_from_page(page, infotable_params, summary="Exporta a Wikidata")
+            logger.info(f"End Page: {page}")
+        else:
+            logger.error(f"Skip Page: no position statements for page {page}")
         # DEBUG
         if args.debug:
             # import pdb;pdb.set_trace()
-            if i >= 3:
+            if i >= 0:
                 break
     logger.info("END transfer_infotable")
