@@ -160,7 +160,11 @@ class Statement:
         self.qualifiers = qualifiers if qualifiers else []  # TODO: better a dict or a Container
         self.sources = sources if sources else []  # TODO: better a dict or a Container
         # TODO: refactorize to repo
-        self._statement = copy.deepcopy(claim._claim)
+        # self._statement = copy.deepcopy(claim._claim)  # TODO: TypeError: 'SiteLink' object is not subscriptable
+        # where: claim._claim = Claim.fromJSON(DataSite("wikidata", "wikidata"), {'mainsnak': {'snaktype': 'value',
+        # 'property': 'P39', 'datatype': 'wikibase-item', 'datavalue': {'value': {'entity-type': 'item',
+        # 'numeric-id': 54875187}, 'type': 'wikibase-entityid'}}, 'type': 'statement', 'rank': 'normal'})
+        self._statement = claim._claim
         self._set_rank(rank)
         if qualifiers is not None:
             self._set_qualifiers(qualifiers)
