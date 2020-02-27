@@ -12,6 +12,7 @@ TEST:
 
 """
 import argparse
+import datetime
 import logging
 import re
 from collections import defaultdict
@@ -61,6 +62,7 @@ DIOCESE = 'P708'
 # Resources
 IMPORTED_FROM_WIKIMEDIA_PROJECT = 'P143'
 CATALAN_WIKIPEDIA = 'Q199693'
+RETRIEVED = 'P813'
 
 # Utils to find position from organization
 OFFICE_HELD_BY_HEAD_OF_GOVERNMENT = 'P1313'
@@ -725,11 +727,16 @@ def create_position_statements(positions):
             # logger.error(f"No position claim: skipped position {position}")
             # continue
             # 2. Create either all or no statements
-            logger.error(f"No position claim: skipped all positions because of position {position}")
+            logger.error(f"Skip all positions: no position claim for position {position}")
             return
         statements.append((position_claim, qualifiers))
-    # Create statements
+    # Create sources
     sources = [Claim(property=IMPORTED_FROM_WIKIMEDIA_PROJECT, item=CATALAN_WIKIPEDIA)]
+    today = datetime.date.today()
+    today = {'year': today.year, 'month': today.month, 'day': today.day}
+    retrieved_claim = Claim(property=RETRIEVED, **today)
+    sources.append(retrieved_claim)
+    # Create statements
     statements = [Statement(claim=position_claim, qualifiers=qualifiers, sources=sources)
                   for position_claim, qualifiers in statements]
     return statements
