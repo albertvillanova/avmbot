@@ -783,9 +783,13 @@ def check_duplicate(item, new_statement, summary=''):
                 # TODO: Additional equality conditions
                 if not statement.qualifiers:
                     if not new_statement.qualifiers:
+                        logger.info(f"Do not add statement: duplicated position values without qualifiers")
                         return True
                     else:
-                        pass  # Add new qualifiers
+                        # Add new qualifiers
+                        logger.info(f"No item position qualifiers")
+                        add_qualifiers(statement, new_statement, summary="")
+                        return True
                 else:
                     # TODO: when to skip? return False
                     for new_statement_qualifier in new_statement.qualifiers:
@@ -795,46 +799,52 @@ def check_duplicate(item, new_statement, summary=''):
                                     if (new_statement_qualifier.value.year == claim.target.year and
                                             new_statement_qualifier.value.month == claim.target.month and
                                             new_statement_qualifier.value.day == claim.target.day):
+                                        # Add new qualifiers
+                                        logger.info(f"Equal position values and start time")
+                                        add_qualifiers(statement, new_statement, summary="")
                                         return True
-                                    else:
-                                        return False
-                # Add qualifiers
-                add_source = False
-                for new_statement_qualifier in new_statement.qualifiers:
-                    add_qualifier = True
-                    for qualifier in statement.qualifiers:
-                        if new_statement_qualifier.property in qualifier:
-                            add_qualifier = False
-                            # for claim in qualifier[new_statement_qualifier.property]:
-                            #     if new_statement_qualifier.value.id == claim.target.id:
-                            #         add_qualifier = False
-                    if add_qualifier:
-                        add_source = True
-                        logger.warning(f"Add qualifier ({new_statement_qualifier.property}, "
-                                       f"{new_statement_qualifier.value}) to already present equal position value "
-                                       f"{new_statement_claim_id} for item {item.id}")
-                        # statement._persist_qualifier(new_statement_qualifier, summary=summary)
-                        statement.addQualifier(new_statement_qualifier._claim, summary=summary)
-                        statement.qualifiers[new_statement_qualifier.property].append(new_statement_qualifier._claim)
-                    else:
-                        logger.info(f"Skip already present qualifier ({new_statement_qualifier.property}, "
-                                    f"{new_statement_qualifier.value}) to already present equal position value "
-                                    f"{new_statement_claim_id} for item {item.id}")
-                if add_source:
-                    new_statement_sources = new_statement.sources
-                    logger.warning(f"Add source to already present equal position value {new_statement_claim_id} for "
-                                   f"item {item.id}")
-                    # statement._persist_source(new_statement_source, summary=summary)
-                    statement.addSources(
-                        [new_statement_source._claim for new_statement_source in new_statement_sources],
-                        summary=summary)
-                    statement.sources.append(
-                        {new_statement_source.property: new_statement_source._claim
-                         for new_statement_source in new_statement_sources})
-                else:
-                    logger.info(f"Nothing added to item {item.id}")
-                return True
     return False
+
+
+def add_qualifiers(statement, new_statement, summary=""):
+    logger.info(f"Add qualifiers to duplicated item position value")
+    # New statement
+    # new_statement_claim_property = new_statement.claim.property
+    new_statement_claim_id = new_statement.claim.value.id
+    #
+    add_source = False
+    for new_statement_qualifier in new_statement.qualifiers:
+        add_qualifier = True
+        for qualifier_pid in statement.qualifiers:
+            if new_statement_qualifier.property == qualifier_pid:
+                add_qualifier = False
+                # for claim in qualifier[new_statement_qualifier.property]:
+                #     if new_statement_qualifier.value.id == claim.target.id:
+                #         add_qualifier = False
+        if add_qualifier:
+            add_source = True
+            logger.warning(f"Add qualifier ({new_statement_qualifier.property}, "
+                           f"{new_statement_qualifier.value}) to already present equal position value "
+                           f"{new_statement_claim_id}")  # for item {item.id}")
+            # statement._persist_qualifier(new_statement_qualifier, summary=summary)
+            statement.addQualifier(new_statement_qualifier._claim, summary=summary)
+            statement.qualifiers[new_statement_qualifier.property].append(new_statement_qualifier._claim)
+        else:
+            logger.info(f"Skip already present qualifier ({new_statement_qualifier.property}, "
+                        f"{new_statement_qualifier.value}) to already present equal position value "
+                        f"{new_statement_claim_id}")  # for item {item.id}")
+    if add_source:
+        new_statement_sources = new_statement.sources
+        logger.warning(f"Add source to already present equal position value {new_statement_claim_id}")
+        # statement._persist_source(new_statement_source, summary=summary)
+        statement.addSources(
+            [new_statement_source._claim for new_statement_source in new_statement_sources],
+            summary=summary)
+        statement.sources.append(
+            {new_statement_source.property: new_statement_source._claim
+             for new_statement_source in new_statement_sources})
+    else:
+        logger.info(f"No qualifier added to duplicated item position value")
 
 
 def remove_positions_from_page(page, infotable_params, summary=""):
