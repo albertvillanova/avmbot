@@ -839,7 +839,7 @@ def remove_positions_from_page(page, infotable_params, summary=""):
             text = re.sub(fr"^\s*\|\s*{re.escape(param_key)}\s*=\s*{re.escape(param_value)}\s*$\n", '', text, count=1,
                           flags=re.MULTILINE)
         # Fix broken-line template
-        text = re.sub(r"\{\{Infotaula persona\s*\n\}\}", "{{Infotaula persona}}", text, count=1, flags=re.MULTILINE)
+        text = re.sub(r"^\{\{([\w\s']+)\n\}\}", r"{{\1}}", text, count=1, flags=re.MULTILINE)
     page.text = text
     page.save(summary=summary, botflag=True)
 
