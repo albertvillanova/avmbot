@@ -496,6 +496,10 @@ def parse_position_value(position_value):
                 position_item = get_item_from_page(position_page)
             else:
                 position_item = get_office_held_by_head(position_page, head_of="state", from_list_of="rei")
+        # secretari
+        elif position_text.lower().startswith("secretari d") or position_text.lower().startswith("secretària d"):
+            if position_page_title.lower().startswith("secretari d"):
+                position_item = get_item_from_page(position_page)
         # senador
         elif position_text.lower().startswith("senador"):
             if position_page_title == "Senat d'Espanya":
