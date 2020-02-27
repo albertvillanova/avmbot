@@ -204,18 +204,18 @@ class Statement:
             source_group[source_claim.getID()].append(source_claim)
         self._statement.sources.append(source_group)
 
-    # TODO: refactorize to repo
-    def _persist_qualifier(self, qualifier, summary=""):
-        # Persist in repo
-        self._statement.addQualifier(qualifier._claim, summary=summary)
-        # Add to attribute
-        self.qualifiers.append(qualifier)
-
-    def _persist_source(self, source, summary=""):
-        # Persist in repo
-        self._statement.addSource(source._claim, summary=summary)
-        # Add to attribute
-        self.sources.append(source)
+    # # TODO: refactorize to repo
+    # def _persist_qualifier(self, qualifier, summary=""):
+    #     # Persist in repo
+    #     self._statement.addQualifier(qualifier._claim, summary=summary)
+    #     # Add to attribute
+    #     self.qualifiers.append(qualifier)
+    #
+    # def _persist_source(self, source, summary=""):
+    #     # Persist in repo
+    #     self._statement.addSource(source._claim, summary=summary)
+    #     # Add to attribute
+    #     self.sources.append(source)
 
 
 class Item:
