@@ -793,7 +793,7 @@ def check_duplicate(item, new_statement, summary=''):
                         logger.warning(f"Add qualifier ({new_statement_qualifier.property}, "
                                        f"{new_statement_qualifier.value}) to already present equal position value "
                                        f"{new_statement_claim_id} for item {item.id}")
-                        statement.addQualifier(new_statement_qualifier._claim, summary=summary)
+                        statement._persist_qualifier(new_statement_qualifier, summary=summary)
                     else:
                         logger.info(f"Skip already present qualifier ({new_statement_qualifier.property}, "
                                     f"{new_statement_qualifier.value}) to already present equal position value "
@@ -802,7 +802,7 @@ def check_duplicate(item, new_statement, summary=''):
                     new_statement_source = new_statement.sources[0]
                     logger.warning(f"Add source to already present equal position value {new_statement_claim_id} for "
                                    f"item {item.id}")
-                    statement.addSource(new_statement_source._claim, summary=summary)
+                    statement._persist_source(new_statement_source, summary=summary)
                 else:
                     logger.info(f"Nothing added to item {item.id}")
                 return True
