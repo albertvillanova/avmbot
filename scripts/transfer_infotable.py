@@ -813,16 +813,24 @@ def check_duplicate(item, new_statement, summary=''):
                         logger.warning(f"Add qualifier ({new_statement_qualifier.property}, "
                                        f"{new_statement_qualifier.value}) to already present equal position value "
                                        f"{new_statement_claim_id} for item {item.id}")
-                        statement._persist_qualifier(new_statement_qualifier, summary=summary)
+                        # statement._persist_qualifier(new_statement_qualifier, summary=summary)
+                        statement.addQualifier(new_statement_qualifier._claim, summary=summary)
+                        statement.qualifiers[new_statement_qualifier.property].append(new_statement_qualifier._claim)
                     else:
                         logger.info(f"Skip already present qualifier ({new_statement_qualifier.property}, "
                                     f"{new_statement_qualifier.value}) to already present equal position value "
                                     f"{new_statement_claim_id} for item {item.id}")
                 if add_source:
-                    new_statement_source = new_statement.sources[0]
+                    new_statement_sources = new_statement.sources
                     logger.warning(f"Add source to already present equal position value {new_statement_claim_id} for "
                                    f"item {item.id}")
-                    statement._persist_source(new_statement_source, summary=summary)
+                    # statement._persist_source(new_statement_source, summary=summary)
+                    statement.addSources(
+                        [new_statement_source._claim for new_statement_source in new_statement_sources],
+                        summary=summary)
+                    statement.sources.append(
+                        {new_statement_source.property: new_statement_source._claim
+                         for new_statement_source in new_statement_sources})
                 else:
                     logger.info(f"Nothing added to item {item.id}")
                 return True
