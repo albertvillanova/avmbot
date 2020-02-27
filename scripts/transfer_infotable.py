@@ -211,7 +211,7 @@ def get_page_from_link(link, langs=None):
     if not langs:
         langs = ['ca', 'es', 'gl', 'en']
     sites = {'ca': CA_SITE, 'es': ES_SITE, 'gl': GL_SITE, 'en': EN_SITE}
-    logger.info(f"Get page from page link {link}")
+    logger.info(f"Get page from link {link}")
     for lang in langs:
         site = sites[lang]
         page = pw.Page(pw.Link(link, source=site))
@@ -586,19 +586,19 @@ def parse_position_qualifier(key, value):
     # Cases
     if key == 'escut_carrec':
         # Ignore it: this should be in the position item
-        logger.warning(f"Skipped position qualifier because of key 'escut_carrec': value: {value}")
+        logger.warning(f"Skip position qualifier because of key 'escut_carrec': value: {value}")
         return 'CONTINUE'
     elif key == 'inici' or key == 'final':
         if value == "present":
             # Ignore it: this is uninformative
-            logger.warning(f"Skipped position qualifier because of value 'present': key: {key}")
+            logger.warning(f"Skip position qualifier because of value 'present': key: {key}")
             return 'CONTINUE'
         # Date
         claim_value = parse_date(value)
     elif key == 'predecessor' or key == 'successor':
         if value == "-":
             # Ignore it: this is uninformative
-            logger.warning(f"Skipped position qualifier because of value '-': key: {key}")
+            logger.warning(f"Skip position qualifier because of value '-': key: {key}")
             return 'CONTINUE'
         # Item
         logger.info(f"Parse as item")
@@ -768,7 +768,7 @@ def add_statement(item, new_statement, summary=''):
 
 
 def check_duplicate(item, new_statement, summary=''):
-    logger.info("Chew if new statement is duplicated in main item")
+    logger.info("Check if new statement is duplicated in main item")
     # pwb_item = item._item
     # pwb_new_statement = new_statement._statement
     # New statement
