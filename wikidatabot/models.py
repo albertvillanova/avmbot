@@ -153,13 +153,12 @@ class SourceContainer:
 
 class Statement:
     """TODO"""
-    def __init__(self, claim: Claim = None, rank='normal',
-                 qualifiers=None, sources=None):
+    def __init__(self, claim: Claim = None, rank='normal', qualifiers=None, sources=None):
                  # qualifiers: QualifierContainer = None, sources: SourceContainer = None):
         self.claim = claim
         self.rank = rank
-        self.qualifiers = qualifiers
-        self.sources = sources
+        self.qualifiers = qualifiers if qualifiers else []  # TODO: better a dict or a Container
+        self.sources = sources if sources else []  # TODO: better a dict or a Container
         # TODO: refactorize to repo
         self._statement = copy.deepcopy(claim._claim)
         self._set_rank(rank)
