@@ -854,7 +854,7 @@ def remove_positions_from_page(page, infotable_params, summary=""):
         param_name, *_ = DIGIT_REGEX.split(param_key)
         # param_num = param_num[0] if param_num else '1'
         if param_name in INFOTABLE_PARAMS:
-            text = re.sub(fr"^\s*\|\s*{re.escape(param_key)}\s*=\s*{re.escape(param_value)}\s*$\n", '', text, count=1,
+            text = re.sub(fr"^\s*\|\s*{re.escape(param_key)}\s*=\s*{re.escape(param_value)}[^|]*", '', text, count=1,
                           flags=re.MULTILINE)
         # Fix broken-line template
         text = re.sub(r"^\{\{([\w\s']+)\n\}\}", r"{{\1}}", text, count=1, flags=re.MULTILINE)
