@@ -788,7 +788,7 @@ def check_duplicate(item, new_statement, summary=''):
                     else:
                         # Add new qualifiers
                         logger.info(f"No item position qualifiers")
-                        add_qualifiers(statement, new_statement, summary="")
+                        add_qualifiers(statement, new_statement, summary=summary)
                         return True
                 else:
                     # TODO: when to skip? return False
@@ -801,7 +801,7 @@ def check_duplicate(item, new_statement, summary=''):
                                             new_statement_qualifier.value.day == claim.target.day):
                                         # Add new qualifiers
                                         logger.info(f"Equal position values and start time")
-                                        add_qualifiers(statement, new_statement, summary="")
+                                        add_qualifiers(statement, new_statement, summary=summary)
                                         return True
     return False
 
