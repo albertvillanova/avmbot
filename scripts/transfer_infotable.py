@@ -517,8 +517,8 @@ def parse_position_value(position_value):
                     appointed_by_claim = Claim(property=APPOINTED_BY, item=appointed_by_item)
                     logger.info(f"Appointed by claim: {appointed_by_claim.value}")
                     qualifiers.append(appointed_by_claim)
-        if position_text[0].isdigit():
-            match = ORDINAL_REGEX.match(position_text)
+        if position_value[0].isdigit():
+            match = ORDINAL_REGEX.match(position_value)
             if match:
                 series_ordinal_quantity = match.group(1)  # must be value=str
                 series_ordinal_claim = Claim(property=SERIES_ORDINAL, value=series_ordinal_quantity)

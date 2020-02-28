@@ -25,6 +25,7 @@ GOVERNOR_OF_HAWAII = 'Q5589655'
 IRENE_RIGAU_I_OLIVER = 'Q15743807'
 KHEDIVE = 'Q127878'
 KING_OF_JORDAN = 'Q14625123'
+KING_OF_SAUDI_ARABIA = 'Q850168'
 MAYOR_OF_A_CORUNA = 'Q12391919'
 MAYOR_OF_LA_VALL_D_UIXO = 'Q26693191'
 MAYOR_OF_LUXEMBOURG = 'Q85422522'
@@ -183,6 +184,7 @@ class TestScriptTransferInfotable:
          MEMBER_OF_THE_UNITED_STATES_HOUSE_OF_REPRESENTATIVES, []),
         ("[[Secretari d'Estat (Monarquia Absolutista borbònica)|Secretari d'Estat]]",
          SECRETARY_OF_STATE_OF_SPAIN_DURING_THE_OLD_RULE, []),
+        ("1r [[Reis de l'Aràbia Saudita|rei]] de l'[[Aràbia Saudita]]", KING_OF_SAUDI_ARABIA, [(SERIES_ORDINAL, '1')]),
     ])
     def test_parse_position_value(self, position_value, expected_position_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)
