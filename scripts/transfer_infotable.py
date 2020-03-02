@@ -796,9 +796,18 @@ def check_duplicate(item, new_statement, summary=''):
                         if new_statement_qualifier.property == START_TIME:
                             if new_statement_qualifier.property in statement.qualifiers:
                                 for claim in statement.qualifiers[new_statement_qualifier.property]:
-                                    if (new_statement_qualifier.value.year == claim.target.year and
-                                            new_statement_qualifier.value.month == claim.target.month and
-                                            new_statement_qualifier.value.day == claim.target.day):
+                                    # if new_statement_qualifier.value.precision == claim.target.precision:
+                                    # precision = 9  # (year)
+                                    # precision = 11  # (year, month, day)
+                                    if (((new_statement_qualifier.value.precision == 9 or claim.target.precision == 9)
+                                         and (new_statement_qualifier.value.year == claim.target.year)) or
+                                        ((new_statement_qualifier.value.precision == 10 or claim.target.precision == 10)
+                                         and (new_statement_qualifier.value.year == claim.target.year
+                                              and new_statement_qualifier.value.month == claim.target.month)) or
+                                        ((new_statement_qualifier.value.precision == 11 or claim.target.precision == 11)
+                                         and (new_statement_qualifier.value.year == claim.target.year
+                                              and new_statement_qualifier.value.month == claim.target.month
+                                              and new_statement_qualifier.value.day == claim.target.day))):
                                         # Add new qualifiers
                                         logger.info(f"Equal position values and start time")
                                         add_qualifiers(statement, new_statement, summary=summary)
