@@ -5,8 +5,8 @@ from collections import OrderedDict
 
 import pytest
 
-from transfer_infotable import extract_positions, get_item_from_page_link, parse_date, parse_position, \
-    parse_position_qualifier, parse_position_value
+from transfer_infotable import extract_positions, get_fixed_electoral_district, get_item_from_page_link, parse_date, \
+    parse_position, parse_position_qualifier, parse_position_value
 
 # Constants
 # P
@@ -48,6 +48,8 @@ PRIME_MINISTER_OF_PAKISTAN = 'Q735575'
 PRIME_MINISTER_OF_THAILAND = 'Q12376089'
 SECRETARY_OF_STATE_OF_SPAIN_DURING_THE_OLD_RULE = 'Q2417901'
 SULTAN_OF_MOROCCO = 'Q14566713'
+TARRAGONA_CONSTITUENCY_OF_CONGRESS_OF_SPAIN = 'Q7686643'
+TARRAGONA_CONSTITUENCY_OF_PARLIAMENT_OF_CATALONIA = 'Q24932383'
 
 
 class TestScriptTransferInfotable:
@@ -83,6 +85,18 @@ class TestScriptTransferInfotable:
         assert 'carrec' in positions[2]
         assert 'carrec' in positions[1]
         assert positions[2]['carrec'] == positions[1]['carrec']
+
+    @pytest.mark.parametrize("electoral_district, position_value_id, expected_item_id", [
+        ("[[província de Tarragona|Tarragona]]", MEMBER_OF_THE_PARLIAMENT_OF_CATALONIA,
+         TARRAGONA_CONSTITUENCY_OF_PARLIAMENT_OF_CATALONIA),
+        ("Tarragona", MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN, TARRAGONA_CONSTITUENCY_OF_CONGRESS_OF_SPAIN)
+    ])
+    def test_get_fixed_electoral_district(self, electoral_district, position_value_id, expected_item_id):
+        item = get_fixed_electoral_district(electoral_district, position_value_id=position_value_id)
+        if item:
+            assert item.id == expected_item_id
+        else:  # is None
+            assert item is expected_item_id
 
     @pytest.mark.parametrize("link, expected_item_id", [
         ("Irene Rigau i Oliver", IRENE_RIGAU_I_OLIVER),  # from ca.wikipedia
@@ -130,19 +144,21 @@ class TestScriptTransferInfotable:
         else:
             assert qualifiers == expected_qualifiers
 
-    @pytest.mark.parametrize("key, value, expected_property, expected_value", [
-        ("inici", "[[17 de febrer]] de [[2011]]", START_TIME, {'year': 2011, 'month': 2, 'day': 17}),
-        ("final", "[[17 de febrer]] de [[2011]]", END_TIME, {'year': 2011, 'month': 2, 'day': 17}),
-        ("predecessor", "[[Irene Rigau i Oliver]]", REPLACES, {'id': IRENE_RIGAU_I_OLIVER}),
-        ("successor", "[[Irene Rigau i Oliver]]", REPLACED_BY, {'id': IRENE_RIGAU_I_OLIVER}),
-        ("successor", "-", None, {}),
-        ("Circumscripció", "[[circumscripció electoral de Barcelona|Barcelona]]", ELECTORAL_DISTRICT,
+    @pytest.mark.parametrize("key, value, position_value_id, expected_property, expected_value", [
+        ("inici", "[[17 de febrer]] de [[2011]]", '', START_TIME, {'year': 2011, 'month': 2, 'day': 17}),
+        ("final", "[[17 de febrer]] de [[2011]]", '', END_TIME, {'year': 2011, 'month': 2, 'day': 17}),
+        ("predecessor", "[[Irene Rigau i Oliver]]", '', REPLACES, {'id': IRENE_RIGAU_I_OLIVER}),
+        ("successor", "[[Irene Rigau i Oliver]]", '', REPLACED_BY, {'id': IRENE_RIGAU_I_OLIVER}),
+        ("successor", "-", '', None, {}),
+        ("Circumscripció", "[[circumscripció electoral de Barcelona|Barcelona]]", '', ELECTORAL_DISTRICT,
          {'id': 'Q28496610'}),
-        ("Proclamació", "[[30 de novembre]] de [[1822]]", START_TIME, {'year': 1822, 'month': 11, 'day': 30}),
-        ("Circumscripció", "Alacant", ELECTORAL_DISTRICT, {'id': 'Q939475'}),
+        ("Proclamació", "[[30 de novembre]] de [[1822]]", '', START_TIME, {'year': 1822, 'month': 11, 'day': 30}),
+        ("Circumscripció", "Alacant", '', ELECTORAL_DISTRICT, {'id': 'Q939475'}),
+        ("Circumscripció", "[[província de Tarragona|Tarragona]]", MEMBER_OF_THE_PARLIAMENT_OF_CATALONIA,
+         ELECTORAL_DISTRICT, {'id': 'Q24932383'}),
     ])
-    def test_parse_position_qualifier(self, key, value, expected_property, expected_value):
-        qualifier_claim = parse_position_qualifier(key, value)
+    def test_parse_position_qualifier(self, key, value, position_value_id, expected_property, expected_value):
+        qualifier_claim = parse_position_qualifier(key, value, position_value_id=position_value_id)
         qualifier_claim = None if qualifier_claim == 'CONTINUE' else qualifier_claim
         if qualifier_claim:
             assert qualifier_claim.property == expected_property
