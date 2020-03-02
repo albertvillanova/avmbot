@@ -815,20 +815,46 @@ def add_qualifiers(statement, new_statement, summary=""):
     add_source = False
     for new_statement_qualifier in new_statement.qualifiers:
         add_qualifier = True
+        change_qualifier = False
         for qualifier_pid in statement.qualifiers:
             if new_statement_qualifier.property == qualifier_pid:
                 add_qualifier = False
-                # for claim in qualifier[new_statement_qualifier.property]:
+                # for claim in statement.qualifiers[new_statement_qualifier.property]:
                 #     if new_statement_qualifier.value.id == claim.target.id:
                 #         add_qualifier = False
-        if add_qualifier:
+                for i_claim, claim in enumerate(statement.qualifiers[new_statement_qualifier.property]):
+                    if (hasattr(claim.target, 'precision') and
+                            claim.target.precision < new_statement_qualifier.value.precision):
+                        if ((claim.target.precision == 9 and
+                             claim.target.year == new_statement_qualifier.value.year) or
+                                (claim.target.precision == 10 and
+                                 claim.target.year == new_statement_qualifier.value.year and
+                                 claim.target.month == new_statement_qualifier.value.month)):
+                            change_qualifier = True
+                            i_change_qualifier = i_claim
+                            hash_change_qualifier = claim.hash
+                        # elif (claim.target.precision == 10 and claim.target.year == new_statement_qualifier.value.year
+                        #         and claim.target.month == new_statement_qualifier.value.month):
+                        #     edit_qualifier = True
+                        #     i_edit_qualifier = i_claim
+
+        if add_qualifier or change_qualifier:
             add_source = True
-            logger.warning(f"Add qualifier ({new_statement_qualifier.property}, "
-                           f"{new_statement_qualifier.value}) to already present equal position value "
-                           f"{new_statement_claim_id}")  # for item {item.id}")
-            # statement._persist_qualifier(new_statement_qualifier, summary=summary)
-            statement.addQualifier(new_statement_qualifier._claim, summary=summary)
-            statement.qualifiers[new_statement_qualifier.property].append(new_statement_qualifier._claim)
+            if add_qualifier:
+                logger.warning(f"Add qualifier ({new_statement_qualifier.property}, "
+                               f"{new_statement_qualifier.value}) to already present equal position value "
+                               f"{new_statement_claim_id}")  # for item {item.id}")
+                # statement._persist_qualifier(new_statement_qualifier, summary=summary)
+                statement.addQualifier(new_statement_qualifier._claim, new=True, summary=summary)
+                statement.qualifiers[new_statement_qualifier.property].append(new_statement_qualifier._claim)
+            elif change_qualifier:
+                logger.warning(f"Change qualifier ({new_statement_qualifier.property}, "
+                               f"{new_statement_qualifier.value}) to already present equal position value "
+                               f"{new_statement_claim_id}")  # for item {item.id}")
+                new_statement_qualifier._claim.hash = hash_change_qualifier
+                statement.addQualifier(new_statement_qualifier._claim, new=False, summary=summary)
+                statement.qualifiers[new_statement_qualifier.property][i_change_qualifier] = \
+                    new_statement_qualifier._claim
         else:
             logger.info(f"Skip already present qualifier ({new_statement_qualifier.property}, "
                         f"{new_statement_qualifier.value}) to already present equal position value "
