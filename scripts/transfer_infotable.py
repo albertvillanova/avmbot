@@ -624,22 +624,17 @@ def parse_position_qualifier(key, value):
         matches = LINK_REGEX.findall(value)
         if matches:
             claim_link = matches[0][0].strip()
-            claim_item = get_item_from_page_link(claim_link)
-            if claim_item:
-                claim_value = {'item': claim_item}
-                claim_property = ELECTORAL_DISTRICT
         else:
             if value.lower()[0] in ['a', 'e', 'i', 'o', 'u']:
                 claim_link = f"Circumscripció electoral d'{value}"
             else:
                 claim_link = f"Circumscripció electoral de {value}"
-            claim_item = get_item_from_page_link(claim_link, langs=['ca'])
-            if claim_item:
-                claim_value = {'item': claim_item}
-                claim_property = ELECTORAL_DISTRICT
-            else:
-                logger.error(f"Failed parsing as item: {value}")
-                return
+        claim_item = get_item_from_page_link(claim_link, langs=['ca'])
+        if not claim_item:
+            logger.error(f"Failed parsing as item: {value}")
+            return
+        claim_value = {'item': claim_item}
+        claim_property = ELECTORAL_DISTRICT
     else:
         # TODO: ordre, junt_a, nominat, designat
         logger.error(f"Unforeseen case for position qualifier: {key}: {value}")
