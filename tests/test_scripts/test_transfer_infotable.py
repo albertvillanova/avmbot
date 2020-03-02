@@ -143,6 +143,7 @@ class TestScriptTransferInfotable:
     ])
     def test_parse_position_qualifier(self, key, value, expected_property, expected_value):
         qualifier_claim = parse_position_qualifier(key, value)
+        qualifier_claim = None if qualifier_claim == 'CONTINUE' else qualifier_claim
         if qualifier_claim:
             assert qualifier_claim.property == expected_property
             for attr, value in expected_value.items():
