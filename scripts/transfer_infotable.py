@@ -75,6 +75,9 @@ HAS_PARTS_OF_THE_CLASS = 'P2670'
 IS_A_LIST_OF = 'P360'
 HUMAN = 'Q5'
 
+# Utils to fix electoral district
+MEMBER_OF_PARLIAMENT_OF_BALEARIC_ISLANDS = 'Q28137076'
+MEMBER_OF_CORTS_VALENCIANES = 'Q21609684'
 # Congress of Deputies
 MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN = 'Q18171345'
 # Parliament of Catalonia
@@ -82,6 +85,7 @@ MEMBER_OF_PARLIAMENT_OF_CATALONIA = 'Q18714088'
 PRESIDENT_OF_PARLIAMENT_OF_CATALONIA = 'Q26000995'
 # Senate
 MEMBER_OF_THE_SENATE_OF_SPAIN = 'Q19323171'
+
 #
 MINISTER_OF_THE_NAVY_OF_SPAIN = 'Q15895305'
 
@@ -130,8 +134,143 @@ AMBASSADOR_OF_TO = {
 }
 SULTAN_OF_MOROCCO = 'Q14566713'
 
-POSITION_MAPPING = {
+CONSTITUENCY_OF_CONGRESS_OF_SPAIN = {
+    "Àlaba": 'Q8076636',
+    "Alacant": 'Q939475',
+    "Albacete": 'Q21402519',
+    "Almeria": 'Q4733797',
+    "Astúries": 'Q4811764',
+    "Àvila": 'Q8077017',
+    "Badajoz": 'Q4840525',
+    "Illes Balears": 'Q4850673',
+    "Barcelona": 'Q4859840',
+    "Biscaia": 'Q4917218',
+    "Burgos": 'Q4998668',
+    "Càceres": 'Q5202311',
+    "Cadis": 'Q2887470',
+    "Cantàbria": 'Q5033517',
+    "Castelló": 'Q5049705',
+    "Ceuta": 'Q5065729',
+    "Ciudad Real": 'Q5124161',
+    "Conca": 'Q5192583',
+    "Còrdova": 'Q5202717',
+    "la Corunya": 'Q4656117',
+    "Girona": 'Q5564804',
+    "Granada": 'Q5594085',
+    "Guadalajara": 'Q5613179',
+    "Guipúscoa": 'Q5564085',
+    "Huelva": 'Q8346385',
+    "Jaén": 'Q6168504',
+    "Lleida": 'Q6661991',
+    "Lleó": 'Q6538224',
+    "Lugo": 'Q6699826',
+    "Madrid": 'Q6728617',
+    "Màlaga": 'Q5680327',
+    "Melilla": 'Q6812414',
+    "Múrcia": 'Q6937568',
+    "Navarra": 'Q6982118',
+    "Osca": 'Q5929316',
+    "Ourense": 'Q7111276',
+    "Palència": 'Q7127111',
+    "Pontevedra": 'Q7228193',
+    "Las Palmas": 'Q6492379',
+    "La Rioja": 'Q6464884',
+    "Salamanca": 'Q19632195',
+    "Santa Cruz de Tenerife": 'Q7419451',
+    "Saragossa": 'Q8066573',
+    "Segòvia": 'Q7446308',
+    "Sevilla": 'Q7458064',
+    "Sòria": 'Q7563479',
+    "Tarragona": 'Q7686643',
+    "Terol": 'Q7705300',
+    "Toledo": 'Q7814141',
+    "València": 'Q4888883',
+    "Valladolid": 'Q7911798',
+    "Zamora": 'Q8065895',
+}
 
+CONSTITUENCY_OF_SENATE_OF_SPAIN = {
+    "Àlaba": 'Q58213992',
+    "Alacant": 'Q58214005',
+    "Albacete": 'Q58213998',
+    "Almeria": 'Q58214012',
+    "Astúries": 'Q58214016',
+    "Àvila": 'Q58136360',
+    "Badajoz": 'Q58214023',
+    "Barcelona": 'Q58214028',
+    "Biscaia": 'Q58214031',
+    "Burgos": 'Q58214034',
+    "Càceres": 'Q58214040',
+    "Cadis": 'Q58214045',
+    "Cantàbria": 'Q58214049',
+    "Castelló": 'Q58214058',
+    "Ceuta": 'Q58214063',
+    "Ciudad Real": 'Q58214072',
+    "Conca": 'Q58214085',
+    "Còrdova": 'Q58214078',
+    "la Corunya": 'Q58213651',
+    "Eivissa-Formentera": 'Q58214093',
+    "Girona": 'Q58214114',
+    "Granada": 'Q58214123',
+    "Guadalajara": 'Q58214130',
+    "Guipúscoa": 'Q58214104',
+    "Huelva": 'Q58214140',
+    "Jaén": 'Q58214143',
+    "Lleida": 'Q58214164',
+    "Lleó": 'Q58214155',
+    "Lugo": 'Q58214170',
+    "Madrid": 'Q58137354',
+    "Màlaga": 'Q58214180',
+    "Mallorca": 'Q58214191',
+    "Melilla": 'Q58214198',
+    "Menorca": 'Q21480830',
+    "Múrcia": 'Q58214212',
+    "Navarra": 'Q58214221',
+    "Osca": 'Q75170261',
+    "Ourense": 'Q58214230',
+    "Palència": 'Q58214244',
+    "La Palma": 'Q21480772',
+    "Pontevedra": 'Q58214253',
+    "La Rioja": 'Q58214151',
+    "Salamanca": 'Q58214261',
+    "Saragossa": 'Q58214320',
+    "Segòvia": 'Q58214265',
+    "Sevilla": 'Q58214271',
+    "Sòria": 'Q58214279',
+    "Tarragona": 'Q58214284',
+    "Terol": 'Q58214292',
+    "Toledo": 'Q58214299',
+    "València": 'Q58214307',
+    "Valladolid": 'Q58135859',
+    "Zamora": 'Q58214314',
+}
+
+CONSTITUENCY_OF_CORTS_VALENCIANES = {
+    "Alacant": 'Q30601105',
+    "Castelló": 'Q30601107',
+    "València": 'Q30601109',
+}
+
+CONSTITUENCY_OF_PARLIAMENT_OF_BALEARIC_ISLANDS = {
+    "Formentera": 'Q30600685',
+    "Eivissa": 'Q30600686',
+    "Mallorca": 'Q30600688',
+    "Menorca": 'Q30600684',
+}
+
+CONSTITUENCY_OF_PARLIAMENT_OF_CATALONIA = {
+    "Barcelona": 'Q28496610',
+    "Girona": 'Q24932380',
+    "Lleida": 'Q24932382',
+    "Tarragona": 'Q24932383',
+}
+
+CONSTITUENCY_REPRESENTED_BY = {
+    MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN: CONSTITUENCY_OF_CONGRESS_OF_SPAIN,
+    MEMBER_OF_THE_SENATE_OF_SPAIN: CONSTITUENCY_OF_SENATE_OF_SPAIN,
+    MEMBER_OF_PARLIAMENT_OF_BALEARIC_ISLANDS: CONSTITUENCY_OF_PARLIAMENT_OF_BALEARIC_ISLANDS,
+    MEMBER_OF_PARLIAMENT_OF_CATALONIA: CONSTITUENCY_OF_PARLIAMENT_OF_CATALONIA,
+    MEMBER_OF_CORTS_VALENCIANES: CONSTITUENCY_OF_CORTS_VALENCIANES,
 }
 
 
