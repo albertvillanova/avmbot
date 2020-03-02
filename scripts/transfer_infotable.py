@@ -1069,11 +1069,19 @@ def add_qualifiers(statement, new_statement, summary=""):
                     new_statement_qualifier._claim
         else:
             logger.info(f"Skip already present qualifier ({new_statement_qualifier.property}, "
-                        f"{new_statement_qualifier.value}) to already present equal position value "
+                        f"{new_statement_qualifier_value}) to already present equal position value "
                         f"{new_statement_claim_id}")  # for item {item.id}")
     if add_source:
         new_statement_sources = new_statement.sources
         logger.warning(f"Add source to already present equal position value {new_statement_claim_id}")
+        # Check if new source already exists
+        for source in statement.sources:
+            if IMPORTED_FROM_WIKIMEDIA_PROJECT in source:
+                for claim in source[IMPORTED_FROM_WIKIMEDIA_PROJECT]:
+                    if claim.target.id == CATALAN_WIKIPEDIA:
+                        logger.info(f"Skip adding source because already present")
+                        return
+        # Add source
         # statement._persist_source(new_statement_source, summary=summary)
         statement.addSources(
             [new_statement_source._claim for new_statement_source in new_statement_sources],
