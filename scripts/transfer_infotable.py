@@ -452,7 +452,10 @@ def parse_position_value(position_value):
             position_item = None
         # Page link
         elif position_text.lower().startswith("[["):
-            position_item = get_item_from_page(position_page)
+            if position_page_title.lower().startswith("llista"):
+                position_item = get_list_of(position_page)
+            else:
+                position_item = get_item_from_page(position_page)
         # alcalde
         elif position_text.lower().startswith("alcalde"):
             if position_page_title.lower().startswith("alcalde"):
