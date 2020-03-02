@@ -71,6 +71,10 @@ OFFICE_HELD_BY_HEAD_OF_STATE = 'P1906'
 HAS_PART = 'P527'
 HAS_PARTS_OF_THE_CLASS = 'P2670'
 
+# Utils to find position from list
+IS_A_LIST_OF = 'P360'
+HUMAN = 'Q5'
+
 # Congress of Deputies
 MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN = 'Q18171345'
 # Parliament of Catalonia
@@ -719,6 +723,37 @@ def parse_position(position):
             continue
         qualifiers.append(qualifier_claim)
     return position_claim, qualifiers
+
+
+def get_list_of(list_page):
+    logger.info(f"Get list of, from {list_page}")
+    list_item = get_item_from_page(list_page)
+    if not list_item:
+        logger.error(f"No list item found from {list_page}")
+        return
+    is_a_list_of_statements = list_item.claims.get(IS_A_LIST_OF)
+    if not is_a_list_of_statements:
+        logger.error(f"No list of statement found for list {list_page}")
+        return
+    if len(is_a_list_of_statements) != 1:
+        logger.error(f"More than one list of statement found for list {list_page}")
+        return
+    is_a_list_of_item = is_a_list_of_statements[0].target
+    if is_a_list_of_item.id == HUMAN:
+        logger.info(f"Get qualifier: found list of HUMAN for list {list_page}")
+        is_a_list_of_item_qualifiers = is_a_list_of_statements[0].qualifiers
+        if len(is_a_list_of_item_qualifiers) != 1:
+            logger.error(f"More than one qualifier found for list of HUMAN, for list {list_page}")
+            return
+        is_a_list_of_item_qualifier_pid, is_a_list_of_item_qualifier_claims = \
+            list(is_a_list_of_statements[0].qualifiers.items())[0]
+        if len(is_a_list_of_item_qualifier_claims) != 1:
+            logger.error(f"More than one qualifier claim found for list of HUMAN qualifier property "
+                         f"{is_a_list_of_item_qualifier_pid}, for list {list_page}")
+            return
+        is_a_list_of_item = is_a_list_of_item_qualifier_claims[0].target
+    logger.info(f"Found list of {is_a_list_of_item} for list {list_page}")
+    return is_a_list_of_item
 
 
 def create_position_statements(positions):
