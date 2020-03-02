@@ -19,6 +19,7 @@ from collections import defaultdict
 
 import pywikibot as pw
 from pywikibot import pagegenerators as pg
+import wikidatabot
 from wikidatabot.models import Claim, Statement, Item
 
 
@@ -386,6 +387,17 @@ def get_item_from_page_link(link, langs=None):
         logger.error(f"No Wikidata item because no Wikipedia page from page link: {link}")
         return
     item = get_item_from_page(page)
+    return item
+
+
+def get_item_from_id(item_id):
+    logger.info(f"Get item from id {item_id}")
+    try:
+        item = pw.ItemPage(wikidatabot.repo, item_id)
+    except pw.NoPage:
+        logger.error(f"No Wikidata item from id {item_id}")
+        return
+    logger.info(f"Found Wikidata item from id {item_id}")
     return item
 
 
