@@ -802,6 +802,32 @@ def parse_position_qualifier(key, value):
     return qualifier_claim
 
 
+def get_fixed_electoral_district(electoral_district, position_value_id=''):
+    logger.info(f"Parse and fix electoral district")
+    matches = LINK_REGEX.findall(electoral_district)
+    if matches:
+        electoral_district_link = matches[0][0].strip()
+        electoral_district_text = matches[0][1].strip()
+    else:
+        electoral_district_text = electoral_district
+    # Specific
+    if position_value_id and position_value_id in CONSTITUENCY_REPRESENTED_BY:
+        electoral_district_id = CONSTITUENCY_REPRESENTED_BY[position_value_id].get(electoral_district_text)
+        if electoral_district_id:
+            logger.info(f"Found electoral district {electoral_district_id} in specific constituency list")
+            electoral_district_item = get_item_from_id(electoral_district_id)
+            if electoral_district_item:
+                return electoral_district_item
+    # Generic
+    if not matches:
+        if electoral_district_text.lower()[0] in ['a', 'e', 'i', 'o', 'u']:
+            electoral_district_link = f"Circumscripció electoral d'{electoral_district_text}"
+        else:
+            electoral_district_link = f"Circumscripció electoral de {electoral_district_text}"
+    electoral_district_item = get_item_from_page_link(electoral_district_link, langs=['ca'])
+    return electoral_district_item
+
+
 def parse_position(position):
     logger.info(f"Parse position: {position}")
     if 'carrec' not in position:
