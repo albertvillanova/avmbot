@@ -735,7 +735,7 @@ def parse_position_value(position_value):
     return position_claim, qualifiers
 
 
-def parse_position_qualifier(key, value):
+def parse_position_qualifier(key, value, position_value_id=''):
     logger.info(f"Parse position qualifier: {key}: {value}")
     claim_value = None
     # Equivalences
@@ -772,15 +772,7 @@ def parse_position_qualifier(key, value):
     elif key.lower() == "circumscripció":
         # Item
         logger.info(f"Parse as item")
-        matches = LINK_REGEX.findall(value)
-        if matches:
-            claim_link = matches[0][0].strip()
-        else:
-            if value.lower()[0] in ['a', 'e', 'i', 'o', 'u']:
-                claim_link = f"Circumscripció electoral d'{value}"
-            else:
-                claim_link = f"Circumscripció electoral de {value}"
-        claim_item = get_item_from_page_link(claim_link, langs=['ca'])
+        claim_item = get_fixed_electoral_district(value, position_value_id=position_value_id)
         if not claim_item:
             logger.error(f"Failed parsing as item: {value}")
             return
@@ -855,7 +847,8 @@ def parse_position(position):
                 continue
             name_value = position[name_key]
             logger.info(f"Parse k_(label, name) pair: ({label_value}, {name_value})")
-            qualifier_claim = parse_position_qualifier(label_value, name_value)
+            qualifier_claim = parse_position_qualifier(label_value, name_value,
+                                                       position_value_id=position_claim.value.id)
         elif position_key == 'k_nom':
             name_key = position_key
             name_value = position_value
