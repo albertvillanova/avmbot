@@ -45,6 +45,7 @@ PRESIDENT_OF_THE_COUNCIL_OF_CASTILE = 'Q6360109'
 PRESIDENT_OF_MALTA = 'Q796593'
 PRESIDENT_OF_THE_PALESTINIAN_NATIONAL_AUTHORITY = 'Q2336111'
 PRIME_MINISTER_OF_PAKISTAN = 'Q735575'
+PRIME_MINISTER_OF_THAILAND = 'Q12376089'
 SECRETARY_OF_STATE_OF_SPAIN_DURING_THE_OLD_RULE = 'Q2417901'
 SULTAN_OF_MOROCCO = 'Q14566713'
 
@@ -185,6 +186,7 @@ class TestScriptTransferInfotable:
         ("[[Secretari d'Estat (Monarquia Absolutista borbònica)|Secretari d'Estat]]",
          SECRETARY_OF_STATE_OF_SPAIN_DURING_THE_OLD_RULE, []),
         ("1r [[Reis de l'Aràbia Saudita|rei]] de l'[[Aràbia Saudita]]", KING_OF_SAUDI_ARABIA, [(SERIES_ORDINAL, '1')]),
+        ("[[Primer ministre de Tailàndia]]", PRIME_MINISTER_OF_THAILAND, []),
     ])
     def test_parse_position_value(self, position_value, expected_position_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)
