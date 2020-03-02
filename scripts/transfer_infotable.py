@@ -1026,6 +1026,16 @@ def add_qualifiers(statement, new_statement, summary=""):
     #
     add_source = False
     for new_statement_qualifier in new_statement.qualifiers:
+        if hasattr(new_statement_qualifier.value, 'id'):
+            new_statement_qualifier_value = new_statement_qualifier.value.id
+        elif hasattr(new_statement_qualifier.value, 'precision'):
+            new_statement_qualifier_value = {'year': new_statement_qualifier.value.year}
+            if new_statement_qualifier.value.precision >= 10:
+                new_statement_qualifier_value['month'] = new_statement_qualifier.value.month
+            if new_statement_qualifier.value.precision >= 11:
+                new_statement_qualifier_value['day'] = new_statement_qualifier.value.day
+        else:
+            new_statement_qualifier_value = new_statement_qualifier.value
         add_qualifier = True
         change_qualifier = False
         for qualifier_pid in statement.qualifiers:
@@ -1054,14 +1064,14 @@ def add_qualifiers(statement, new_statement, summary=""):
             add_source = True
             if add_qualifier:
                 logger.warning(f"Add qualifier ({new_statement_qualifier.property}, "
-                               f"{new_statement_qualifier.value}) to already present equal position value "
+                               f"{new_statement_qualifier_value}) to already present equal position value "
                                f"{new_statement_claim_id}")  # for item {item.id}")
                 # statement._persist_qualifier(new_statement_qualifier, summary=summary)
                 statement.addQualifier(new_statement_qualifier._claim, new=True, summary=summary)
                 statement.qualifiers[new_statement_qualifier.property].append(new_statement_qualifier._claim)
             elif change_qualifier:
                 logger.warning(f"Change qualifier ({new_statement_qualifier.property}, "
-                               f"{new_statement_qualifier.value}) to already present equal position value "
+                               f"{new_statement_qualifier_value}) to already present equal position value "
                                f"{new_statement_claim_id}")  # for item {item.id}")
                 new_statement_qualifier._claim.hash = hash_change_qualifier
                 statement.addQualifier(new_statement_qualifier._claim, new=False, summary=summary)
