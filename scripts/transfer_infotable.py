@@ -908,6 +908,8 @@ def get_fixed_electoral_district(electoral_district, position_value_id=''):
     if matches:
         electoral_district_link = matches[0][0].strip()
         electoral_district_text = matches[0][1].strip()
+        if not electoral_district_text:
+            electoral_district_text = electoral_district_link
     else:
         electoral_district_text = electoral_district
     # Specific

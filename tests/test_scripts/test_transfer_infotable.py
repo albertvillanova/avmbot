@@ -26,6 +26,7 @@ IRENE_RIGAU_I_OLIVER = 'Q15743807'
 KHEDIVE = 'Q127878'
 KING_OF_JORDAN = 'Q14625123'
 KING_OF_SAUDI_ARABIA = 'Q850168'
+LLEIDA_CONSTITUENCY_OF_CONGRESS_OF_SPAIN = 'Q6661991'
 MAYOR_OF_A_CORUNA = 'Q12391919'
 MAYOR_OF_LA_VALL_D_UIXO = 'Q26693191'
 MAYOR_OF_LUXEMBOURG = 'Q85422522'
@@ -91,7 +92,8 @@ class TestScriptTransferInfotable:
     @pytest.mark.parametrize("electoral_district, position_value_id, expected_item_id", [
         ("[[província de Tarragona|Tarragona]]", MEMBER_OF_THE_PARLIAMENT_OF_CATALONIA,
          TARRAGONA_CONSTITUENCY_OF_PARLIAMENT_OF_CATALONIA),
-        ("Tarragona", MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN, TARRAGONA_CONSTITUENCY_OF_CONGRESS_OF_SPAIN)
+        ("Tarragona", MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN, TARRAGONA_CONSTITUENCY_OF_CONGRESS_OF_SPAIN),
+        ("[[Lleida]]", MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN, LLEIDA_CONSTITUENCY_OF_CONGRESS_OF_SPAIN),
     ])
     def test_get_fixed_electoral_district(self, electoral_district, position_value_id, expected_item_id):
         item = get_fixed_electoral_district(electoral_district, position_value_id=position_value_id)
