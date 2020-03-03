@@ -1000,7 +1000,7 @@ def parse_position(position):
             label_value = position_value
             name_key = 'k_nom'  # position_key.replace('_etiqueta', '_nom')
             if name_key not in position:
-                logger.error(
+                logger.warning(
                     f"Missing member of k_(label, name) pair: no name {name_key} for label {label_key}: {label_value}")
                 continue
             name_value = position[name_key]
@@ -1012,7 +1012,7 @@ def parse_position(position):
             name_value = position_value
             label_key = 'k_etiqueta'  # position_key.replace('_nom', '_etiqueta')
             if label_key not in position:
-                logger.error(
+                logger.warning(
                     f"Missing member of k_(label, name) pair: no label {label_key} for name {name_key}: {name_value}")
             continue # already parsed
         # _etiqueta
@@ -1021,19 +1021,20 @@ def parse_position(position):
             label_value = position_value
             name_key = position_key.replace('_etiqueta', '_nom')
             if name_key not in position:
-                logger.error(
+                logger.warning(
                     f"Missing member of (label, name) pair: no name {name_key} for label {label_key}: {label_value}")
                 continue
             # TODO: parse pair
             name_value = position[name_key]
-            logger.error(f"TODO: Parse (label, name) pair ({label_key}, {name_key}): ({label_value}, {name_value})")
-            return None, []
+            logger.warning(f"TODO: Parse (label, name) pair ({label_key}, {name_key}): ({label_value}, {name_value})")
+            # return None, []
+            continue
         elif '_nom' in position_key:
             name_key = position_key
             name_value = position_value
             label_key = position_key.replace('_nom', '_etiqueta')
             if label_key not in position:
-                logger.error(
+                logger.warning(
                     f"Missing member of (label, name) pair: no label {label_key} for name {name_key}: {name_value}")
             continue  # already parsed
         # rest
