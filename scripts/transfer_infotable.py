@@ -884,7 +884,7 @@ def parse_position_qualifier(key, value, position_value_id=''):
     # Equivalences
     if key.lower() == "proclamació":
         key = "inici"
-    # Cases
+    # Standard cases
     if key == 'escut_carrec':
         # Ignore it: this should be in the position item
         logger.warning(f"Skip position qualifier because of key 'escut_carrec': value: {value}")
@@ -912,6 +912,19 @@ def parse_position_qualifier(key, value, position_value_id=''):
             claim_item = get_item_from_page_link(claim_link)
             if claim_item:
                 claim_value = {'item': claim_item}
+    elif key == 'junt_a':
+        # Item
+        logger.info(f"Parse as item")
+        matches = LINK_REGEX.findall(value)
+        if not matches:
+            logger.error(f"Failed parsing as item: {value}")
+            return
+        else:
+            claim_link = matches[0][0].strip()
+            claim_item = get_item_from_page_link(claim_link)
+            if claim_item:
+                claim_value = {'item': claim_item}
+    # Additional cases
     elif key.lower() == "circumscripció":
         # Item
         logger.info(f"Parse as item")
