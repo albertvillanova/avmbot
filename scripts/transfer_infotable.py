@@ -135,6 +135,15 @@ AMBASSADOR_OF_TO = {
 }
 SULTAN_OF_MOROCCO = 'Q14566713'
 
+COUNTY_OF_CARCASSONNE,  COUNT_OF_CARCASSONNE = ('Q38697063', 'Q38697206')
+KINGDOM_OF_ISRAEL, KING_OF_ISRAEL = ('Q230407', 'Q26835654')
+KINGDOM_OF_JUDAH, KING_OF_JUDAH = ('Q48685', 'Q10550167')
+FIX_POSITION_VALUE = {
+    COUNTY_OF_CARCASSONNE: COUNT_OF_CARCASSONNE,
+    KINGDOM_OF_ISRAEL: KING_OF_ISRAEL,
+    KINGDOM_OF_JUDAH: KING_OF_JUDAH,
+}
+
 CONSTITUENCY_OF_CONGRESS_OF_SPAIN = {
     "Àlaba": 'Q8076636',
     "Alacant": 'Q939475',
@@ -730,6 +739,9 @@ def parse_position_value(position_value):
         if not position_item:
             logger.error(f"Failed parsing position value: {position_value}")
     if position_item:
+        position_item_id = position_item if isinstance(position_item, str) else position_item.id
+        if position_item_id in FIX_POSITION_VALUE:
+            position_item = FIX_POSITION_VALUE[position_item_id]
         position_claim = Claim(property=POSITION_HELD, item=position_item)
         logger.info(f"Position held claim: {position_claim.value}")
     return position_claim, qualifiers
