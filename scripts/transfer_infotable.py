@@ -450,10 +450,25 @@ def extract_positions(template_params):
     if not positions:
         return []
     positions = [positions[position_num] for position_num in sorted(positions)]
-    # Propagate 'carrec'
+    # Propagate values
     for i, position in enumerate(positions):
+        # Propagate 'carrec'
         if 'carrec' not in position:
             position['carrec'] = positions[i - 1]['carrec']
+        # Propagate year from final to inici
+        if 'inici' in position and 'final' in position:
+            # kaka
+            inici = position['inici']
+            if not inici.startswith('{{'):
+                inici = inici.replace('[[', '').replace(']]', '')
+                inici_parts = PREPOSITION_REGEX.split(inici)[::-1]
+                if inici_parts[0].isalpha():
+                    final = position['final']
+                    if not final.startswith('{{'):
+                        final = final.replace('[[', '').replace(']]', '')
+                        final_parts = PREPOSITION_REGEX.split(final)[::-1]
+                        if not final_parts[0].isalpha():
+                            position['inici'] += " de " + final_parts[0]
     return positions
 
 
@@ -653,7 +668,7 @@ def parse_date(value):
     else:
         value = value.replace('[[', '').replace(']]', '')
         date_parts = PREPOSITION_REGEX.split(value)[::-1]
-    if len(date_parts) < 1 or len(date_parts) > 3:
+    if len(date_parts) < 1 or len(date_parts) > 3 or date_parts[0].isalpha():  # ["març", 13]
         logger.error(f"Failed parsing date: {value}")
         return
     date_parts = [int(part) if part.isdigit() else TO_MONTH_NUMBER[part] for part in date_parts
