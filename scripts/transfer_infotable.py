@@ -788,6 +788,13 @@ def parse_position_value(position_value):
                     qualifier_property = DIOCESE
                     qualifier_link = matched_link[0].strip()
                     qualifier_item = get_item_from_page_link(qualifier_link)
+                if len(matched_links) == 2 and " per " in position_value and ('diputa' in position_value.lower()
+                                                                              or 'senador' in position_value.lower()):
+                    logger.info(f"Parse electoral district")
+                    qualifier_property = ELECTORAL_DISTRICT
+                    qualifier_link = matched_link[0].strip()
+                    position_item_id = position_item if isinstance(position_item, str) else position_item.id
+                    qualifier_item = get_fixed_electoral_district(qualifier_link, position_value_id=position_item_id)
                 if qualifier_item:
                     qualifier_claim = Claim(property=qualifier_property, item=qualifier_item)
                     logger.info(f"Qualifier claim: {qualifier_claim.value}")

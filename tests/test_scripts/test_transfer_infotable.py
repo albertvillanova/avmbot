@@ -17,6 +17,7 @@ REPLACES = 'P1365'
 SERIES_ORDINAL = 'P1545'
 START_TIME = 'P580'
 # Q
+ALAVA_CONSTITUENCY_OF_SENATE_OF_SPAIN = 'Q58213992'
 AMBASSADOR_OF_SPAIN_TO_FRANCE = 'Q27969744'
 CATHOLIC_ARCHBISHOP = 'Q48629921'
 CITY_COUNCILLOR_OF_SOLSONA = 'Q58219014'
@@ -216,6 +217,8 @@ class TestScriptTransferInfotable:
         ("[[President de l'Uruguai]]", PRESIDENT_OF_URUGUAY, []),
         ("[[Arquebisbe]] [[metropolità]] de [[arquebisbat de Tlalnepantla|Tlalnepantla]]", CATHOLIC_ARCHBISHOP, [
             (DIOCESE, ROMAN_CATHOLIC_ARCHDIOCESE_OF_TLALNEPANTLA)]),
+        ("[[Senat d'Espanya|Senador]] per [[Àlaba]]", MEMBER_OF_THE_SENATE_OF_SPAIN, [
+            (ELECTORAL_DISTRICT, ALAVA_CONSTITUENCY_OF_SENATE_OF_SPAIN)]),
     ])
     def test_parse_position_value(self, position_value, expected_position_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)
