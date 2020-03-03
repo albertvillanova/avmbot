@@ -1277,6 +1277,10 @@ def remove_positions_from_page(page, infotable_params, summary=""):
     page.save(summary=summary, botflag=True)
 
 
+class SkipPageError(Exception):
+    pass
+
+
 if __name__ == '__main__':
 
     # Parse arguments
@@ -1289,13 +1293,54 @@ if __name__ == '__main__':
     # Generator
     generator = create_generator(groupsize=1)  # TODO: remove groupsize in prod
     for i, page in enumerate(generator):
-        logger.info(f"{i + 1} Page: {page}")
-        infotable_params = parse_infotable(page)
-        logger.info(f"Infotable parameters: {infotable_params}")
-        positions = extract_positions(infotable_params)
-        logger.info(f"Positions: {positions}")
-        position_statements = create_position_statements(positions)
-        if position_statements:
+
+        IGNORED = [
+            "Eleuterio Abad Martín", "Buenaventura Abarzuza Ferrer", "José Abascal Carredano",
+            "Abd-Al·lah II de Jordània", "Abdul Hamid I", "Abdul Hamid II", "Abdülâziz",
+            "Abdul·lah de l'Aràbia Saudita", "Adolfo de Abel Vilela", "Martí Abella i Pere", "Rosalie Abella",
+            "Josep Abelló Padró", "Solvita Āboltiņa", "Hovik Abrahamian",
+            # TODO: why?
+            "Alcinda Abreu", "Miguel Abriat Cantó", "Santos Abril y Castelló", "Fernando Abril Martorell",
+            # 15:
+            "Pietro Accolti", "Eduardo Acevedo Maturana" ,"Juan Bautista de Acevedo", "Youssef Achour", "Acoris",
+            "Juan Acosta Muñoz", "Gonzalo Acosta Pan", "Octavio Acquaviva", "Antonio Acuña Carballar",
+            "Amy Adams (política)", "Adamu", "José María Adán García", "Adelaida II, abadessa de Quedlinburg", "Adimir",
+            "Ælfwald d'Ànglia de l'Est",
+            # 13:
+            "Aelfwine de Deira", "Æthelflæd", "Aethelwold de l'Ànglia Oriental", "Ernesto Agazzi",
+            "Pau d'Àger i d'Orcau", "Agim Çeku", "Geraldo Majella Agnelo", "Santiago Agrelo Martínez",
+            "Miquel Aguilà i Barril", "Manuel María de Aguilar y Puerta", "Antonio Aguilar y Correa",
+            "Salvador Aguilera Carrillo", "Francisco Aguilera y Egea",
+            # 16:
+            "Enrique de Aguilera y Gamboa", "Lourdes Aguiló Bennàssar", "José Ignacio Aguiló Fuster",
+            "José Antonio Aguiriano Forniés", "Pedro Aguirre Cerda", "Francisco Javier Máximo Aguirre de la Hoz",
+            "Joaquín Aguirre de la Peña", "Manuel Aguirre de Tejada", "José Ventura Aguirre-Solarte Iturraspe",
+            "Miquel d'Agullana", "Bonaventura Agulló i Prats", "Agustí I de Mèxic", "Lorenzo Agustí Pons",
+            "Gilberto Agustoni", "Ahazià de Judà", "Ahmed Khatib",
+            # 6:
+            "Mahmud Ahmadinejad", "Ahmed Aboutaleb", "Ahmet I", "Ahmet II", "Ahmet III",
+            "ʻAhoʻeitu ʻUnuakiʻotonga Tukuʻaho",
+            # 16: (-36)
+            "Antonio Aige Pascual", "Jaume Aiguader i Miró", "Jean-Paul Aimé Gobel",
+            "Rafael Aizpún Santafé", "Jesús Aizpún Tuero", "Luis Aizpuru y Mondéjar", "Juan Aizpurúa Azqueta",
+            "Juan de Ajuriaguerra Ochandiano", "Baixar al-Àssad", "Hafez al-Àssad", "Mohamed al-Baradei",
+            "Mahmud al-Muntasir", "Isidro de Alaix Fábregas", "Cirilo de Alameda y Brea", "Luis Alarcón de la Lastra",
+            "Diego de Álava y Esquivel"
+        ]
+        if page.title() in IGNORED:
+            continue
+
+        logger.info(f"Start Page {i + 1}: {page}")
+        try:
+            infotable_params = parse_infotable(page)
+            logger.info(f"Infotable parameters: {infotable_params}")
+            if not infotable_params:
+                raise SkipPageError
+            positions = extract_positions(infotable_params)
+            logger.info(f"Positions: {positions}")
+            position_statements = create_position_statements(positions)
+            if not position_statements:
+                raise SkipPageError
             # Get item
             item = get_main_item(page)
             # Add statements
@@ -1303,7 +1348,7 @@ if __name__ == '__main__':
             # Remove infotable params
             remove_positions_from_page(page, infotable_params, summary="Exporta a Wikidata")
             logger.info(f"End Page: {page}")
-        else:
+        except SkipPageError:
             logger.error(f"Skip Page: no position statements for page {page}")
         # DEBUG
         if args.debug:
