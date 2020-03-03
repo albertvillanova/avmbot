@@ -559,7 +559,8 @@ def parse_date(value):
     if len(date_parts) < 1 or len(date_parts) > 3:
         logger.error(f"Failed parsing date: {value}")
         return
-    date_parts = [int(part) if part.isdigit() else TO_MONTH_NUMBER[part] for part in date_parts]
+    date_parts = [int(part) if part.isdigit() else TO_MONTH_NUMBER[part] for part in date_parts
+                  if part.isdigit() or part in TO_MONTH_NUMBER]
     claim_value = {k: v for k, v in zip(['year', 'month', 'day'], date_parts)}
     return claim_value
 
@@ -759,7 +760,7 @@ def parse_position_qualifier(key, value, position_value_id=''):
         logger.warning(f"Skip position qualifier because of key 'escut_carrec': value: {value}")
         return 'CONTINUE'
     elif key == 'inici' or key == 'final':
-        if value == "present":
+        if value == "present" or value == "?":
             # Ignore it: this is uninformative
             logger.warning(f"Skip position qualifier because of value 'present': key: {key}")
             return 'CONTINUE'
