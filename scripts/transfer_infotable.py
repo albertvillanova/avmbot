@@ -773,15 +773,25 @@ def parse_position_value(position_value):
         if not position_item:
             logger.error(f"Failed parsing position value: {position_link}; {position_text}")
         # Eventual qualifiers in position value
-        if len(matched_links) == 2:
-            if 'designa' in position_value:
-                logger.info(f"Parse appointed by")
-                appointed_by_link = matched_links[1][0].strip()
-                appointed_by_item = get_item_from_page_link(appointed_by_link)
-                if appointed_by_item:
-                    appointed_by_claim = Claim(property=APPOINTED_BY, item=appointed_by_item)
-                    logger.info(f"Appointed by claim: {appointed_by_claim.value}")
-                    qualifiers.append(appointed_by_claim)
+        if len(matched_links) >= 2:
+            logger.info("Parse eventual qualifiers in position value")
+            for matched_link in matched_links[1:]:
+                qualifier_property = None
+                qualifier_item = None
+                if len(matched_links) == 2 and 'designa' in position_value:
+                    logger.info(f"Parse appointed by")
+                    qualifier_property = APPOINTED_BY
+                    qualifier_link = matched_link[0].strip()
+                    qualifier_item = get_item_from_page_link(qualifier_link)
+                if "arquebisbat" in matched_link[0].lower():
+                    logger.info(f"Parse diocese")
+                    qualifier_property = DIOCESE
+                    qualifier_link = matched_link[0].strip()
+                    qualifier_item = get_item_from_page_link(qualifier_link)
+                if qualifier_item:
+                    qualifier_claim = Claim(property=qualifier_property, item=qualifier_item)
+                    logger.info(f"Qualifier claim: {qualifier_claim.value}")
+                    qualifiers.append(qualifier_claim)
         if position_value[0].isdigit():
             match = ORDINAL_REGEX.match(position_value)
             if match:

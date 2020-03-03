@@ -20,6 +20,7 @@ START_TIME = 'P580'
 AMBASSADOR_OF_SPAIN_TO_FRANCE = 'Q27969744'
 CATHOLIC_ARCHBISHOP = 'Q48629921'
 CITY_COUNCILLOR_OF_SOLSONA = 'Q58219014'
+DIOCESE = 'P708'
 ELECTORAL_DISTRICT = 'P768'
 GENERAL_CAPTAIN_OF_VALENCIA = 'Q54875187'
 GOVERNOR_OF_HAWAII = 'Q5589655'
@@ -50,6 +51,7 @@ PRESIDENT_OF_PARAGUAY = 'Q34071'
 PRESIDENT_OF_URUGUAY = 'Q4524807'
 PRIME_MINISTER_OF_PAKISTAN = 'Q735575'
 PRIME_MINISTER_OF_THAILAND = 'Q12376089'
+ROMAN_CATHOLIC_ARCHDIOCESE_OF_TLALNEPANTLA = 'Q1365709'
 SECRETARY_OF_STATE_OF_SPAIN_DURING_THE_OLD_RULE = 'Q2417901'
 SULTAN_OF_MOROCCO = 'Q14566713'
 TARRAGONA_CONSTITUENCY_OF_CONGRESS_OF_SPAIN = 'Q7686643'
@@ -212,7 +214,8 @@ class TestScriptTransferInfotable:
         ("[[Primer ministre de Tailàndia]]", PRIME_MINISTER_OF_THAILAND, []),
         ("[[Llista de presidents del Paraguai|President del Paraguai]]", PRESIDENT_OF_PARAGUAY, []),
         ("[[President de l'Uruguai]]", PRESIDENT_OF_URUGUAY, []),
-        ("[[Arquebisbe]] [[metropolità]] de [[arquebisbat de Tlalnepantla|Tlalnepantla]]", CATHOLIC_ARCHBISHOP, []),
+        ("[[Arquebisbe]] [[metropolità]] de [[arquebisbat de Tlalnepantla|Tlalnepantla]]", CATHOLIC_ARCHBISHOP, [
+            (DIOCESE, ROMAN_CATHOLIC_ARCHDIOCESE_OF_TLALNEPANTLA)]),
     ])
     def test_parse_position_value(self, position_value, expected_position_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)
