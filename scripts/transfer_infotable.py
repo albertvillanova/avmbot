@@ -760,7 +760,7 @@ def parse_position_value(position_value):
                 position_item = get_office_held_by_head(position_page, from_list_of="ministr",
                                                         prepend_to_list_of="Ministeri")
         # president
-        elif position_text.lower().startswith("president"):
+        elif position_text.lower().startswith("president") or "president" in position_text.lower():
             if position_page_title.lower().startswith("president"):
                 position_item = get_item_from_page(position_page)
             else:
@@ -786,7 +786,7 @@ def parse_position_value(position_value):
                 position_item = MEMBER_OF_THE_SENATE_OF_SPAIN
         # Position claim
         if not position_item:
-            logger.error(f"Failed parsing position value: {position_link}; {position_text}")
+            logger.error(f"Failed parsing position value: {position_value}")
         # Eventual qualifiers in position value
         if len(matched_links) >= 2:
             logger.info("Parse eventual qualifiers in position value")
@@ -814,8 +814,9 @@ def parse_position_value(position_value):
                     qualifier_claim = Claim(property=qualifier_property, item=qualifier_item)
                     logger.info(f"Qualifier claim: {qualifier_claim.value}")
                     qualifiers.append(qualifier_claim)
-        if position_value[0].isdigit():
-            match = ORDINAL_REGEX.match(position_value)
+        if position_value[0].isdigit() or position_text[0].isdigit():
+            value = position_value if position_value[0].isdigit() else position_text
+            match = ORDINAL_REGEX.match(value)
             if match:
                 series_ordinal_quantity = match.group(1)  # must be value=str
                 series_ordinal_claim = Claim(property=SERIES_ORDINAL, value=series_ordinal_quantity)

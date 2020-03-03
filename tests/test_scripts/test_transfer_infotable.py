@@ -46,6 +46,7 @@ MINISTER_OF_THE_NAVY = 'Q15895305'
 PARLIAMENT_OF_CATALONIA = 'Q135630'
 PRESIDENT_OF_COLOMBIA = 'Q853475'
 PRESIDENT_OF_THE_COUNCIL_OF_CASTILE = 'Q6360109'
+PRESIDENT_OF_FINLAND = 'Q29558'
 PRESIDENT_OF_MALTA = 'Q796593'
 PRESIDENT_OF_THE_PALESTINIAN_NATIONAL_AUTHORITY = 'Q2336111'
 PRESIDENT_OF_PARAGUAY = 'Q34071'
@@ -219,6 +220,7 @@ class TestScriptTransferInfotable:
             (DIOCESE, ROMAN_CATHOLIC_ARCHDIOCESE_OF_TLALNEPANTLA)]),
         ("[[Senat d'Espanya|Senador]] per [[Àlaba]]", MEMBER_OF_THE_SENATE_OF_SPAIN, [
             (ELECTORAL_DISTRICT, ALAVA_CONSTITUENCY_OF_SENATE_OF_SPAIN)]),
+        ("[[President de Finlàndia|10è President de Finlàndia]]", PRESIDENT_OF_FINLAND, [(SERIES_ORDINAL, '10')])
     ])
     def test_parse_position_value(self, position_value, expected_position_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)
