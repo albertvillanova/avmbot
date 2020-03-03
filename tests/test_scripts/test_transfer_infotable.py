@@ -18,6 +18,7 @@ SERIES_ORDINAL = 'P1545'
 START_TIME = 'P580'
 # Q
 AMBASSADOR_OF_SPAIN_TO_FRANCE = 'Q27969744'
+CATHOLIC_ARCHBISHOP = 'Q48629921'
 CITY_COUNCILLOR_OF_SOLSONA = 'Q58219014'
 ELECTORAL_DISTRICT = 'P768'
 GENERAL_CAPTAIN_OF_VALENCIA = 'Q54875187'
@@ -211,6 +212,7 @@ class TestScriptTransferInfotable:
         ("[[Primer ministre de Tailàndia]]", PRIME_MINISTER_OF_THAILAND, []),
         ("[[Llista de presidents del Paraguai|President del Paraguai]]", PRESIDENT_OF_PARAGUAY, []),
         ("[[President de l'Uruguai]]", PRESIDENT_OF_URUGUAY, []),
+        ("[[Arquebisbe]] [[metropolità]] de [[arquebisbat de Tlalnepantla|Tlalnepantla]]", CATHOLIC_ARCHBISHOP, []),
     ])
     def test_parse_position_value(self, position_value, expected_position_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)
