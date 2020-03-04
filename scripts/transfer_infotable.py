@@ -1128,7 +1128,7 @@ def add_statement(item, new_statement, summary=''):
     logger.info(f"Try to add new statement: {new_statement.claim.value.id}")
     duplicated = check_duplicate(item, new_statement, summary=summary)
     if not duplicated:
-        logger.info(f"Add statement: {new_statement}")
+        logger.info(f"Add statement: {new_statement.claim.value.id}")
         item.add_statement(new_statement, summary=summary)
 
 
