@@ -807,9 +807,8 @@ def parse_position_value(position_value):
                                                                               or 'senador' in position_value.lower()):
                     logger.info(f"Parse electoral district")
                     qualifier_property = ELECTORAL_DISTRICT
-                    qualifier_link = matched_link[0].strip()
                     position_item_id = position_item if isinstance(position_item, str) else position_item.id
-                    qualifier_item = get_fixed_electoral_district(qualifier_link, position_value_id=position_item_id)
+                    qualifier_item = get_fixed_electoral_district(matched_link, position_value_id=position_item_id)
                 if qualifier_item:
                     qualifier_claim = Claim(property=qualifier_property, item=qualifier_item)
                     logger.info(f"Qualifier claim: {qualifier_claim.value}")
@@ -952,7 +951,10 @@ def parse_position_qualifier(key, value, position_value_id=''):
 
 def get_fixed_electoral_district(electoral_district, position_value_id=''):
     logger.info(f"Parse and fix electoral district")
-    matches = LINK_REGEX.findall(electoral_district)
+    if isinstance(electoral_district, tuple):
+        matches = [electoral_district]
+    else:
+        matches = LINK_REGEX.findall(electoral_district)
     if matches:
         electoral_district_link = matches[0][0].strip()
         electoral_district_text = matches[0][1].strip()
