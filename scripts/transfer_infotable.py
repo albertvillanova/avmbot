@@ -226,6 +226,7 @@ OLD_CONSTITUENCY_OF_CONGRESS_OF_SPAIN = {
     "Valls": 'Q41627234',
     "Valverde del Camino": 'Q42887354',
     "Vendrell": 'Q41627356',
+    "el Vendrell": 'Q41627356',
     "Verín": 'Q42899630',
     "Vic": 'Q63247018',
     "Vigo": 'Q42899708',
