@@ -1146,15 +1146,15 @@ def check_duplicate(item, new_statement, summary=''):
             if new_statement_claim_id == statement.target.id:
                 logger.warning(f"Equal position value {new_statement_claim_id} already exists for item {item.id}")
                 # TODO: Additional equality conditions
-                if not statement.qualifiers:
-                    if not new_statement.qualifiers:
-                        logger.info(f"Do not add statement: duplicated position values without qualifiers")
-                        return True
-                    else:
-                        # Add new qualifiers
-                        logger.info(f"No item position qualifiers")
-                        add_qualifiers(statement, new_statement, summary=summary)
-                        return True
+                if not new_statement.qualifiers:
+                    logger.info(f"Do not add statement: duplicated position values without qualifiers")
+                    return True
+                if statement.qualifiers.keys().isdisjoint(
+                        {new_statement_qualifier.property for new_statement_qualifier in new_statement.qualifiers}):
+                    # Add new qualifiers
+                    logger.info(f"Item position does not contain any of the new statement qualifiers")
+                    add_qualifiers(statement, new_statement, summary=summary)
+                    return True
                 else:
                     # TODO: when to skip? return False
                     for new_statement_qualifier in new_statement.qualifiers:
