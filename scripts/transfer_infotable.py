@@ -1155,34 +1155,57 @@ def check_duplicate(item, new_statement, summary=''):
                 if not new_statement.qualifiers:
                     logger.info(f"Do not add statement: duplicated position values without qualifiers")
                     return True
-                if statement.qualifiers.keys().isdisjoint(
-                        {new_statement_qualifier.property for new_statement_qualifier in new_statement.qualifiers}):
+                common_qualifier_properties = set(statement.qualifiers.keys()).intersection(
+                    {new_statement_qualifier.property for new_statement_qualifier in new_statement.qualifiers})
+                if not common_qualifier_properties:
                     # Add new qualifiers
                     logger.info(f"Item position does not contain any of the new statement qualifiers")
                     add_qualifiers(statement, new_statement, summary=summary)
                     return True
                 else:
-                    # TODO: when to skip? return False
+                    equal_qualifiers = True
                     for new_statement_qualifier in new_statement.qualifiers:
-                        if new_statement_qualifier.property == START_TIME:
-                            if new_statement_qualifier.property in statement.qualifiers:
-                                for claim in statement.qualifiers[new_statement_qualifier.property]:
-                                    # if new_statement_qualifier.value.precision == claim.target.precision:
-                                    # precision = 9  # (year)
-                                    # precision = 11  # (year, month, day)
-                                    if (((new_statement_qualifier.value.precision == 9 or claim.target.precision == 9)
-                                         and (new_statement_qualifier.value.year == claim.target.year)) or
-                                        ((new_statement_qualifier.value.precision == 10 or claim.target.precision == 10)
-                                         and (new_statement_qualifier.value.year == claim.target.year
-                                              and new_statement_qualifier.value.month == claim.target.month)) or
-                                        ((new_statement_qualifier.value.precision == 11 or claim.target.precision == 11)
-                                         and (new_statement_qualifier.value.year == claim.target.year
-                                              and new_statement_qualifier.value.month == claim.target.month
-                                              and new_statement_qualifier.value.day == claim.target.day))):
-                                        # Add new qualifiers
-                                        logger.info(f"Equal position values and start time")
-                                        add_qualifiers(statement, new_statement, summary=summary)
-                                        return True
+                        if new_statement_qualifier.property in common_qualifier_properties:
+                            if hasattr(new_statement_qualifier.value, 'id'):
+                                new_statement_qualifier_value = new_statement_qualifier.value.id
+                            elif hasattr(new_statement_qualifier.value, 'precision'):
+                                new_statement_qualifier_value = {'year': new_statement_qualifier.value.year}
+                                if new_statement_qualifier.value.precision >= 10:
+                                    new_statement_qualifier_value['month'] = new_statement_qualifier.value.month
+                                if new_statement_qualifier.value.precision >= 11:
+                                    new_statement_qualifier_value['day'] = new_statement_qualifier.value.day
+                            else:
+                                new_statement_qualifier_value = new_statement_qualifier.value
+                            equal_qualifier = False  # if any True:
+                            for claim in statement.qualifiers[new_statement_qualifier.property]:
+                                if hasattr(claim.target, 'id'):
+                                    statement_qualifier_value = claim.target.id
+                                elif hasattr(claim.target, 'precision'):
+                                    statement_qualifier_value = {'year': claim.target.year}
+                                    if claim.target.precision >= 10:
+                                        statement_qualifier_value['month'] = claim.target.month
+                                    if claim.target.precision >= 11:
+                                        statement_qualifier_value['day'] = claim.target.day
+                                else:
+                                    statement_qualifier_value = claim.target
+                                if isinstance(statement_qualifier_value, dict):
+                                    if all([
+                                        statement_qualifier_value[key] == new_statement_qualifier_value[key] for key in
+                                        set(statement_qualifier_value.keys()).intersection(
+                                            new_statement_qualifier_value.keys())]):
+                                        equal_qualifier = True
+                                        break
+                                else:
+                                    if new_statement_qualifier_value == statement_qualifier_value:
+                                        equal_qualifier = True
+                                        break
+                            equal_qualifiers = equal_qualifiers and equal_qualifier
+                            if not equal_qualifiers:  # if any of the common qualifiers are different
+                                return False
+                    if equal_qualifiers:  # if all common qualifiers are equal
+                        logger.info(f"Equal position values and all equal common qualifiers")
+                        add_qualifiers(statement, new_statement, summary=summary)
+                        return True
     return False
 
 
