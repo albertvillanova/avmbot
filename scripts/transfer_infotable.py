@@ -490,11 +490,15 @@ def get_page_from_link(link, langs=None):
     for lang in langs:
         site = sites[lang]
         page = pw.Page(pw.Link(link, source=site))
-        if page.isRedirectPage():
-            page = page.getRedirectTarget()
-        if page.exists():
-            logger.info(f"Found Wikipedia page from {lang} page link {link}: {page}")
-            return page
+        try:
+            if page.isRedirectPage():
+                page = page.getRedirectTarget()
+            if page.exists():
+                logger.info(f"Found Wikipedia page from {lang} page link {link}: {page}")
+                return page
+        except Exception as e:
+            logger.error(f"Exception {type(e)}: {e}")
+            return
         else:
             logger.warning(f"No Wikipedia page from {lang} page link {link}")
     logger.error(f"No Wikipedia page from (ca, es, gl, en) page links: {link}")
