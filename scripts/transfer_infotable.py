@@ -121,6 +121,8 @@ INFOTABLE_PARAMS = {
 
 # Regex
 DIGIT_REGEX = re.compile(r"(\d+)")
+ELECTORAL_DISTRICT_REGEX = re.compile(r"(?:província|circumscripció electoral|districte electoral) (?:de |d')"
+                                      r"(?P<name>.+)", flags=re.I)
 LINK_REGEX = re.compile(r'\[\[(?P<link>[^\]|[<>{}]*)(?:\|(?P<text>.*?))?\]\]')
 ORDINAL_REGEX = re.compile(r"(\d+)[rntéèa]\.? .+")
 PREPOSITION_REGEX = re.compile(r"(?: de | d'|\s)")
@@ -970,6 +972,10 @@ def get_fixed_electoral_district(electoral_district, position_value_id=''):
             electoral_district_text = electoral_district_link
     else:
         electoral_district_text = electoral_district
+    # if electoral_district_text.lower().startswith("província"):
+    match = ELECTORAL_DISTRICT_REGEX.match(electoral_district_text)
+    if match:
+        electoral_district_text = match.group('name')
     # Specific
     if position_value_id and position_value_id in CONSTITUENCY_REPRESENTED_BY:
         electoral_district_id = CONSTITUENCY_REPRESENTED_BY[position_value_id].get(electoral_district_text)

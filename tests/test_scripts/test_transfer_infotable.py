@@ -59,6 +59,7 @@ SECRETARY_OF_STATE_OF_SPAIN_DURING_THE_OLD_RULE = 'Q2417901'
 SULTAN_OF_MOROCCO = 'Q14566713'
 TARRAGONA_CONSTITUENCY_OF_CONGRESS_OF_SPAIN = 'Q7686643'
 TARRAGONA_CONSTITUENCY_OF_PARLIAMENT_OF_CATALONIA = 'Q24932383'
+TARRAGONA_CONSTITUENCY_OF_SENATE_OF_SPAIN = 'Q58214284'
 VALENCIA_CONSTITUENCY_OF_SENATE_OF_SPAIN = 'Q58214307'
 
 
@@ -226,6 +227,8 @@ class TestScriptTransferInfotable:
         ("[[Senat d'Espanya|Senador]] per [[circumscripció electoral de València|València]]",
          MEMBER_OF_THE_SENATE_OF_SPAIN, [(ELECTORAL_DISTRICT, VALENCIA_CONSTITUENCY_OF_SENATE_OF_SPAIN)]),
         ("[[Ministre d'Afers Exteriors de Letònia]]", MINISTER_OF_FOREIGN_AFFAIRS_OF_LATVIA, []),
+        ("[[Senat d'Espanya|Senador]] per [[província de Tarragona]]", MEMBER_OF_THE_SENATE_OF_SPAIN, [
+            (ELECTORAL_DISTRICT, TARRAGONA_CONSTITUENCY_OF_SENATE_OF_SPAIN)]),
     ])
     def test_parse_position_value(self, position_value, expected_position_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)
