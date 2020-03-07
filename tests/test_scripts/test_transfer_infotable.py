@@ -41,6 +41,7 @@ MEMBER_OF_THE_PARLIAMENT_OF_CATALONIA = 'Q18714088'
 MEMBER_OF_THE_PARLIAMENT_OF_GALICIA = 'Q43198218'
 MEMBER_OF_THE_SENATE_OF_SPAIN = 'Q19323171'
 MEMBER_OF_THE_UNITED_STATES_HOUSE_OF_REPRESENTATIVES = 'Q13218630'
+MINISTER_OF_FOREIGN_AFFAIRS_OF_LATVIA = 'Q57125919'
 MINISTER_OF_FOREIGN_AFFAIRS_OF_SPAIN = 'Q32969906'
 MINISTER_OF_THE_NAVY = 'Q15895305'
 PARLIAMENT_OF_CATALONIA = 'Q135630'
@@ -224,6 +225,7 @@ class TestScriptTransferInfotable:
         ("[[President de Finlàndia|10è President de Finlàndia]]", PRESIDENT_OF_FINLAND, [(SERIES_ORDINAL, '10')]),
         ("[[Senat d'Espanya|Senador]] per [[circumscripció electoral de València|València]]",
          MEMBER_OF_THE_SENATE_OF_SPAIN, [(ELECTORAL_DISTRICT, VALENCIA_CONSTITUENCY_OF_SENATE_OF_SPAIN)]),
+        ("[[Ministre d'Afers Exteriors de Letònia]]", MINISTER_OF_FOREIGN_AFFAIRS_OF_LATVIA, []),
     ])
     def test_parse_position_value(self, position_value, expected_position_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)

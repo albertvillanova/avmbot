@@ -731,12 +731,6 @@ def parse_position_value(position_value):
         # No page link
         if not position_page_title:
             position_item = None
-        # Page link
-        elif position_text.lower().startswith("[["):
-            if position_page_title.lower().startswith("llista"):
-                position_item = get_list_of(position_page)
-            else:
-                position_item = get_item_from_page(position_page)
         # alcalde
         elif position_text.lower().startswith("alcalde"):
             if position_page_title.lower().startswith("alcalde"):
@@ -761,7 +755,7 @@ def parse_position_value(position_value):
         elif position_text.lower().startswith("membre"):
             position_item = get_has_part_from_link(position_link)
         # ministr
-        elif position_text.lower().startswith("ministr"):
+        elif position_text.lower().startswith("ministr") or position_link.lower().startswith("ministr"):
             if position_page_title.lower().startswith("ministr"):
                 position_item = get_item_from_page(position_page)
             else:
@@ -792,6 +786,12 @@ def parse_position_value(position_value):
         elif position_text.lower().startswith("senador"):
             if position_page_title == "Senat d'Espanya":
                 position_item = MEMBER_OF_THE_SENATE_OF_SPAIN
+        # Rest: use page link
+        elif position_text.lower().startswith("[["):
+            if position_page_title.lower().startswith("llista"):
+                position_item = get_list_of(position_page)
+            else:
+                position_item = get_item_from_page(position_page)
         # Position claim
         if not position_item:
             logger.error(f"Failed parsing position value: {position_value}")
