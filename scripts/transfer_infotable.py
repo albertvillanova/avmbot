@@ -211,6 +211,7 @@ OLD_CONSTITUENCY_OF_CONGRESS_OF_SPAIN = {
     "Llíria": 'Q36120327',
     "Loja": 'Q43140042',
     "Manresa": 'Q41764614',
+    "Monòver": 'Q87163933',
     "Móra de Rubiols": 'Q38710029',
     "Olot": 'Q65209995',
     "Purchena": 'Q86835202',
