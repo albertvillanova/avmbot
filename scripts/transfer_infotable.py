@@ -1329,19 +1329,22 @@ def add_qualifiers(statement, new_statement, summary=""):
         logger.info(f"No qualifier added to duplicated item position value")
 
 
-def remove_positions_from_page(page, infotable_params, summary=""):
+def remove_positions_from_page(page, infotable_params, summary="", persist=True):
     logger.info(f"Remove positions from page: {page}")
     text = page.text
     for param_key, param_value in infotable_params.items():
         param_name, *_ = DIGIT_REGEX.split(param_key)
         # param_num = param_num[0] if param_num else '1'
         if param_name in INFOTABLE_PARAMS:
-            text = re.sub(r"\s*\|\s*" + re.escape(param_key) + r"\s*=\s*" + re.escape(param_value) + r"[^|}]*", '',
+            text = re.sub(r"\s*\|\s*" + re.escape(param_key) + r"\s*=\s*" + re.escape(param_value) + r"[^|}]*", '\n',
                           text, count=1, flags=re.MULTILINE)
-        # Fix broken-line template
-        text = re.sub(r"^\{\{([\w\s']+)\n\}\}", r"{{\1}}", text, count=1, flags=re.MULTILINE)
+    # Fix broken-line template
+    text = re.sub(r"^\{\{([\w\s']+)\n\}\}", r"{{\1}}", text, count=1, flags=re.MULTILINE)
     page.text = text
-    page.save(summary=summary, botflag=True)
+    if persist:
+        page.save(summary=summary, botflag=True)
+    else:
+        return page
 
 
 class SkipPageError(Exception):

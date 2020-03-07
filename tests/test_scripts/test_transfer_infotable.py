@@ -2,11 +2,12 @@
 python -m pytest -s tests/test_scripts
 """
 from collections import OrderedDict
+from types import SimpleNamespace
 
 import pytest
 
 from transfer_infotable import extract_positions, get_fixed_electoral_district, get_item_from_page_link, parse_date, \
-    parse_position, parse_position_qualifier, parse_position_value
+    parse_position, parse_position_qualifier, parse_position_value, remove_positions_from_page
 
 # Constants
 # P
@@ -248,4 +249,19 @@ class TestScriptTransferInfotable:
                     assert claim.value.id == qid
         else:
             assert qualifiers == expected_qualifiers
+
+    @pytest.mark.parametrize("text", [
+        '{{Infotaula\n| llengua = rus\n| inici          = [[15 de juny]] de [[1977]]\n| ocupacio = Poeta\n}}',
+        "{{Infotaula\n| llengua = rus  |  inici  =  [[15 de juny]] de [[1977]]\n| ocupacio = Poeta\n}}",
+        '{{Infotaula\n| llengua = rus\n| inici          = [[15 de juny]] de [[1977]]   | ocupacio = Poeta\n}}',
+        '{{Infotaula\n| llengua = rus\n| ocupacio = Poeta\n| inici          = [[15 de juny]] de [[1977]]\n}}',
+        "{{Infotaula\n| llengua = rus\n| ocupacio = Poeta  |  inici  =  [[15 de juny]] de [[1977]]\n}}",
+        '{{Infotaula\n| llengua = rus\n| ocupacio = Poeta\n| inici          = [[15 de juny]] de [[1977]]   }}',
+    ])
+    def test_remove_positions_from_page(self, text):
+        page = SimpleNamespace(text=text)
+        infotable_params = {'inici': '[[15 de juny]] de [[1977]]'}
+        page = remove_positions_from_page(page, infotable_params, persist=False)
+        expected_text = "{{Infotaula\n| llengua = rus\n| ocupacio = Poeta\n}}"
+        assert page.text == expected_text
 
