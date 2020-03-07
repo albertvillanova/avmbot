@@ -27,6 +27,7 @@ GENERAL_CAPTAIN_OF_VALENCIA = 'Q54875187'
 GOVERNOR_OF_HAWAII = 'Q5589655'
 IRENE_RIGAU_I_OLIVER = 'Q15743807'
 KHEDIVE = 'Q127878'
+KING_OF_HUNGARY = 'Q6412254'
 KING_OF_JORDAN = 'Q14625123'
 KING_OF_SAUDI_ARABIA = 'Q850168'
 LLEIDA_CONSTITUENCY_OF_CONGRESS_OF_SPAIN = 'Q6661991'
@@ -229,6 +230,7 @@ class TestScriptTransferInfotable:
         ("[[Ministre d'Afers Exteriors de Letònia]]", MINISTER_OF_FOREIGN_AFFAIRS_OF_LATVIA, []),
         ("[[Senat d'Espanya|Senador]] per [[província de Tarragona]]", MEMBER_OF_THE_SENATE_OF_SPAIN, [
             (ELECTORAL_DISTRICT, TARRAGONA_CONSTITUENCY_OF_SENATE_OF_SPAIN)]),
+        ("Rei d'Hongria", KING_OF_HUNGARY, []),
     ])
     def test_parse_position_value(self, position_value, expected_position_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)

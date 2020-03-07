@@ -149,6 +149,7 @@ FIX_POSITION_VALUE = {
     KINGDOM_OF_ISRAEL: KING_OF_ISRAEL,
     KINGDOM_OF_JUDAH: KING_OF_JUDAH,
 }
+KING_OF_HUNGARY = 'Q6412254'
 
 CONSTITUENCY_OF_EUROPEAN_PARLIAMENT = {
     "Espanya": 'Q16254367',
@@ -860,10 +861,13 @@ def parse_position_value(position_value):
             if match:
                 position_item = get_office_held_by_head_from_link(match.group('organization'))
         elif position_value.lower().startswith("rei"):
-            regex = "rei" + r"\S*\s(?:de |d')(?P<organization>.+)"
-            match = re.match(regex, position_value, re.I)
-            if match:
-                position_item = get_office_held_by_head_from_link(match.group('organization'), of='state')
+            if position_value.lower() == "rei d'hongria":
+                position_item = KING_OF_HUNGARY
+            else:
+                regex = "rei" + r"\S*\s(?:de |d')(?P<organization>.+)"
+                match = re.match(regex, position_value, re.I)
+                if match:
+                    position_item = get_office_held_by_head_from_link(match.group('organization'), of='state')
         elif position_value.lower().startswith("ambaixador"):
             # Join multi-word countries
             position_value = position_value.replace("Regne Unit", "Regne_Unit")
