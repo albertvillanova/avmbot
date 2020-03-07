@@ -126,6 +126,7 @@ ELECTORAL_DISTRICT_REGEX = re.compile(r"(?:província|circumscripció electoral|
 LINK_REGEX = re.compile(r'\[\[(?P<link>[^\]|[<>{}]*)(?:\|(?P<text>.*?))?\]\]')
 ORDINAL_REGEX = re.compile(r"(\d+)[rntéèa]\.? .+")
 PREPOSITION_REGEX = re.compile(r"(?: de | d'|\s)")
+TAG_REGEX = re.compile(r"<.+?>")
 
 COUNTRIES = ["Espanya", "França", "Portugal", "Regne_Unit"]
 AMBASSADOR_OF_SPAIN_TO_FRANCE = 'Q27969744'
@@ -724,6 +725,8 @@ def parse_position_value(position_value):
     position_item = None
     position_claim = None
     qualifiers = []
+    # Remove tags
+    position_value = remove_tags(position_value)
     # Match links
     matched_links = LINK_REGEX.findall(position_value)
     # From links
@@ -897,6 +900,8 @@ def parse_position_qualifier(key, value, position_value_id=''):
     # Equivalences
     if key.lower() == "proclamació":
         key = "inici"
+    # Remove tags
+    value = remove_tags(value)
     # Standard cases
     if key == 'escut_carrec':
         # Ignore it: this should be in the position item
@@ -961,6 +966,21 @@ def parse_position_qualifier(key, value, position_value_id=''):
         logger.error(f"No claim value found for position qualifier: {key}: {value}")
         return
     return qualifier_claim
+
+
+def remove_tags(text):
+    tags = set(TAG_REGEX.findall(text))
+    for tag in tags:
+        if tag.startswith("<br"):
+            text = text.replace(tag, " ")
+            logger.info(f"Remove tag '<br>': {text}")
+        elif tag.startswith("<ref") and tag in text:  # it could have been removed by a previous tag
+            text = text[:text.find(tag)]
+            logger.info(f"Remove tag '<ref>': {text}")
+        else:
+            text = text.replace(tag, " ")
+            logger.warning(f"Remove tag '{tag}': {text}")
+    return text
 
 
 def get_fixed_electoral_district(electoral_district, position_value_id=''):
