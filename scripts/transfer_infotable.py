@@ -545,6 +545,24 @@ def extract_positions(template_params):
     return positions
 
 
+def parse_link(link):
+    logger.info(f"Parse link: {link}")
+    link_target, link_label = '', ''
+    if isinstance(link, tuple):
+        matches = [link]
+    else:
+        matches = LINK_REGEX.findall(link)
+    if matches:
+        link_target = matches[0][0].strip()
+        link_label = matches[0][1].strip()
+        if not link_label:
+            link_label = link_target
+    else:  # if not a link, return the string as link_label
+        link_label = link
+    logger.info(f"Parsed link: {link_target, link_label}")
+    return link_target, link_label
+
+
 def get_page_from_link(link, langs=None):
     if not langs:
         langs = ['ca', 'es', 'gl', 'en']
@@ -897,10 +915,15 @@ def parse_position_value(position_value):
                     qualifier_item = get_item_from_page_link(qualifier_link)
                 if len(matched_links) == 2 and " per " in position_value and ('diputa' in position_value.lower()
                                                                               or 'senador' in position_value.lower()):
-                    logger.info(f"Parse electoral district")
-                    qualifier_property = ELECTORAL_DISTRICT
-                    position_item_id = position_item if isinstance(position_item, str) else position_item.id
-                    qualifier_item = get_fixed_electoral_district(matched_link, position_value_id=position_item_id)
+                    if "designa" in position_value:
+                        logger.info(f"Parse appointed by")
+                        qualifier_property = APPOINTED_BY
+                        qualifier_item = get_appointed_by(matched_link)
+                    else:
+                        logger.info(f"Parse electoral district")
+                        qualifier_property = ELECTORAL_DISTRICT
+                        position_item_id = position_item if isinstance(position_item, str) else position_item.id
+                        qualifier_item = get_fixed_electoral_district(matched_link, position_value_id=position_item_id)
                 if qualifier_item:
                     qualifier_claim = Claim(property=qualifier_property, item=qualifier_item)
                     logger.info(f"Qualifier claim: {qualifier_claim.value}")
@@ -1071,19 +1094,18 @@ def get_civil_governor_of(jurisdiction):
     return civil_governor_id
 
 
+def get_appointed_by(appointed_by):
+    logger.info(f"Parse appointed by")
+    appointed_by_link, appointed_by_text = parse_link(appointed_by)
+    if not appointed_by_link:
+        logger.error(f"No link: {appointed_by}")
+    appointed_by_item = get_item_from_page_link(appointed_by_link)
+    return appointed_by_item
+
+
 def get_fixed_electoral_district(electoral_district, position_value_id=''):
     logger.info(f"Parse and fix electoral district")
-    if isinstance(electoral_district, tuple):
-        matches = [electoral_district]
-    else:
-        matches = LINK_REGEX.findall(electoral_district)
-    if matches:
-        electoral_district_link = matches[0][0].strip()
-        electoral_district_text = matches[0][1].strip()
-        if not electoral_district_text:
-            electoral_district_text = electoral_district_link
-    else:
-        electoral_district_text = electoral_district
+    electoral_district_link, electoral_district_text = parse_link(electoral_district)
     # if electoral_district_text.lower().startswith("província"):
     match = ELECTORAL_DISTRICT_REGEX.match(electoral_district_text)
     if match:
@@ -1097,7 +1119,7 @@ def get_fixed_electoral_district(electoral_district, position_value_id=''):
             if electoral_district_item:
                 return electoral_district_item
     # Generic
-    if not matches:
+    if not electoral_district_link:
         if electoral_district_text.lower()[0] in ['a', 'e', 'i', 'o', 'u']:
             electoral_district_link = f"Circumscripció electoral d'{electoral_district_text}"
         else:

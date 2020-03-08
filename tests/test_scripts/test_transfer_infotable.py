@@ -50,6 +50,7 @@ MINISTER_OF_FOREIGN_AFFAIRS_OF_LATVIA = 'Q57125919'
 MINISTER_OF_FOREIGN_AFFAIRS_OF_SPAIN = 'Q32969906'
 MINISTER_OF_THE_NAVY = 'Q15895305'
 PARLIAMENT_OF_CATALONIA = 'Q135630'
+PARLIAMENT_OF_VALENCIA = 'Q2734573'
 PRESIDENT_OF_COLOMBIA = 'Q853475'
 PRESIDENT_OF_THE_COUNCIL_OF_CASTILE = 'Q6360109'
 PRESIDENT_OF_FINLAND = 'Q29558'
@@ -233,6 +234,8 @@ class TestScriptTransferInfotable:
         ("[[Senat d'Espanya|Senador]] per [[Àlaba]]", MEMBER_OF_THE_SENATE_OF_SPAIN, [
             (ELECTORAL_DISTRICT, ALAVA_CONSTITUENCY_OF_SENATE_OF_SPAIN)]),
         ("[[President de Finlàndia|10è President de Finlàndia]]", PRESIDENT_OF_FINLAND, [(SERIES_ORDINAL, '10')]),
+        ("[[Senat d'Espanya|Senador]] designat per les [[Corts Valencianes]]", MEMBER_OF_THE_SENATE_OF_SPAIN, [
+            (APPOINTED_BY, PARLIAMENT_OF_VALENCIA)]),
         ("[[Senat d'Espanya|Senador]] per [[circumscripció electoral de València|València]]",
          MEMBER_OF_THE_SENATE_OF_SPAIN, [(ELECTORAL_DISTRICT, VALENCIA_CONSTITUENCY_OF_SENATE_OF_SPAIN)]),
         ("[[Ministre d'Afers Exteriors de Letònia]]", MINISTER_OF_FOREIGN_AFFAIRS_OF_LATVIA, []),
