@@ -20,6 +20,7 @@ START_TIME = 'P580'
 # Q
 ALAVA_CONSTITUENCY_OF_SENATE_OF_SPAIN = 'Q58213992'
 AMBASSADOR_OF_SPAIN_TO_FRANCE = 'Q27969744'
+ARCHBISHOP_OF_VALENCIA = 'Q23774884'
 CATHOLIC_ARCHBISHOP = 'Q48629921'
 CITY_COUNCILLOR_OF_SOLSONA = 'Q58219014'
 CIVIL_GOVERNOR_OF_BARCELONA = 'Q11924567'
@@ -234,6 +235,7 @@ class TestScriptTransferInfotable:
         ("[[Senat d'Espanya|Senador]] per [[província de Tarragona]]", MEMBER_OF_THE_SENATE_OF_SPAIN, [
             (ELECTORAL_DISTRICT, TARRAGONA_CONSTITUENCY_OF_SENATE_OF_SPAIN)]),
         ("Rei d'Hongria", KING_OF_HUNGARY, []),
+        ("[[Arquebisbe de València]]", ARCHBISHOP_OF_VALENCIA, []),
     ])
     def test_parse_position_value(self, position_value, expected_position_claim_id, expected_qualifiers):
         position_claim, qualifiers = parse_position_value(position_value)

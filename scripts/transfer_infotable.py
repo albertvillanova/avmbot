@@ -808,6 +808,12 @@ def parse_position_value(position_value):
                 position_item = get_item_from_page(position_page)
             else:
                 position_item = get_office_held_by_head(position_page, from_list_of="alcalde")
+        # arquebisbe
+        elif position_text.lower().startswith("arquebisbe") or position_link.lower().startswith("arquebisbe"):
+            if position_page_title.lower().startswith("arquebisbe"):
+                position_item = get_item_from_page(position_page)
+            else:
+                position_item = get_office_held_by_head(position_page, from_list_of="arquebisbe")
         # diputa
         elif position_text.lower().startswith("diputa"):
             if position_page_title == "Parlament de Catalunya":
