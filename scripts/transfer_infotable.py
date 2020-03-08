@@ -155,6 +155,61 @@ FIX_POSITION_VALUE = {
 }
 KING_OF_HUNGARY = 'Q6412254'
 
+CIVIL_GOVERNOR = 'Q5551744'
+CIVIL_GOVERNOR_OF = {
+    "Àlaba": 'Q36870698',
+    "Alacant": 'Q40156414',
+    "Albacete": 'Q33416825',
+    "Almeria": 'Q36870028',
+    "Àvila": 'Q33208514',
+    "Badajoz": 'Q40155768',
+    "Illes Balears": 'Q41159235',
+    "Barcelona": 'Q11924567',
+    "Biscaia": 'Q40257808',
+    "Burgos": 'Q33408919',
+    "Càceres": 'Q38090471',
+    "Cadis": 'Q36859635',
+    "Canàries": 'Q55692460',
+    "Castelló": 'Q45062382',
+    "Ciudad Real": 'Q39396880',
+    "Conca": 'Q40261054',
+    "Còrdova": 'Q39750004',
+    "la Corunya": 'Q38045114',
+    "Girona": 'Q40819105',
+    "Granada": 'Q33400749',
+    "Guadalajara": 'Q37152410',
+    "Guipúscoa": 'Q40260454',
+    "Huelva": 'Q42308661',
+    "Jaén": 'Q37159593',
+    "Lleida" : 'Q44685974',
+    "Lleó": 'Q38047906',
+    "Logronyo": 'Q40264082',
+    "Lugo": 'Q40258491',
+    "Madrid": 'Q24069432',
+    "Màlaga": 'Q38181128',
+    "Múrcia": 'Q36862346',
+    "Navarra": 'Q40262436',
+    "Osca": 'Q40156951',
+    "Ourense": 'Q38047455',
+    "Oviedo": 'Q39558956',
+    "Las Palmas": 'Q39682341',
+    "Palència": 'Q38058793',
+    "Pontevedra": 'Q40210099',
+    "Salamanca": 'Q33393612',
+    "Santa Cruz de Tenerife": 'Q45067876',
+    "Santander": 'Q44554575',
+    "Saragossa": 'Q38090231',
+    "Segòvia": 'Q33206649',
+    "Sevilla": 'Q33395409',
+    "Sòria": 'Q40897543',
+    "Tarragona": 'Q44732418',
+    "Terol": 'Q39757602',
+    "Toledo": 'Q39558446',
+    "València": 'Q40982569',
+    "Valladolid": 'Q37160251',
+    "Zamora": 'Q38059170',
+}
+
 CONSTITUENCY_OF_EUROPEAN_PARLIAMENT = {
     "Espanya": 'Q16254367',
 }
@@ -759,6 +814,11 @@ def parse_position_value(position_value):
                 position_item = MEMBER_OF_PARLIAMENT_OF_CATALONIA
             else:
                 position_item = get_has_part_from_link(position_link)
+        # governador civil
+        elif position_page_title.lower().startswith("governador civil"):
+            if len(matched_links) == 2:
+                province_text = matched_links[1][1].strip()
+                position_item = get_civil_governor_of(province_text)
         # governador
         elif position_page_title.lower().startswith("governador"):
             if len(matched_links) == 2:
@@ -992,6 +1052,16 @@ def remove_tags(text):
             text = text.replace(tag, " ")
             logger.warning(f"Remove tag '{tag}': {text}")
     return text
+
+
+def get_civil_governor_of(jurisdiction):
+    logger.info(f"Parse civil governor")
+    if jurisdiction in CIVIL_GOVERNOR_OF:
+        civil_governor_id = CIVIL_GOVERNOR_OF[jurisdiction]
+    else:
+        logger.warning(f"Jurisdiction {jurisdiction} not in CIVIL_GOVERNOR_OF")
+        civil_governor_id = CIVIL_GOVERNOR
+    return civil_governor_id
 
 
 def get_fixed_electoral_district(electoral_district, position_value_id=''):

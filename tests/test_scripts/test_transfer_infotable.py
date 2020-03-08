@@ -22,6 +22,7 @@ ALAVA_CONSTITUENCY_OF_SENATE_OF_SPAIN = 'Q58213992'
 AMBASSADOR_OF_SPAIN_TO_FRANCE = 'Q27969744'
 CATHOLIC_ARCHBISHOP = 'Q48629921'
 CITY_COUNCILLOR_OF_SOLSONA = 'Q58219014'
+CIVIL_GOVERNOR_OF_BARCELONA = 'Q11924567'
 DIOCESE = 'P708'
 ELECTORAL_DISTRICT = 'P768'
 GENERAL_CAPTAIN_OF_VALENCIA = 'Q54875187'
@@ -197,6 +198,7 @@ class TestScriptTransferInfotable:
          []),
         ("Diputat al [[Congrés dels Diputats]]", MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN, []),
         ("7è [[Governador]] de [[Hawaii]]", GOVERNOR_OF_HAWAII, [(SERIES_ORDINAL, '7')]),
+        ("[[Governador civil]] de [[província de Barcelona|Barcelona]]", CIVIL_GOVERNOR_OF_BARCELONA, []),
         ("[[Alcalde de Solsona|Alcalde accidental de Solsona]]", MAYOR_OF_SOLSONA, []),
         ("[[Llista d'alcaldes de Reus|Alcalde de Reus]]", MAYOR_OF_REUS, []),
         ("Alcalde-President de Melilla", MAYOR_PRESIDENT_OF_MELILLA, []),
