@@ -815,7 +815,7 @@ def parse_position_value(position_value):
             else:
                 position_item = get_office_held_by_head(position_page, from_list_of="arquebisbe")
         # diputa
-        elif position_text.lower().startswith("diputa"):
+        elif position_text.lower().startswith("diputa") or position_value.lower().startswith("diputa"):
             if position_page_title == "Parlament de Catalunya":
                 position_item = MEMBER_OF_PARLIAMENT_OF_CATALONIA
             else:
@@ -878,6 +878,7 @@ def parse_position_value(position_value):
         # Position claim
         if not position_item:
             logger.error(f"Failed parsing position value: {position_value}")
+            return position_claim, qualifiers
         # Eventual qualifiers in position value
         if len(matched_links) >= 2:
             logger.info("Parse eventual qualifiers in position value")
@@ -1101,7 +1102,7 @@ def get_fixed_electoral_district(electoral_district, position_value_id=''):
             electoral_district_link = f"Circumscripció electoral d'{electoral_district_text}"
         else:
             electoral_district_link = f"Circumscripció electoral de {electoral_district_text}"
-    electoral_district_item = get_item_from_page_link(electoral_district_link, langs=['ca'])
+    electoral_district_item = get_item_from_page_link(electoral_district_link)
     return electoral_district_item
 
 
