@@ -778,7 +778,8 @@ def parse_position_value(position_value):
                 position_item = get_office_held_by_head(position_page, from_list_of="ministr",
                                                         prepend_to_list_of="Ministeri")
         # president
-        elif position_text.lower().startswith("president") or "president" in position_text.lower():
+        elif position_text.lower().startswith("president") or " president" in position_text.lower():
+            # "10è President"; not "Vicepresident"
             if position_page_title.lower().startswith("president"):
                 position_item = get_item_from_page(position_page)
             else:
