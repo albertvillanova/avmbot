@@ -530,7 +530,6 @@ def extract_positions(template_params):
             position['carrec'] = positions[i - 1]['carrec']
         # Propagate year from final to inici
         if 'inici' in position and 'final' in position:
-            # kaka
             inici = position['inici']
             if not inici.startswith('{{'):
                 inici = inici.replace('[[', '').replace(']]', '')
@@ -715,8 +714,8 @@ def get_office_held_by_head(organization_page, head_of=None, from_list_of=None, 
         office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_STATE)
     else:
         office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_GOVERNMENT)
-        if not office_claims:
-            office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_THE_ORGANIZATION)
+    if not office_claims:
+        office_claims = organization_item.claims.get(OFFICE_HELD_BY_HEAD_OF_THE_ORGANIZATION)
     if office_claims:
         if len(office_claims) == 1:
             position_item = office_claims[0].getTarget()  # .id
@@ -868,7 +867,7 @@ def parse_position_value(position_value):
                 position_item = get_item_from_page(position_page)
             else:
                 # TODO: of='state'?
-                position_item = get_office_held_by_head(position_page, from_list_of="president")
+                position_item = get_office_held_by_head(position_page, head_of="state", from_list_of="president")
         # # regidor  # TODO: not yet a clearly established structure in Wikidata
         # elif position_text.lower().startswith("regidor"):
         #     position_item = get_has_part_from_link(position_link)

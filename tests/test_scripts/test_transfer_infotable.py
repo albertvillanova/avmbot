@@ -54,6 +54,7 @@ PARLIAMENT_OF_VALENCIA = 'Q2734573'
 PRESIDENT_OF_COLOMBIA = 'Q853475'
 PRESIDENT_OF_THE_COUNCIL_OF_CASTILE = 'Q6360109'
 PRESIDENT_OF_FINLAND = 'Q29558'
+PRESIDENT_OF_KOSOVO = 'Q886947'
 PRESIDENT_OF_MALTA = 'Q796593'
 PRESIDENT_OF_THE_PALESTINIAN_NATIONAL_AUTHORITY = 'Q2336111'
 PRESIDENT_OF_PARAGUAY = 'Q34071'
@@ -234,6 +235,7 @@ class TestScriptTransferInfotable:
         ("[[Senat d'Espanya|Senador]] per [[Àlaba]]", MEMBER_OF_THE_SENATE_OF_SPAIN, [
             (ELECTORAL_DISTRICT, ALAVA_CONSTITUENCY_OF_SENATE_OF_SPAIN)]),
         ("[[President de Finlàndia|10è President de Finlàndia]]", PRESIDENT_OF_FINLAND, [(SERIES_ORDINAL, '10')]),
+        ("4a [[Kosovo|Presidenta de Kosovo]]", PRESIDENT_OF_KOSOVO, [(SERIES_ORDINAL, '4')]),
         ("[[Senat d'Espanya|Senador]] designat per les [[Corts Valencianes]]", MEMBER_OF_THE_SENATE_OF_SPAIN, [
             (APPOINTED_BY, PARLIAMENT_OF_VALENCIA)]),
         ("[[Senat d'Espanya|Senador]] per [[circumscripció electoral de València|València]]",
