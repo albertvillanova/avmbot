@@ -36,6 +36,7 @@ KING_OF_JORDAN = 'Q14625123'
 KING_OF_SAUDI_ARABIA = 'Q850168'
 LIST_OF_PRIME_MINISTERS_OF_SAINT_LUCIA = 'Q934245'
 LLEIDA_CONSTITUENCY_OF_CONGRESS_OF_SPAIN = 'Q6661991'
+MAYOR_OF_ARGENTONA = 'Q26690390'
 MAYOR_OF_A_CORUNA = 'Q12391919'
 MAYOR_OF_LA_VALL_D_UIXO = 'Q26693191'
 MAYOR_OF_LUXEMBOURG = 'Q85422522'
@@ -204,6 +205,7 @@ class TestScriptTransferInfotable:
             assert qualifier_claim is expected_property
 
     @pytest.mark.parametrize("position_value, expected_position_claim_id, expected_qualifiers", [
+        ("[[Alcalde d'Argentona]]", MAYOR_OF_ARGENTONA, []),
         ("[[Ministeri de Marina d'Espanya|Ministre de Marina]]", MINISTER_OF_THE_NAVY, []),
         ("[[La Corunya|Alcalde de La Corunya]]", MAYOR_OF_A_CORUNA, []),
         ("Diputada al [[Parlament de Catalunya]]", MEMBER_OF_THE_PARLIAMENT_OF_CATALONIA, []),

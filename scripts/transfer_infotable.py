@@ -830,7 +830,7 @@ def parse_position_value(position_value):
         if not position_page_title:
             position_item = None
         # alcalde
-        elif position_text.lower().startswith("alcalde"):
+        elif position_text.lower().startswith("alcalde") or position_link.lower().startswith("alcalde"):
             if position_page_title.lower().startswith("alcalde"):
                 position_item = get_item_from_page(position_page)
             else:
