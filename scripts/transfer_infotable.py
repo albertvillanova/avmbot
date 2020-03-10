@@ -75,6 +75,9 @@ HAS_PARTS_OF_THE_CLASS = 'P2670'
 # Utils to find position from list
 IS_A_LIST_OF = 'P360'
 HUMAN = 'Q5'
+INSTANCE_OF = 'P31'
+WIKIMEDIA_LIST_ARTICLE = 'Q13406463'
+WIKIMEDIA_LIST_OF_PERSONS_BY_POSITION_HELD = 'Q66715753'
 
 # Utils to fix electoral district
 MEMBER_OF_EUROPEAN_PARLIAMENT = 'Q27169'
@@ -608,12 +611,17 @@ def get_item_from_page_link(link, langs=None):
 def get_item_from_id(item_id):
     logger.info(f"Get item from id {item_id}")
     try:
-        item = pw.ItemPage(wikidatabot.repo, item_id)
+        pwb_item = pw.ItemPage(wikidatabot.repo, item_id)
     except pw.NoPage:
         logger.error(f"No Wikidata item from id {item_id}")
         return
     logger.info(f"Found Wikidata item from id {item_id}")
-    return item
+    return pwb_item
+
+
+def fetch_item(pwb_item):
+    _ = pwb_item.get()
+    return pwb_item
 
 
 # def get_item(page):
@@ -986,9 +994,11 @@ def parse_position_value(position_value):
         if not position_item:
             logger.error(f"Failed parsing position value: {position_value}")
     if position_item:
-        position_item_id = position_item if isinstance(position_item, str) else position_item.id
-        if position_item_id in FIX_POSITION_VALUE:
-            position_item = FIX_POSITION_VALUE[position_item_id]
+        # Fix position item
+        position_item = fix_position_value(position_item)
+        if not position_item:
+            return None, []
+        # Create position claim
         position_claim = Claim(property=POSITION_HELD, item=position_item)
         logger.info(f"Position held claim: {position_claim.value}")
     return position_claim, qualifiers
@@ -1127,6 +1137,30 @@ def get_fixed_electoral_district(electoral_district, position_value_id=''):
     return electoral_district_item
 
 
+def fix_position_value(position_item):
+    position_item_id = position_item if isinstance(position_item, str) else position_item.id
+    # Mapping of specific cases
+    if position_item_id in FIX_POSITION_VALUE:
+        new_position_item = FIX_POSITION_VALUE[position_item_id]
+        logger.info(f"Fix specific position value: from {position_item_id} to {new_position_item}")
+        return new_position_item
+    # List of
+    if isinstance(position_item, str):
+        position_item = get_item_from_id(position_item)
+    position_item = fetch_item(position_item)
+    instance_of_statements = position_item.claims.get(INSTANCE_OF)
+    list_instances = [WIKIMEDIA_LIST_ARTICLE, WIKIMEDIA_LIST_OF_PERSONS_BY_POSITION_HELD]
+    if instance_of_statements and any([statement.target.id in list_instances for statement in instance_of_statements]):
+        logger.warning(f"Position value is a list: {position_item_id}. "
+                       f"The corresponding Wikipedia page should be fixed.")
+        new_position_item = get_list_of(item=position_item)
+        if not new_position_item:
+            logger.error(f"Failed to get element from list: {position_item_id}")
+        else:
+            return new_position_item
+    return position_item
+
+
 def parse_position(position):
     logger.info(f"Parse position: {position}")
     if 'carrec' not in position:
@@ -1201,34 +1235,38 @@ def parse_position(position):
     return position_claim, qualifiers
 
 
-def get_list_of(list_page):
-    logger.info(f"Get list of, from {list_page}")
-    list_item = get_item_from_page(list_page)
-    if not list_item:
-        logger.error(f"No list item found from {list_page}")
-        return
+def get_list_of(page=None, item=None):
+    arg = page if page else item
+    logger.info(f"Get list of, from {arg}")
+    if page:
+        list_item = get_item_from_page(page)
+        if not list_item:
+            logger.error(f"No list item found from {arg}")
+            return
+    elif item:
+        list_item = item
     is_a_list_of_statements = list_item.claims.get(IS_A_LIST_OF)
     if not is_a_list_of_statements:
-        logger.error(f"No list of statement found for list {list_page}")
+        logger.error(f"No list of statement found for list {arg}")
         return
     if len(is_a_list_of_statements) != 1:
-        logger.error(f"More than one list of statement found for list {list_page}")
+        logger.error(f"More than one list of statement found for list {arg}")
         return
     is_a_list_of_item = is_a_list_of_statements[0].target
     if is_a_list_of_item.id == HUMAN:
-        logger.info(f"Get qualifier: found list of HUMAN for list {list_page}")
+        logger.info(f"Get qualifier: found list of HUMAN for list {arg}")
         is_a_list_of_item_qualifiers = is_a_list_of_statements[0].qualifiers
         if len(is_a_list_of_item_qualifiers) != 1:
-            logger.error(f"More than one qualifier found for list of HUMAN, for list {list_page}")
+            logger.error(f"More than one qualifier found for list of HUMAN, for list {arg}")
             return
         is_a_list_of_item_qualifier_pid, is_a_list_of_item_qualifier_claims = \
             list(is_a_list_of_statements[0].qualifiers.items())[0]
         if len(is_a_list_of_item_qualifier_claims) != 1:
             logger.error(f"More than one qualifier claim found for list of HUMAN qualifier property "
-                         f"{is_a_list_of_item_qualifier_pid}, for list {list_page}")
+                         f"{is_a_list_of_item_qualifier_pid}, for list {arg}")
             return
         is_a_list_of_item = is_a_list_of_item_qualifier_claims[0].target
-    logger.info(f"Found list of {is_a_list_of_item} for list {list_page}")
+    logger.info(f"Found list of {is_a_list_of_item} for list {arg}")
     return is_a_list_of_item
 
 

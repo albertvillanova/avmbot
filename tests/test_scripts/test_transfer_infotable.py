@@ -6,8 +6,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from transfer_infotable import extract_positions, get_fixed_electoral_district, get_item_from_page_link, parse_date, \
-    parse_position, parse_position_qualifier, parse_position_value, remove_positions_from_page
+from transfer_infotable import fix_position_value, extract_positions, get_fixed_electoral_district, \
+    get_item_from_page_link, parse_date, parse_position, parse_position_qualifier, parse_position_value, \
+    remove_positions_from_page
 
 # Constants
 # P
@@ -33,6 +34,7 @@ KHEDIVE = 'Q127878'
 KING_OF_HUNGARY = 'Q6412254'
 KING_OF_JORDAN = 'Q14625123'
 KING_OF_SAUDI_ARABIA = 'Q850168'
+LIST_OF_PRIME_MINISTERS_OF_SAINT_LUCIA = 'Q934245'
 LLEIDA_CONSTITUENCY_OF_CONGRESS_OF_SPAIN = 'Q6661991'
 MAYOR_OF_A_CORUNA = 'Q12391919'
 MAYOR_OF_LA_VALL_D_UIXO = 'Q26693191'
@@ -60,6 +62,7 @@ PRESIDENT_OF_THE_PALESTINIAN_NATIONAL_AUTHORITY = 'Q2336111'
 PRESIDENT_OF_PARAGUAY = 'Q34071'
 PRESIDENT_OF_URUGUAY = 'Q4524807'
 PRIME_MINISTER_OF_PAKISTAN = 'Q735575'
+PRIME_MINISTER_OF_SAINT_LUCIA = 'Q30101433'
 PRIME_MINISTER_OF_THAILAND = 'Q12376089'
 ROMAN_CATHOLIC_ARCHDIOCESE_OF_TLALNEPANTLA = 'Q1365709'
 SECRETARY_OF_STATE_OF_SPAIN_DURING_THE_OLD_RULE = 'Q2417901'
@@ -72,6 +75,18 @@ VALENCIA_CONSTITUENCY_OF_SENATE_OF_SPAIN = 'Q58214307'
 
 
 class TestScriptTransferInfotable:
+
+    @pytest.mark.parametrize("position_item, expected_position_item", [
+        (LIST_OF_PRIME_MINISTERS_OF_SAINT_LUCIA, PRIME_MINISTER_OF_SAINT_LUCIA),
+    ])
+    def test_fix_position_value(self, position_item, expected_position_item):
+        fixed_position_item = fix_position_value(position_item)
+        if fixed_position_item:
+            fixed_position_item_id = fixed_position_item if isinstance(fixed_position_item, str) \
+                else fixed_position_item.id
+            assert fixed_position_item_id == expected_position_item
+        else:
+            assert fixed_position_item is expected_position_item
 
     def test_extract_positions(self):
         infotable_params = OrderedDict([
