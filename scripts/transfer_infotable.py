@@ -1379,10 +1379,11 @@ def check_duplicate(item, new_statement, summary=''):
                                         break
                             equal_qualifiers = equal_qualifiers and equal_qualifier
                             if not equal_qualifiers:  # if any of the common qualifiers is different
-                                logger.info(f"Any of the common qualifiers is different: "
+                                logger.info(f"Skip statement: any of the common qualifiers is different: "
                                             f"{new_statement_qualifier.property}: {new_statement_qualifier_value}) "
                                             f"vs. {statement_qualifier_value}")
-                                return False
+                                # Pass to next statement
+                                break
                     if equal_qualifiers:  # if all common qualifiers are equal
                         logger.info(f"Equal position values and all equal common qualifiers")
                         add_qualifiers(statement, new_statement, summary=summary)
