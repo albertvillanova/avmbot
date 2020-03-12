@@ -850,7 +850,7 @@ def parse_position_value(position_value):
         # governador civil
         elif position_page_title.lower().startswith("governador civil"):
             if len(matched_links) == 2:
-                province_text = matched_links[1][1].strip()
+                province_text = matched_links[1][1].strip() or matched_links[1][0].strip()
                 position_item = get_civil_governor_of(province_text)
         # governador
         elif position_page_title.lower().startswith("governador"):
@@ -1099,6 +1099,19 @@ def get_civil_governor_of(jurisdiction):
     logger.info(f"Parse civil governor")
     if jurisdiction in CIVIL_GOVERNOR_OF:
         civil_governor_id = CIVIL_GOVERNOR_OF[jurisdiction]
+    elif jurisdiction.lower().startswith("província"):
+        match = ELECTORAL_DISTRICT_REGEX.match(jurisdiction)
+        if match:
+            logger.warning(f"Jurisdiction {jurisdiction} matched")
+            jurisdiction = match.group('name')
+            if jurisdiction in CIVIL_GOVERNOR_OF:
+                civil_governor_id = CIVIL_GOVERNOR_OF[jurisdiction]
+            else:
+                logger.warning(f"Matched jurisdiction {jurisdiction} not in CIVIL_GOVERNOR_OF")
+                civil_governor_id = CIVIL_GOVERNOR
+        else:
+            logger.warning(f"Jurisdiction {jurisdiction} not matched")
+            civil_governor_id = CIVIL_GOVERNOR
     else:
         logger.warning(f"Jurisdiction {jurisdiction} not in CIVIL_GOVERNOR_OF")
         civil_governor_id = CIVIL_GOVERNOR

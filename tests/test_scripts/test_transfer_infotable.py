@@ -223,6 +223,7 @@ class TestScriptTransferInfotable:
         ("Diputat al [[Congrés dels Diputats]]", MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN, []),
         ("7è [[Governador]] de [[Hawaii]]", GOVERNOR_OF_HAWAII, [(SERIES_ORDINAL, '7')]),
         ("[[Governador civil]] de [[província de Barcelona|Barcelona]]", CIVIL_GOVERNOR_OF_BARCELONA, []),
+        (" [[Governador civil]] de la [[província de Barcelona]]", CIVIL_GOVERNOR_OF_BARCELONA, []),
         ("[[Alcalde de Solsona|Alcalde accidental de Solsona]]", MAYOR_OF_SOLSONA, []),
         ("[[Llista d'alcaldes de Reus|Alcalde de Reus]]", MAYOR_OF_REUS, []),
         ("Alcalde-President de Melilla", MAYOR_PRESIDENT_OF_MELILLA, []),
