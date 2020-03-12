@@ -121,6 +121,8 @@ INFOTABLE_PARAMS = {
     'l_etiqueta': None,
     'l_nom': None,
 }
+IGNORED_PARAMS = ['a_etiqueta', 'a_nom', 'b_etiqueta', 'b_nom', 'e_etiqueta', 'e_nom', 'f_etiqueta', 'f_nom',
+                  'l_etiqueta', 'l_nom']
 
 # Regex
 DIGIT_REGEX = re.compile(r"(\d+)")
@@ -524,7 +526,11 @@ def extract_positions(template_params):
         param_name, *param_num = DIGIT_REGEX.split(param_name)
         param_num = param_num[0] if param_num else '1'
         if param_name in INFOTABLE_PARAMS:
-            positions[param_num][param_name] = param_value
+            if param_name in IGNORED_PARAMS:
+                logger.warning(f"TODO: Ignored parameter (name, value): ({param_name}, {param_value})")
+                continue
+            else:
+                positions[param_num][param_name] = param_value
     if not positions:
         return []
     positions = [positions[position_num] for position_num in sorted(positions)]
@@ -1213,28 +1219,28 @@ def parse_position(position):
                 logger.warning(
                     f"Missing member of k_(label, name) pair: no label {label_key} for name {name_key}: {name_value}")
             continue # already parsed
-        # _etiqueta
-        elif '_etiqueta' in position_key:
-            label_key = position_key
-            label_value = position_value
-            name_key = position_key.replace('_etiqueta', '_nom')
-            if name_key not in position:
-                logger.warning(
-                    f"Missing member of (label, name) pair: no name {name_key} for label {label_key}: {label_value}")
-                continue
-            # TODO: parse pair
-            name_value = position[name_key]
-            logger.warning(f"TODO: Parse (label, name) pair ({label_key}, {name_key}): ({label_value}, {name_value})")
-            # return None, []
-            continue
-        elif '_nom' in position_key:
-            name_key = position_key
-            name_value = position_value
-            label_key = position_key.replace('_nom', '_etiqueta')
-            if label_key not in position:
-                logger.warning(
-                    f"Missing member of (label, name) pair: no label {label_key} for name {name_key}: {name_value}")
-            continue  # already parsed
+        # # _etiqueta
+        # elif '_etiqueta' in position_key:
+        #     label_key = position_key
+        #     label_value = position_value
+        #     name_key = position_key.replace('_etiqueta', '_nom')
+        #     if name_key not in position:
+        #         logger.warning(
+        #             f"Missing member of (label, name) pair: no name {name_key} for label {label_key}: {label_value}")
+        #         continue
+        #     # TODO: parse pair
+        #     name_value = position[name_key]
+        #     logger.warning(f"TODO: Parse (label, name) pair ({label_key}, {name_key}): ({label_value}, {name_value})")
+        #     # return None, []
+        #     continue
+        # elif '_nom' in position_key:
+        #     name_key = position_key
+        #     name_value = position_value
+        #     label_key = position_key.replace('_nom', '_etiqueta')
+        #     if label_key not in position:
+        #         logger.warning(
+        #             f"Missing member of (label, name) pair: no label {label_key} for name {name_key}: {name_value}")
+        #     continue  # already parsed
         # rest
         elif position_key in INFOTABLE_PARAMS:
             qualifier_claim = parse_position_qualifier(position_key, position_value)
