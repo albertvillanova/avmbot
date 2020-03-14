@@ -47,6 +47,7 @@ MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN = 'Q18171345'
 MEMBER_OF_NEW_ZELAND_PARLIAMENT = 'Q18145518'
 MEMBER_OF_THE_PARLIAMENT_OF_CATALONIA = 'Q18714088'
 MEMBER_OF_THE_PARLIAMENT_OF_GALICIA = 'Q43198218'
+MEMBER_OF_THE_PARLIAMENT_OF_VALENCIA = 'Q21609684'
 MEMBER_OF_THE_SENATE_OF_SPAIN = 'Q19323171'
 MEMBER_OF_THE_UNITED_STATES_HOUSE_OF_REPRESENTATIVES = 'Q13218630'
 MINISTER_OF_FOREIGN_AFFAIRS_OF_LATVIA = 'Q57125919'
@@ -222,6 +223,7 @@ class TestScriptTransferInfotable:
         ("[[Llista dels Ministres d'Afers Exteriors d'Espanya|Ministre d'Estat]]", MINISTER_OF_FOREIGN_AFFAIRS_OF_SPAIN,
          []),
         ("Diputat al [[Congrés dels Diputats]]", MEMBER_OF_THE_CONGRESS_OF_DEPUTIES_OF_SPAIN, []),
+        ("[[Diputat]] a les [[Corts Valencianes]]", MEMBER_OF_THE_PARLIAMENT_OF_VALENCIA, []),
         ("7è [[Governador]] de [[Hawaii]]", GOVERNOR_OF_HAWAII, [(SERIES_ORDINAL, '7')]),
         ("[[Governador civil]] de [[província de Barcelona|Barcelona]]", CIVIL_GOVERNOR_OF_BARCELONA, []),
         (" [[Governador civil]] de la [[província de Barcelona]]", CIVIL_GOVERNOR_OF_BARCELONA, []),

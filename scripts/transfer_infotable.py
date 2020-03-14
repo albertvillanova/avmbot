@@ -850,9 +850,20 @@ def parse_position_value(position_value):
             else:
                 position_item = get_office_held_by_head(position_page, from_list_of="arquebisbe")
         # diputa
-        elif position_text.lower().startswith("diputa") or position_value.lower().startswith("diputa"):
+        elif position_text.lower().startswith("diputa") or position_value.lower().startswith("diputa") \
+                or position_page_title.lower().startswith("diputa"):
             if position_page_title == "Parlament de Catalunya":
                 position_item = MEMBER_OF_PARLIAMENT_OF_CATALONIA
+            elif position_page_title.lower().startswith("diputa"):
+                if position_page_title == "Diputat":
+                    if len(matched_links) >= 2:
+                        matched_links = matched_links[1:]
+                        position_link = matched_links[0][0].strip()
+                        position_item = get_has_part_from_link(position_link)
+                    else:
+                        position_item = None
+                else:
+                    position_item = get_item_from_page(position_page)
             else:
                 position_item = get_has_part_from_link(position_link)
         # governador civil
