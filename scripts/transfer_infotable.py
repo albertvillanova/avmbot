@@ -824,6 +824,8 @@ def parse_position_value(position_value):
     position_value = remove_tags(position_value)
     # Match links
     matched_links = LINK_REGEX.findall(position_value)
+    matched_links = [matched_link for matched_link in matched_links if
+                     not matched_link[0].strip().startswith("Fitxer:")]
     # From links
     if matched_links:
         position_link = matched_links[0][0].strip()

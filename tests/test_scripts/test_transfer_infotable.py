@@ -262,6 +262,9 @@ class TestScriptTransferInfotable:
         ("[[Ministre d'Afers Exteriors de Letònia]]", MINISTER_OF_FOREIGN_AFFAIRS_OF_LATVIA, []),
         ("[[Senat d'Espanya|Senador]] per [[província de Tarragona]]", MEMBER_OF_THE_SENATE_OF_SPAIN, [
             (ELECTORAL_DISTRICT, TARRAGONA_CONSTITUENCY_OF_SENATE_OF_SPAIN)]),
+        ("[[Senat d'Espanya|Senador]] per [[província de Tarragona|Tarragona]]<br>"
+         "[[Fitxer:Escudo_del_Senado_de_España.svg|30px]]", MEMBER_OF_THE_SENATE_OF_SPAIN, [
+            (ELECTORAL_DISTRICT, TARRAGONA_CONSTITUENCY_OF_SENATE_OF_SPAIN)]),
         ("Rei d'Hongria", KING_OF_HUNGARY, []),
         ("[[Arquebisbe de València]]", ARCHBISHOP_OF_VALENCIA, []),
     ])
