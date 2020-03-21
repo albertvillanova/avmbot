@@ -186,6 +186,7 @@ class TestScriptTransferInfotable:
     @pytest.mark.parametrize("key, value, position_value_id, expected_property, expected_value", [
         ("inici", "[[17 de febrer]] de [[2011]]", '', START_TIME, {'year': 2011, 'month': 2, 'day': 17}),
         ("final", "[[17 de febrer]] de [[2011]]", '', END_TIME, {'year': 2011, 'month': 2, 'day': 17}),
+        ("inici", "[[22 d’abril]] de [[1852]]", '', START_TIME, {'year': 1852, 'month': 4, 'day': 22}),
         ("predecessor", "[[Irene Rigau i Oliver]]", '', REPLACES, {'id': IRENE_RIGAU_I_OLIVER}),
         ("successor", "[[Irene Rigau i Oliver]]", '', REPLACED_BY, {'id': IRENE_RIGAU_I_OLIVER}),
         ("successor", "-", '', None, {}),

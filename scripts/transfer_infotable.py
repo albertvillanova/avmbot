@@ -126,11 +126,11 @@ IGNORED_PARAMS = ['a_etiqueta', 'a_nom', 'b_etiqueta', 'b_nom', 'e_etiqueta', 'e
 
 # Regex
 DIGIT_REGEX = re.compile(r"(\d+)")
-ELECTORAL_DISTRICT_REGEX = re.compile(r"(?:província|circumscripció electoral|districte electoral) (?:de |d')"
+ELECTORAL_DISTRICT_REGEX = re.compile(r"(?:província|circumscripció electoral|districte electoral) (?:de |d(?:'|’))"
                                       r"(?P<name>.+)", flags=re.I)
 LINK_REGEX = re.compile(r'\[\[(?P<link>[^\]|[<>{}]*)(?:\|(?P<text>.*?))?\]\]')
 ORDINAL_REGEX = re.compile(r"(\d+)[rntéèa]\.? .+")
-PREPOSITION_REGEX = re.compile(r"(?: de | d'|\s)")
+PREPOSITION_REGEX = re.compile(r"(?: de | d(?:'|’)|\s)")
 TAG_REGEX = re.compile(r"<.+?>")
 
 COUNTRIES = ["Espanya", "França", "Portugal", "Regne_Unit"]
@@ -781,9 +781,27 @@ def parse_date(value):
     if len(date_parts) < 1 or len(date_parts) > 3 or date_parts[0].isalpha():  # ["març", 13]
         logger.error(f"Failed parsing date: {value}")
         return
-    date_parts = [int(part) if part.isdigit() else TO_MONTH_NUMBER[part] for part in date_parts
-                  if part.isdigit() or part in TO_MONTH_NUMBER]
-    claim_value = {k: v for k, v in zip(['year', 'month', 'day'], date_parts)}
+    normalized_date_parts = []
+    for part in date_parts:
+        if part.isdigit():
+            normalized_date_parts.append(int(part))
+        elif part in TO_MONTH_NUMBER:
+            normalized_date_parts.append(TO_MONTH_NUMBER[part])
+        else:
+            logger.error(f"Failed parsing date: {value}")
+            return
+    claim_value = {k: v for k, v in zip(['year', 'month', 'day'], normalized_date_parts)}
+    # Validate
+    if 'month' in claim_value:
+        month = claim_value['month']
+        if month < 1 or month > 12:
+            logger.error(f"Failed parsing date: {value}")
+            return
+    if 'day'in claim_value:
+        day = claim_value['day']
+        if day < 1 or day > 31:
+            logger.error(f"Failed parsing date: {value}")
+            return
     return claim_value
 
 
