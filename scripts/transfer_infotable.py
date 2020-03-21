@@ -1337,7 +1337,7 @@ def create_position_statements(positions):
         statements.append((position_claim, qualifiers))
     # Create sources
     sources = [Claim(property=IMPORTED_FROM_WIKIMEDIA_PROJECT, item=CATALAN_WIKIPEDIA)]
-    today = datetime.date.today()
+    today = datetime.datetime.now(datetime.timezone.utc)
     today = {'year': today.year, 'month': today.month, 'day': today.day}
     retrieved_claim = Claim(property=RETRIEVED, **today)
     sources.append(retrieved_claim)
