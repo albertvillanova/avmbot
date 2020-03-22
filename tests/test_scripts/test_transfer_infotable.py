@@ -123,6 +123,19 @@ class TestScriptTransferInfotable:
         assert 'carrec' in positions[1]
         assert positions[2]['carrec'] == positions[1]['carrec']
 
+    def test_extract_positions_without_first(self):
+        infotable_params = OrderedDict([
+            ('k_etiqueta', 'Circumscripció'),
+            ('carrec2', 'Diputat a les[[Corts Valencianes]]'),
+            ('escut_carrec2', 'Escudo de la Comunidad Valenciana.svg'), ('inici2', '[[2 de juliol]] de[[1987]]'),
+            ('final2', '[[18 de juny]] de[[1991]]'), ('k_etiqueta2', 'Circumscripció'),
+            ('k_etiqueta3', 'Circumscripció')])
+        positions = extract_positions(infotable_params)
+        assert isinstance(positions, list)
+        assert len(positions) == 3
+        assert positions[0].keys() == set(['k_etiqueta'])
+        assert positions[2].keys() == set(['k_etiqueta', 'carrec'])
+
     @pytest.mark.parametrize("electoral_district, position_value_id, expected_item_id", [
         ("[[província de Tarragona|Tarragona]]", MEMBER_OF_THE_PARLIAMENT_OF_CATALONIA,
          TARRAGONA_CONSTITUENCY_OF_PARLIAMENT_OF_CATALONIA),

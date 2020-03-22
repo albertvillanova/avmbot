@@ -537,8 +537,10 @@ def extract_positions(template_params):
     # Propagate values
     for i, position in enumerate(positions):
         # Propagate 'carrec'
-        if 'carrec' not in position:
-            position['carrec'] = positions[i - 1]['carrec']
+        if 'carrec' not in position and i > 0:
+            previous_position = positions[i - 1].get('carrec')
+            if previous_position:
+                position['carrec'] = previous_position
         # Propagate year from final to inici
         if 'inici' in position and 'final' in position:
             inici = position['inici']
