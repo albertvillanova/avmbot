@@ -263,10 +263,12 @@ def load_data(path=None, sheet_name=None, index=None, column=None, **kwargs):
     else:
         to_dtype = {idx: str for idx in index}
     # Read
-    if path.suffix.endswith('xls'):
+    if path.suffix in ['.xls', '.xlsx']:
         df = pd.read_excel(path, sheet_name=sheet_name, header=7, dtype=to_dtype)
-    elif path.suffix.endswith('csv'):
+    elif path.suffix == '.csv':
         df = pd.read_csv(path, sep='\t', dtype=to_dtype)
+    else:
+        raise ValueError(f"Not supported extension for path: {path}")
     # Set index
     if isinstance(index, str):
         df = df.set_index(index)
