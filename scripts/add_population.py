@@ -16,6 +16,7 @@ logger = logging.getLogger('add_population')
 
 
 PATH_FRANCE_2017 = Path('D:/data/insee/populations/2017/ensemble.xls')
+PATH_FRANCE_2018 = Path('D:/data/insee/populations/2018/ensemble.xlsx')
 
 # Constants
 INSTANCE_OF = 'P31'
@@ -60,7 +61,7 @@ PARAMS = {
             'source_title': "Recensement de la population 2017 de Mayotte",
             'source_language': 'fr',
             'publication_date': {'year': 2017, 'month': 12, 'day': 27},
-            'cantons':{
+            'cantons': {
                 'path': '~/share/data/insee/populations/mayotte/2017/populations_mayotte_2017_cantons.csv',
                 'administrative_division': 'Q18524218',  # canton of France (starting March 2015)
                 'insee_code': 'P2506',  # INSEE canton code
@@ -68,7 +69,7 @@ PARAMS = {
                 'index': ['Code département', 'Code canton'],
                 'column': 'Population municipale',
             },
-            'communes':{
+            'communes': {
                 'path': '~/share/data/insee/populations/mayotte/2017/populations_mayotte_2017_communes.csv',
                 'administrative_division': 'Q484170',  # commune of France
                 'insee_code': 'P374',  # INSEE municipality code
@@ -157,6 +158,46 @@ PARAMS = {
             },
         },
 
+    },
+    '2018': {
+        'france': {
+            'cog_year': '2020',  # dans les limites territoriales des communes au 1er janvier 2020
+            # MINUS: [Mayotte, French Polynesia, New Caledonia, Wallis and Futuna, Saint Pierre and Miquelon]
+            'location': {'MINUS': ['Q17063', 'Q30971', 'Q33788', 'Q35555', 'Q34617']},
+            # None,  # 'Q142',  # France <- this gives TimeOut
+            'summary': "Add France 2018 population",
+            'population_date': {'year': 2018, 'month': 1, 'day': 1},  # données de population au 1er janvier 2018
+            'stated_in': 'Q104619889',  # Populations légales 2018
+            #
+            'regions': {
+                'path': PATH_FRANCE_2018,
+                'administrative_division': 'Q36784',  # region of France
+                'insee_code': 'P2585',  # INSEE region code
+                'sheet_name': 'Régions',
+                'index': 'Code région',
+                'column': 'Population municipale',
+            },
+            #
+            'departements': {
+                'path': PATH_FRANCE_2018,
+                # [department of France, overseas department of France]
+                'administrative_division': ['Q6465', 'Q202216'],
+                'insee_code': 'P2586',  # INSEE department code
+                'sheet_name': 'Départements',
+                'index': 'Code département',
+                'column': 'Population municipale',
+            },
+            #
+            'communes': {
+                'path': PATH_FRANCE_2018,
+                # [commune of France, commune nouvelle, municipal arrondissement]
+                'administrative_division': ['Q484170', 'Q2989454', 'Q702842'],
+                'insee_code': 'P374',  # INSEE municipality code
+                'sheet_name': 'Communes',
+                'index': ['Code département', 'Code commune'],
+                'column': 'Population municipale',
+            },
+        },
     },
 }
 
