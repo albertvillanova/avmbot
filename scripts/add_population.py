@@ -317,6 +317,9 @@ def check_duplicated_year(item, new_statement, point_in_time=POINT_IN_TIME):
         statements = item_statements[new_statement.getID()]
         for statement in statements:
             if point_in_time in statement.qualifiers:
+                if not hasattr(statement.qualifiers[point_in_time][0].getTarget(), 'year'):
+                    logger.error(f"Unknown point_in_time format in item {item.labels.get('fr')} ({item.getID()})")
+                    continue
                 statement_point_in_time_qualifier_year = statement.qualifiers[point_in_time][0].getTarget().year
                 if statement_point_in_time_qualifier_year == new_statement_point_in_time_qualifier_year:
                     statement_population_amount = statement.getTarget().amount
