@@ -33,6 +33,8 @@ TITLE = 'P1476'
 PUBLICATION_DATE = 'P577'
 DETERMINATION_METHOD = 'P459'
 CENSUS = 'Q39825'
+INCEPTION = 'P571'
+DISSOLVED_DATE = 'P576'
 
 PARAMS = {
     '2014': {
@@ -225,19 +227,27 @@ SELECT DISTINCT ?item WHERE {
 
   ?item p:{instance_of} ?st .
   ?st ps:{instance_of} wd:{administrative_division} .
-  
+
   OPTIONAL{?st pq:{start_time} ?start_time_date}
   FILTER(IF(BOUND(?start_time_date), ?start_time_date <= "{cog_year}-01-01"^^xsd:dateTime, true))
-  
+
   OPTIONAL{?st pq:{end_time} ?end_time_date}
   FILTER(IF(BOUND(?end_time_date), ?end_time_date > "{cog_year}-01-01"^^xsd:dateTime, true))
-  
+
+  OPTIONAL{?item wdt:{inception} ?start_time_date}
+  FILTER(IF(BOUND(?start_time_date), ?start_time_date <= "{cog_year}-01-01"^^xsd:dateTime, true))
+
+  OPTIONAL{?item wdt:{dissolved_date} ?end_time_date}
+  FILTER(IF(BOUND(?end_time_date), ?end_time_date > "{cog_year}-01-01"^^xsd:dateTime, true))
+
   {located_in_location}
 }
  """\
     .replace('{instance_of}', INSTANCE_OF)\
     .replace('{start_time}', START_TIME)\
-    .replace('{end_time}', END_TIME)
+    .replace('{end_time}', END_TIME)\
+    .replace('{inception}', INCEPTION)\
+    .replace('{dissolved_date}', DISSOLVED_DATE)
 
 
 def config_logger(log_filename=''):
