@@ -188,10 +188,28 @@ PARAMS = {
                 'column': 'Population municipale',
             },
             #
+            'arrondissements': {
+                'path': PATH_FRANCE_2018,
+                'administrative_division': 'Q194203',  # arrondissement of France
+                'insee_code': 'P3423',  # INSEE arrondissement code
+                'sheet_name': 'Arrondissements',
+                'index': ['Code département', 'Code arrondissement'],
+                'column': 'Population municipale',
+            },
+            #
+            'cantons': {
+                'path': PATH_FRANCE_2018,
+                'administrative_division': 'Q18524218',  # canton of France (starting March 2015)
+                'insee_code': 'P2506',  # INSEE canton code
+                'sheet_name': 'Cantons et métropoles',
+                'index': ['Code département', 'Code canton'],
+                'column': 'Population municipale',
+            },
+            #
             'communes': {
                 'path': PATH_FRANCE_2018,
                 # [commune of France, commune nouvelle, municipal arrondissement]
-                'administrative_division': ['Q484170', 'Q2989454', 'Q702842'],
+                'administrative_division': ['Q484170'],  # ['Q484170', 'Q2989454', 'Q702842'],  # TODO: all together give timeout
                 'insee_code': 'P374',  # INSEE municipality code
                 'sheet_name': 'Communes',
                 'index': ['Code département', 'Code commune'],
